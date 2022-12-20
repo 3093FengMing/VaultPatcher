@@ -1,16 +1,10 @@
 package me.fengming.vaultpatcher.command;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
-import me.fengming.vaultpatcher.VaultPatcher;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.TextComponent;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 
 public class ExportCommand implements Command<CommandSourceStack> {
     public static ExportCommand instance = new ExportCommand();

@@ -3,6 +3,7 @@
   "package": "me.fengming.vaultpatcher.mixin",
   "refmap": "refmap.vaultpatcher.json",
   "mixins": [
+    "FontMixin",
     "TextComponentMixin"
   ],
   "client": [

@@ -21,7 +21,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.spongepowered.mixin'
 
 
-version = 'forge-1.2.1+1.18.2'
+version = 'forge-1.2.0+1.18.2'
 group = 'me.fengming.vaultpatcher' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'vaultpatcher'
 
@@ -214,4 +214,7 @@ tasks.withType(JavaCompile).configureEach {
 mixin {
     add sourceSets.main, 'mixins.vaultpatcher.refmap.json'
     config 'mixins.vaultpatcher.json'
+
+    debug.export = true
+    debug.verbose = true
 }
