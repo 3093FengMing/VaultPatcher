@@ -1,4 +1,5 @@
 # Vanilla Hardcoded Breaker
+# （Vault Patcher）
 
 ### 硬编码->本地化字符串
 ### Let the hard coded change into localization string in some mods.
@@ -120,7 +121,7 @@ TRANSFORMER/minecraft@1.18.2/net.minecraft.network.chat.TextComponent.handler$zz
 TRANSFORMER/minecraft@1.18.2/net.minecraft.client.gui.screens.TitleScreen(TitleScreen.java:3),
 ...
 ```
-`ItemStack.java`的`stack_depth`就是2。
+`net.minecraft.client.gui.screens.TitleScreen`的`stack_depth`就是2。
 `stack_depth`的大小取决于要定位的堆栈所处的位置，
 使用`stack_depth`时，`name`不能为模糊匹配。
 
@@ -173,6 +174,8 @@ TRANSFORMER/minecraft@1.18.2/net.minecraft.client.gui.screens.TitleScreen(TitleS
 ```
 如果你仔细看的话，那么你会发现，`target_class`这个键其实很少被使用。
 
-## 致谢
-#### 作者：FengMing([github](https://github.com/3093FengMing))，teddyxlandlee([github](https://github.com/teddyxlandlee))
+## 其他
+#### 主作者：FengMing([github](https://github.com/3093FengMing))
+#### 配置部分：teddyxlandlee([github](https://github.com/teddyxlandlee))
+#### 想法：yiqv([github](https://github.com/yiqv))
 #### Mod地址：[github](https://github.com/3093FengMing/VaultPatcher)，[mcmod](等)，[bilibili](等)
