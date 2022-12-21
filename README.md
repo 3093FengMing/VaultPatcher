@@ -1,5 +1,7 @@
 # Vanilla Hardcoded Breaker（Vault Patcher）
 
+[简体中文](README.md) [English](README_en_us.md)
+
 ### 硬编码->本地化字符串
 ### Let the hard coded change into localization string in some mods.
 
@@ -96,6 +98,7 @@ Vanilla Hardcoded Breaker会在`.minecraft\config\vaultpatcher`下生成config.j
 简单解释下：
 
 有一个GUI里面有`Close`（指关闭GUI）这个文本，另一个GUI也有`Close`（指关闭管道），
+
 此时它们的含义不同，但是若不加上`target_class`，那么他们的翻译内容却是一样的。
 所以要用到`target_class`。
 
@@ -103,9 +106,9 @@ Vanilla Hardcoded Breaker会在`.minecraft\config\vaultpatcher`下生成config.j
 
 ### 类名（name）
 类名的匹配规则大概是这样的： 
-* 以`#`开头的字符串会视为模糊匹配（示例：`#TitleScreen`会匹配`net.minecraft.client.gui.screens.TitleScreen`和`net.minecraft.client.gui.screens.titlescreen`）
-但不匹配`net.minecraft.client.gui.titlescreen.screens`
-* 不以`#`开头的字符串会视为全匹配（示例：`net.minecraft.client.gui.screens.TitleScreen`会匹配`net.minecraft.client.gui.screens.TitleScreen`和`net.minecraft.client.gui.screens.titlescreen`）
+* 以`#`开头的字符串会视为模糊匹配（示例：`#TitleScreen`会匹配`net.minecraft.client.gui.screens.TitleScreen`和`net.minecraft.client.gui.screens.titlescreen`
+  但不匹配`net.minecraft.client.gui.titlescreen.screens`）
+* 不以`#`开头的字符串会视为全匹配（示例：`net.minecraft.client.gui.screens.TitleScreen`会匹配`net.minecraft.client.gui.screens.TitleScreen`和`net.minecraft.client.gui.screens.titlescreen`
   但不匹配`net.minecraft.client.gui.titlescreen.screens`）
 
 ### 映射（mapping）
@@ -136,7 +139,7 @@ TRANSFORMER/minecraft@1.18.2/net.minecraft.client.gui.screens.TitleScreen(TitleS
     "value":"Mojang AB."
 }
 ```
-此时便能精准的定位到`net.minecraft.client.gui.screens.TitleScreen`这个类
+此时便能精准的定位到`net.minecraft.client.gui.screens.TitleScreen`这个类。
 
 ### 参考配置
 **_（用于Vault Hunter 3rd Edition）_**
