@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 
 public class VaultPatcherConfig {
     private static final Gson GSON = new Gson();
@@ -93,12 +94,25 @@ public class VaultPatcherConfig {
             }
             int index = targetClassInfo.getStackDepth();
             if (index >= stackTrace.length) continue;
-            if (Objects.equals(stackTrace[index].getClassName(), targetClassInfo.getName())) {
+            if (info.getKey().contains(stackTrace[index].getClassName()) || fuzzyMatch(info.getKey(), stackTrace)) {
                 return I18n.get(info.getValue());
             }
         }
 
         // not satisfied
         return null;
+    }
+
+    private boolean fuzzyMatch(String str, StackTraceElement[] stackTrace) {
+        var s = str.toLowerCase();
+        for (StackTraceElement ste : stackTrace) {
+            // it looks like python
+            // it looks like minecraft item tag more
+            if (s.startsWith("#"))
+                return (ste.getClassName().endsWith(s));
+            else
+                return s.equals(ste.getClassName());
+        }
+        return false;
     }
 }

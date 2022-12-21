@@ -1,7 +1,6 @@
 package me.fengming.vaultpatcher.mixin;
 
 import me.fengming.vaultpatcher.ThePatcher;
-import me.fengming.vaultpatcher.VaultPatcher;
 import net.minecraft.client.gui.Font;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -9,9 +8,10 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 import java.util.Objects;
 
+import static me.fengming.vaultpatcher.VaultPatcher.exportList;
+
 @Mixin(Font.class)
 public class FontMixin {
-    // fixme: which mixin is useful?
     //GUI Transcription
     @ModifyArg(
             method = {
@@ -23,8 +23,8 @@ public class FontMixin {
                     value = "INVOKE",
                     target = "Lnet/minecraft/client/gui/Font;drawInternal(Ljava/lang/String;FFILcom/mojang/math/Matrix4f;ZZ)I"),
             index = 0)
-    private String proxyDraw(String p_92804_) {
-        VaultPatcher.LOGGER.info(p_92804_);
+    private String proxy_DrawInternal(String p_92804_) {
+        exportList.add(p_92804_);
         return Objects.requireNonNullElse(ThePatcher.patch(p_92804_), p_92804_);
     }
 }

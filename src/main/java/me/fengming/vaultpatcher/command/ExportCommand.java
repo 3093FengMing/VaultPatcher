@@ -1,9 +1,20 @@
 package me.fengming.vaultpatcher.command;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
+import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.TextComponent;
+
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+
+import static me.fengming.vaultpatcher.VaultPatcher.exportList;
 
 
 public class ExportCommand implements Command<CommandSourceStack> {
@@ -11,18 +22,22 @@ public class ExportCommand implements Command<CommandSourceStack> {
     @Override
     public int run(CommandContext<CommandSourceStack> context) {
         context.getSource().sendSuccess(new TextComponent("Warning: This is *WIP*"), true);
-//        Gson gson = new Gson();
-//        String json = gson.toJson(VaultPatcher.patchMap, new TypeToken<HashMap<String, String>>(){}.getType());
-//        //Export Patch
-//        try {
-//            BufferedWriter bw = new BufferedWriter(new FileWriter(VaultPatcher.configFile, StandardCharsets.UTF_8));
-//            bw.write(json);
-//            bw.flush();
-//
-//            bw.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        Gson gson = new Gson();
+        String json = gson.toJson(exportList, new TypeToken<ArrayList<String>>(){}.getType());
+        //Export Patch
+        try {
+            BufferedWriter bw = new BufferedWriter(
+                    new FileWriter(
+                            Minecraft.getInstance().gameDirectory.toPath().
+                                    resolve("langpacther.json").toFile(),
+                            StandardCharsets.UTF_8));
+            bw.write(json);
+            bw.flush();
+
+            bw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         context.getSource().sendSuccess(new TextComponent("Export langpatcher.json"), true);
         return 0;
     }

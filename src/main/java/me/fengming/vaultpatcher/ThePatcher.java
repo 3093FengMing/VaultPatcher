@@ -12,7 +12,7 @@ public final class ThePatcher {
     private ThePatcher() {}
 
     public static String patch(String s) {
-        VaultPatcher.LOGGER.info(Arrays.toString(Thread.currentThread().getStackTrace()));
+        // VaultPatcher.LOGGER.info(Arrays.toString(Thread.currentThread().getStackTrace()));
         return VaultPatcherConfig.getInstance().patch(s, Thread.currentThread().getStackTrace());
     }
 }

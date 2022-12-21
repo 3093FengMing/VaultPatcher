@@ -8,12 +8,13 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import org.slf4j.Logger;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 @Mod("vaultpatcher")
 public class VaultPatcher
 {
     public static final Logger LOGGER = LogUtils.getLogger();
-
+    public static ArrayList<String> exportList = new ArrayList<>();
     @Mod.EventBusSubscriber(modid = "vaultpatcher", bus = Mod.EventBusSubscriber.Bus.MOD)
     public static final class Events {
         @SubscribeEvent
@@ -22,8 +23,8 @@ public class VaultPatcher
                 try {
                     VaultPatcherConfig.getInstance().readConfig();
                 } catch (IOException e) {
-                    LOGGER.error("Failed to load config!", e);
-                    //throw new RuntimeException(e);
+                    LOGGER.error("Failed to load config: ", e);
+                    throw new RuntimeException(e);
                 }
             });
         }
