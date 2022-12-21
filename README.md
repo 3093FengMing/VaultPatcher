@@ -1,5 +1,4 @@
-# Vanilla Hardcoded Breaker
-## （Vault Patcher）
+# Vanilla Hardcoded Breaker（Vault Patcher）
 
 ### 硬编码->本地化字符串
 ### Let the hard coded change into localization string in some mods.
