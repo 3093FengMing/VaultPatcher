@@ -12,9 +12,11 @@ import net.minecraftforge.fml.loading.FMLPaths;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
-import java.util.regex.Pattern;
 
 public class VaultPatcherConfig {
     private static final Gson GSON = new Gson();
@@ -41,6 +43,10 @@ public class VaultPatcherConfig {
         p.computeIfAbsent(key, k -> new ArrayList<>()).add(val);
     }
 
+    public static VaultPatcherConfig getInstance() {
+        return INSTANCE.get();
+    }
+
     public void readConfig(JsonReader reader) throws IOException {
         reader.beginArray();
         Map<String, List<TranslationInfo>> m = new HashMap<>();
@@ -64,8 +70,8 @@ public class VaultPatcherConfig {
     }
 
     public void writeConfig() throws IOException {
-        try (var w = GSON.newJsonWriter(Files.newBufferedWriter(configFile))) {
-            writeConfig(w);
+        try (var jsonWriter = GSON.newJsonWriter(Files.newBufferedWriter(configFile))) {
+            writeConfig(jsonWriter);
         }
     }
 
@@ -74,13 +80,9 @@ public class VaultPatcherConfig {
             writeConfig();
             return;
         }
-        try (var r = GSON.newJsonReader(Files.newBufferedReader(configFile))) {
-            readConfig(r);
+        try (var jsonReader = GSON.newJsonReader(Files.newBufferedReader(configFile))) {
+            readConfig(jsonReader);
         }
-    }
-
-    public static VaultPatcherConfig getInstance() {
-        return INSTANCE.get();
     }
 
     public String patch(String text, StackTraceElement[] stackTrace) {

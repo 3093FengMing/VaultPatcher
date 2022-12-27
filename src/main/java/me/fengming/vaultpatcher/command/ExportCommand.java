@@ -19,11 +19,13 @@ import static me.fengming.vaultpatcher.VaultPatcher.exportList;
 
 public class ExportCommand implements Command<CommandSourceStack> {
     public static ExportCommand instance = new ExportCommand();
+
     @Override
     public int run(CommandContext<CommandSourceStack> context) {
         context.getSource().sendSuccess(new TextComponent("Warning: This is *WIP*"), true);
         Gson gson = new Gson();
-        String json = gson.toJson(exportList, new TypeToken<ArrayList<String>>(){}.getType());
+        String json = gson.toJson(exportList, new TypeToken<ArrayList<String>>() {
+        }.getType());
         //Export Patch
         try {
             BufferedWriter bw = new BufferedWriter(

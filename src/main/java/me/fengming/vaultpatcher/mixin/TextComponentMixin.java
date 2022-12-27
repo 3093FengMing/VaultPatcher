@@ -12,7 +12,9 @@ import static me.fengming.vaultpatcher.VaultPatcher.exportList;
 
 @Mixin(TextComponent.class)
 public abstract class TextComponentMixin {
-    @Accessor("text") abstract String getText();
+    @Accessor("text")
+    abstract String getText();
+
     @Inject(method = "getContents", at = @At("HEAD"), cancellable = true)
     private void proxy_getContents(CallbackInfoReturnable<String> cir) {
         String c = ThePatcher.patch(this.getText());

@@ -29,7 +29,8 @@ public class TranslationInfo {
 
     public void writeJson(JsonWriter writer) throws IOException {
         writer.beginObject();
-        writer.name("target_class"); getTargetClassInfo().writeJson(writer);
+        writer.name("target_class");
+        getTargetClassInfo().writeJson(writer);
         writer.name("key").value(getKey());
         writer.name("value").value(getValue());
         writer.endObject();

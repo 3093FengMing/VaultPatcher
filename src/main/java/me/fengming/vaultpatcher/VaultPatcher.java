@@ -11,10 +11,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 @Mod("vaultpatcher")
-public class VaultPatcher
-{
+public class VaultPatcher {
     public static final Logger LOGGER = LogUtils.getLogger();
     public static ArrayList<String> exportList = new ArrayList<>();
+
     @Mod.EventBusSubscriber(modid = "vaultpatcher", bus = Mod.EventBusSubscriber.Bus.MOD)
     public static final class Events {
         @SubscribeEvent
