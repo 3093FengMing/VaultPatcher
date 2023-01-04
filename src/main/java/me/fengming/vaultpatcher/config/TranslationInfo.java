@@ -18,10 +18,10 @@ public class TranslationInfo {
         reader.beginObject();
         while (reader.peek() != JsonToken.END_OBJECT) {
             switch (reader.nextName()) {
-                case "target_class" -> getTargetClassInfo().readJson(reader);
-                case "key" -> setKey(reader.nextString());
-                case "value" -> setValue(reader.nextString());
-                default -> reader.skipValue();
+                case "target_class" : getTargetClassInfo().readJson(reader); break;
+                case "key" : setKey(reader.nextString()); break;
+                case "value" : setValue(reader.nextString()); break;
+                default : reader.skipValue(); break;
             }
         }
         reader.endObject();

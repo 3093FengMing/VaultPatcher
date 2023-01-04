@@ -1,18 +1,17 @@
 {
-  "compatibilityLevel": "JAVA_17",
-  "minVersion": "1",
+  "compatibilityLevel": "JAVA_8",
+  "minVersion": "0.6",
   "package": "me.fengming.vaultpatcher.mixin",
   "refmap": "mixins.vaultpatcher.refmap.json",
   "mixins": [
-    "FontMixin",
-    "TextComponentMixin"
+    "FontRendererMixin",
+    "StringTextComponentMixin"
   ],
   "client": [
-    "FontMixin",
-    "TextComponentMixin"
+    "FontRendererMixin",
+    "StringTextComponentMixin"
   ],
   "server": [
-    "FontMixin",
-    "TextComponentMixin"
+    "StringTextComponentMixin"
   ]
 }

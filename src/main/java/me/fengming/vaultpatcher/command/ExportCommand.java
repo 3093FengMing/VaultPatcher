@@ -5,24 +5,24 @@ import com.google.gson.reflect.TypeToken;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.client.Minecraft;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.command.CommandSource;
+import net.minecraft.util.text.TranslationTextComponent;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 import static me.fengming.vaultpatcher.VaultPatcher.exportList;
 
 
-public class ExportCommand implements Command<CommandSourceStack> {
+public class ExportCommand implements Command<CommandSource> {
     public static ExportCommand instance = new ExportCommand();
 
     @Override
-    public int run(CommandContext<CommandSourceStack> context) {
-        context.getSource().sendSuccess(new TextComponent("Warning: This is *WIP*"), true);
+    public int run(CommandContext<CommandSource> context) {
+        //Warning: This is *WIP*
+        context.getSource().sendSuccess(new TranslationTextComponent("command.vaultpatcher.export.tips.wipwarning"), true);
         Gson gson = new Gson();
         String json = gson.toJson(exportList, new TypeToken<ArrayList<String>>() {
         }.getType());
@@ -31,8 +31,7 @@ public class ExportCommand implements Command<CommandSourceStack> {
             BufferedWriter bw = new BufferedWriter(
                     new FileWriter(
                             Minecraft.getInstance().gameDirectory.toPath().
-                                    resolve("langpacther.json").toFile(),
-                            StandardCharsets.UTF_8));
+                            resolve("langpacther.json").toFile()));
             bw.write(json);
             bw.flush();
 
@@ -40,7 +39,7 @@ public class ExportCommand implements Command<CommandSourceStack> {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        context.getSource().sendSuccess(new TextComponent("Export langpatcher.json"), true);
+        context.getSource().sendSuccess(new TranslationTextComponent("command.vaultpatcher.export.tips.succeed"), true);
         return 0;
     }
 }

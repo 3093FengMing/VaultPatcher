@@ -1,9 +1,9 @@
 package me.fengming.vaultpatcher.command;
 
 import com.mojang.brigadier.CommandDispatcher;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraftforge.client.event.RegisterClientCommandsEvent;
+import net.minecraft.command.CommandSource;
+import net.minecraft.command.Commands;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -11,8 +11,8 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(modid = "vaultpatcher", bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class CommandEventHandler {
     @SubscribeEvent(priority = EventPriority.HIGH)
-    public static void registerClientCommands(RegisterClientCommandsEvent event) {
-        CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
+    public static void registerClientCommands(RegisterCommandsEvent event) {
+        CommandDispatcher<CommandSource> dispatcher = event.getDispatcher();
         dispatcher.register(
                 Commands.literal("vaultpatcher").then(
                         Commands.literal("export")

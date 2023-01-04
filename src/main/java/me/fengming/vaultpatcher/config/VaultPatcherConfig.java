@@ -6,7 +6,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import me.fengming.vaultpatcher.VaultPatcher;
-import net.minecraft.client.resources.language.I18n;
+import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fml.loading.FMLPaths;
 
 import java.io.IOException;
@@ -70,7 +70,7 @@ public class VaultPatcherConfig {
     }
 
     public void writeConfig() throws IOException {
-        try (var jsonWriter = GSON.newJsonWriter(Files.newBufferedWriter(configFile))) {
+        try (JsonWriter jsonWriter = GSON.newJsonWriter(Files.newBufferedWriter(configFile))) {
             writeConfig(jsonWriter);
         }
     }
@@ -80,7 +80,7 @@ public class VaultPatcherConfig {
             writeConfig();
             return;
         }
-        try (var jsonReader = GSON.newJsonReader(Files.newBufferedReader(configFile))) {
+        try (JsonReader jsonReader = GSON.newJsonReader(Files.newBufferedReader(configFile))) {
             readConfig(jsonReader);
         }
     }
@@ -106,14 +106,9 @@ public class VaultPatcherConfig {
     }
 
     private boolean fuzzyMatch(String str, StackTraceElement[] stackTrace) {
-        var s = str.toLowerCase();
+        String s = str.toLowerCase();
         for (StackTraceElement ste : stackTrace) {
-            // it looks like python
-            // it looks like minecraft item tag more
-            if (s.startsWith("#"))
-                return (ste.getClassName().endsWith(s));
-            else
-                return s.equals(ste.getClassName());
+            return s.startsWith("#") ? ste.getClassName().endsWith(s) : s.equals(ste.getClassName());
         }
         return false;
     }
