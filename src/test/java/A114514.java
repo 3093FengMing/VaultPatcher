@@ -4,7 +4,7 @@ public class A114514 {
         StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
         //Preconditions.checkArgument(givenDepth < stackTraceElements.length, "Too deep: %d", givenDepth);
         if (givenDepth >= stackTraceElements.length) return;    // may not match, should not throw
-        var element = stackTraceElements[givenDepth];
+        StackTraceElement element = stackTraceElements[givenDepth];
         if (className.equals(element.getClassName())) {
             // modify it
         }
