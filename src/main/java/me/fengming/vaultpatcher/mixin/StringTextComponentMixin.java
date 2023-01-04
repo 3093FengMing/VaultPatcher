@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import static me.fengming.vaultpatcher.VaultPatcher.exportList;
 
-@Mixin(StringTextComponent.class)
+@Mixin(value = StringTextComponent.class, priority = Integer.MAX_VALUE)
 public abstract class StringTextComponentMixin {
     @Accessor("text")
     abstract String getText();

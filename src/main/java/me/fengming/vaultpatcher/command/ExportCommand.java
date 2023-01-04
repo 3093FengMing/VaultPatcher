@@ -21,8 +21,7 @@ public class ExportCommand implements Command<CommandSource> {
 
     @Override
     public int run(CommandContext<CommandSource> context) {
-        //Warning: This is *WIP*
-        context.getSource().sendSuccess(new TranslationTextComponent("command.vaultpatcher.export.tips.wipwarning"), true);
+        context.getSource().sendSuccess(new TranslationTextComponent("commands.vaultpatcher.export.warning.wip"), true);
         Gson gson = new Gson();
         String json = gson.toJson(exportList, new TypeToken<ArrayList<String>>() {
         }.getType());
@@ -39,7 +38,7 @@ public class ExportCommand implements Command<CommandSource> {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        context.getSource().sendSuccess(new TranslationTextComponent("command.vaultpatcher.export.tips.succeed"), true);
+        context.getSource().sendSuccess(new TranslationTextComponent("commands.vaultpatcher.export.tips.success"), true);
         return 0;
     }
 }

@@ -14,7 +14,7 @@ import java.util.Objects;
 
 import static me.fengming.vaultpatcher.VaultPatcher.exportList;
 
-@Mixin(FontRenderer.class)
+@Mixin(value = FontRenderer.class, priority = Integer.MAX_VALUE)
 public class FontRendererMixin {
     //GUI Transcription
     @ModifyArgs(

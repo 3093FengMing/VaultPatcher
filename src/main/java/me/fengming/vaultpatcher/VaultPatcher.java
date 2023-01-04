@@ -1,6 +1,7 @@
 package me.fengming.vaultpatcher;
 
 import me.fengming.vaultpatcher.config.VaultPatcherConfig;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -17,7 +18,7 @@ public class VaultPatcher {
 
     @Mod.EventBusSubscriber(modid = Utils.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
     public static final class Events {
-        @SubscribeEvent
+        @SubscribeEvent(priority = EventPriority.HIGHEST)
         public static void loadConfig(FMLCommonSetupEvent event) {
             event.enqueueWork(() -> {
                 try {

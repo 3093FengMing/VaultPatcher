@@ -1,0 +1,4 @@
+{
+  "commands.vaultpatcher.export.tips.success": "Done! Export to langpatcher.json",
+  "commands.vaultpatcher.export.warning.wip": "Warning: This feature is still *WIP*!"
+}

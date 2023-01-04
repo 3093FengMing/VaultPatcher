@@ -1,4 +1,6 @@
 {
+  "priority": 2147483647,
+  "mixinPriority": 2147483647,
   "compatibilityLevel": "JAVA_8",
   "minVersion": "0.6",
   "package": "me.fengming.vaultpatcher.mixin",
