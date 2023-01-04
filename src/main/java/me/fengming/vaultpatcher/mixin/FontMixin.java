@@ -10,7 +10,7 @@ import java.util.Objects;
 
 import static me.fengming.vaultpatcher.VaultPatcher.exportList;
 
-@Mixin(Font.class)
+@Mixin(value = Font.class, priority = Integer.MAX_VALUE)
 public class FontMixin {
     //GUI Transcription
     @ModifyArg(
