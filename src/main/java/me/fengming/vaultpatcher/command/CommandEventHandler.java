@@ -15,10 +15,14 @@ public class CommandEventHandler {
     public static void registerClientCommands(RegisterClientCommandsEvent event) {
         CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
         dispatcher.register(
-                Commands.literal(Utils.MOD_ID).then(
+                Commands.literal(Utils.MOD_ID
+                ).then(
                         Commands.literal("export")
                                 .requires((commandSource) -> commandSource.hasPermission(2))
                                 .executes(ExportCommand.instance)
+                ).then(
+                        Commands.literal("list")
+                                .executes(ListCommand.instance)
                 )
         );
     }

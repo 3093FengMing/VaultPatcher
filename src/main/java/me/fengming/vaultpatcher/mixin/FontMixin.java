@@ -24,7 +24,6 @@ public class FontMixin {
                     target = "Lnet/minecraft/client/gui/Font;drawInternal(Ljava/lang/String;FFILcom/mojang/math/Matrix4f;ZZ)I"),
             index = 0)
     private String proxy_DrawInternal(String p_92804_) {
-        exportList.add(p_92804_);
         return Objects.requireNonNullElse(ThePatcher.patch(p_92804_), p_92804_);
     }
 }

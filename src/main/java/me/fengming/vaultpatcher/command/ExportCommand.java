@@ -6,7 +6,6 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 
 import java.io.BufferedWriter;

@@ -13,12 +13,16 @@ import static me.fengming.vaultpatcher.VaultPatcher.exportList;
 @Mixin(value = TextComponent.class, priority = Integer.MAX_VALUE)
 public abstract class TextComponentMixin {
     @Accessor("text")
-    abstract String getText();
+    abstract String getText1();
 
     @Inject(method = "getContents", at = @At("HEAD"), cancellable = true)
     private void proxy_getContents(CallbackInfoReturnable<String> cir) {
-        String c = ThePatcher.patch(this.getText());
-        exportList.add(c);
+        String c = ThePatcher.patch(this.getText1());
+        if (c != null) cir.setReturnValue(c);
+    }
+    @Inject(method = "getText", at = @At("HEAD"), cancellable = true)
+    private void proxy_getText(CallbackInfoReturnable<String> cir) {
+        String c = ThePatcher.patch(this.getText1());
         if (c != null) cir.setReturnValue(c);
     }
 
