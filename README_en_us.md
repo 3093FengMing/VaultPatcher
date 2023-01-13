@@ -1,10 +1,10 @@
-# Vault Patcher（Vanilla Hardcoded Breaker）
+# Vault Patcher ~~（Vanilla Hardcoded Breaker）~~
 
-[简体中文](README.md) [English](README_en_us.md)
+**Language：[简体中文](README.md)丨[English](README_en_us.md)**
 
 ### Hardcoded -> Localization
 
-### Let the hard coded change into localization string in some mods.
+### Let the hard coded strings change into localization strings in some mods.
 
 # Configs
 
@@ -24,7 +24,7 @@ The format of the config file is roughly as follows:
       "stack_depth": -1
     },
     "key": "I'm key",
-    "value": "Im value"
+    "value": "I'm value"
   },
   {
     "target_class": {
@@ -46,7 +46,24 @@ The format of the config file is roughly as follows:
   }
 ]
 ```
-
+or
+```json
+[
+  {
+    "key": "I'm key",
+    "value": "I'm value"
+  },
+  {
+    "key": "Dragon Relic",
+    "value": "namespace.modify.modid.item.relics.dragonrelic"
+  },
+  {
+    "key": "Talents",
+    "value": "namespace.modify.the_vault.gui.talnets"
+  }
+]
+```
+.
 Where
 
 ```json
@@ -85,8 +102,9 @@ If there is no mistake, it should be as follows:
 }
 ```
 
-However, this is not enough,
-you must add `target_class`.
+~~However, this is not enough,
+you must add `target_class`~~.
+(1.2.4 and above are no longer required)
 
 For Example:
 

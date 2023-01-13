@@ -1,4 +1,6 @@
 {
   "commands.vaultpatcher.export.tips.success": "Done! Export to langpatcher.json",
-  "commands.vaultpatcher.export.warning.wip": "Warning: This feature is still *WIP*!"
+  "commands.vaultpatcher.export.warning.wip": "Warning: This feature is still *WIP*!",
+  "commands.vaultpatcher.list.warning.wip": "Warning: This feature is still *WIP*!",
+  "commands.vaultpatcher.list.tips.modslist": "The following is a list of loaded modules: "
 }

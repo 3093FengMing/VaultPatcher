@@ -1,18 +1,18 @@
-# Vault Patcher（Vanilla Hardcoded Breaker）
+# Vault Patcher ~~（Vanilla Hardcoded Breaker）~~
 
-[简体中文](README.md) [English](README_en_us.md)
+语言：**[简体中文](README.md)丨[English](README_en_us.md)**
 
-### 硬编码->本地化字符串
+### 硬编码 -> 本地化
 
-### Let the hard coded change into localization string in some mods.
+### Let the hard coded strings change into localization strings in some mods.
 
-# 配置
+# 配置文件
 
 ## 基础配置
 
 Vault Patcher会在`.minecraft\config\vaultpatcher`下生成config.json（下文统称***配置文件***）
 
-配置文件的格式大概是长这样：
+配置文件的格式大概这样：
 
 ```json
 [
@@ -23,7 +23,7 @@ Vault Patcher会在`.minecraft\config\vaultpatcher`下生成config.json（下文
       "stack_depth": -1
     },
     "key": "I'm key",
-    "value": "Im value"
+    "value": "I'm value"
   },
   {
     "target_class": {
@@ -45,8 +45,25 @@ Vault Patcher会在`.minecraft\config\vaultpatcher`下生成config.json（下文
   }
 ]
 ```
+或者
+```json
+[
+  {
+    "key": "I'm key",
+    "value": "I'm value"
+  },
+  {
+    "key": "Dragon Relic",
+    "value": "namespace.modify.modid.item.relics.dragonrelic"
+  },
+  {
+    "key": "Talents",
+    "value": "namespace.modify.the_vault.gui.talnets"
+  }
+]
+```
 
-其中，
+。其中，
 
 ```json
 {
@@ -84,8 +101,9 @@ Vault Patcher会在`.minecraft\config\vaultpatcher`下生成config.json（下文
 }
 ```
 
-然而，光有这点东西是无法使用的。
-你还得加上~~虽然基本用不到但是还是要加上的~~``target_class``
+~~然而，光有这点东西是无法使用的。
+你还得加上虽然基本用不到但是还是要加上的``target_class``~~
+（1.2.4及以上不需要）
 
 例如
 

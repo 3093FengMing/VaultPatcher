@@ -1,17 +1,24 @@
 package me.fengming.vaultpatcher;
 
-import me.fengming.vaultpatcher.config.VaultPatcherConfig;
+import me.fengming.vaultpatcher.config.VaultPatcherPatch;
 
-/**
- * For config writers: here is the patcher method,
- * indexed ${UNKNOWN} in the stacktrace
- */
-public final class ThePatcher {
-    private ThePatcher() {
+public class ThePatcher {
+    public ThePatcher() {
     }
 
     public static String patch(String s) {
+        if (s == null || s.equals("")) {
+            return s;
+        }
+        VaultPatcher.exportList.add(s);
         // VaultPatcher.LOGGER.info(Arrays.toString(Thread.currentThread().getStackTrace()));
-        return VaultPatcherConfig.getInstance().patch(s, Thread.currentThread().getStackTrace());
+        String ret = s;
+        for (VaultPatcherPatch vpp : VaultPatcher.vpps) {
+            ret = vpp.patch(s, Thread.currentThread().getStackTrace());
+            if (ret != null && !ret.equals(s)) {
+                return ret;
+            }
+        }
+        return s;
     }
 }
