@@ -1,4 +1,6 @@
 {
   "commands.vaultpatcher.export.tips.success": "完成！导出到langpatcher.json",
-  "commands.vaultpatcher.export.warning.wip": "警告：此功能仍是WIP！"
+  "commands.vaultpatcher.export.warning.wip": "警告：此功能仍是WIP！",
+  "commands.vaultpatcher.list.warning.wip": "警告：此功能仍是WIP！",
+  "commands.vaultpatcher.list.tips.modslist": "以下为已加载的模块列表: "
 }
