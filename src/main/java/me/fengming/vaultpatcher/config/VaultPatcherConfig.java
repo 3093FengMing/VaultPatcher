@@ -28,6 +28,5 @@ public class VaultPatcherConfig {
         } else {
             jr.close();
         }
-        System.out.println("mods = " + mods);
     }
 }

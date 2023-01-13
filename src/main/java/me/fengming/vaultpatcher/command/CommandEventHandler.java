@@ -18,11 +18,14 @@ public class CommandEventHandler {
                 Commands.literal(Utils.MOD_ID
                 ).then(
                         Commands.literal("export")
-                                .requires((commandSource) -> commandSource.hasPermission(2))
                                 .executes(ExportCommand.instance)
                 ).then(
                         Commands.literal("list")
                                 .executes(ListCommand.instance)
+                ).then(
+                        Commands.literal("reload")
+                                .requires((commandSource) -> commandSource.hasPermission(2))
+                                .executes(ReloadCommand.instance)
                 )
         );
     }

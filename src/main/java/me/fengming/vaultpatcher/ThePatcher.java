@@ -14,8 +14,6 @@ public class ThePatcher {
         // VaultPatcher.LOGGER.info(Arrays.toString(Thread.currentThread().getStackTrace()));
         String ret = s;
         for (VaultPatcherPatch vpp : VaultPatcher.vpps) {
-            VaultPatcher.LOGGER.info("s = " + s);
-            VaultPatcher.LOGGER.info("ret = " + ret);
             ret = vpp.patch(s, Thread.currentThread().getStackTrace());
             if (ret != null && !ret.equals(s)) {
                 return ret;

@@ -10,7 +10,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import java.io.IOException;
 
 public class PatchInfo {
-    private final PatchInfo patchInfo = new PatchInfo();
     private String name;
     private String desc;
     private String mods;
@@ -32,9 +31,6 @@ public class PatchInfo {
         return authors;
     }
 
-    public PatchInfo getPatchInfo() {
-        return patchInfo;
-    }
 
     public void setName(String name) {
         this.name = name;
@@ -57,7 +53,6 @@ public class PatchInfo {
         reader.beginObject();
         while (reader.peek() != JsonToken.END_OBJECT) {
             switch (reader.nextName()) {
-                case "patch_info" -> getPatchInfo().readJson(reader);
                 case "name" -> setName(reader.nextString());
                 case "desc" -> setDesc(reader.nextString());
                 case "mods" -> setMods(reader.nextString());
@@ -71,7 +66,6 @@ public class PatchInfo {
     public void writeJson(JsonWriter writer) throws IOException {
         writer.beginObject();
         writer.name("patch_info");
-        getPatchInfo().writeJson(writer);
         writer.name("name").value(getName());
         writer.name("desc").value(getDesc());
         writer.name("mods").value(getMods());
@@ -88,7 +82,6 @@ public class PatchInfo {
         PatchInfo that = (PatchInfo) o;
 
         return new EqualsBuilder()
-                .append(patchInfo, that.patchInfo)
                 .append(name, that.name)
                 .append(desc, that.desc)
                 .append(mods, that.mods)
@@ -99,7 +92,6 @@ public class PatchInfo {
     @Override
     public int hashCode() {
         return new HashCodeBuilder(23, 53)
-                .append(patchInfo)
                 .append(name)
                 .append(desc)
                 .append(mods)
@@ -110,7 +102,6 @@ public class PatchInfo {
     @Override
     public String toString() {
         return new ToStringBuilder(this)
-                .append("patchInfo", patchInfo)
                 .append("name", name)
                 .append("desc", desc)
                 .append("mods", mods)

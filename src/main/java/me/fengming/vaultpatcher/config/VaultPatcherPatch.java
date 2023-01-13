@@ -3,9 +3,9 @@ package me.fengming.vaultpatcher.config;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
-import com.google.gson.stream.JsonWriter;
 import me.fengming.vaultpatcher.VaultPatcher;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.server.Bootstrap;
 import net.minecraftforge.fml.loading.FMLPaths;
 
 import java.io.IOException;
@@ -17,9 +17,9 @@ public class VaultPatcherPatch {
     private static final Gson GSON = new Gson();
 
     public VaultPatcherPatch(String patchFile) {
-        System.out.println(patchFile);
+        Bootstrap.realStdoutPrintln(patchFile);
         Path p = FMLPaths.CONFIGDIR.get().resolve("vaultpatcher").resolve(patchFile);
-        System.out.println(p);
+        Bootstrap.realStdoutPrintln(p.toString());
         try {
             Files.createDirectories(p.getParent());
         } catch (IOException e) {
@@ -55,7 +55,6 @@ public class VaultPatcherPatch {
 
         reader.endArray();
         map = m;
-        VaultPatcher.LOGGER.info("map = " + map);
     }
 
     public void readConfig() throws IOException {
@@ -66,40 +65,39 @@ public class VaultPatcherPatch {
             readConfig(jsonReader);
         }
     }
-
-    public List<TranslationInfo> getList(Map<String, List<TranslationInfo>> map, String regex) {
+    
+    private List<TranslationInfo> getList(String str) {
         Set<String> set = map.keySet();
-        for (String e : set) {
-            if (e.matches(regex)) {
-                return map.get(e);
+        for (String s : set) {
+            if (str.contains(s)) {
+                return map.get(s);
             }
         }
-        return map.get(regex);
+        return null;
     }
 
     public String patch(String text, StackTraceElement[] stackTrace) {
         List<TranslationInfo> list;
-        if ((list = map.get(text)) == null) return null;
+        if ((list = getList(text)) == null) return null;
 
         for (TranslationInfo info : list) {
             if (info.getValue() == null || info.getKey() == null) continue;
             final TargetClassInfo targetClassInfo = info.getTargetClassInfo();
-            if (targetClassInfo.getName().isEmpty() || targetClassInfo.getStackDepth() <= 0 || fuzzyMatch(targetClassInfo.getName(), stackTrace)) {
-                return patchFormattingText(info.getValue(), text);
+            if (targetClassInfo.getName().isEmpty() || targetClassInfo.getStackDepth() <= 0 || matchStack(targetClassInfo.getName(), stackTrace)) {
+                return patchText(info.getValue(), info.getKey(), text);
             }
             int index = targetClassInfo.getStackDepth();
             if (index >= stackTrace.length) continue;
             if (stackTrace[index].getClassName().contains(targetClassInfo.getName())) {
-                return I18n.get(info.getValue());
+                return patchText(info.getValue(), info.getKey(), text);
             }
         }
 
-        // not satisfied
         return null;
     }
 
-    private boolean fuzzyMatch(String str, StackTraceElement[] stackTrace) {
-        var s = str.toLowerCase();
+    private boolean matchStack(String str, StackTraceElement[] stackTrace) {
+        String s = str.toLowerCase();
         for (StackTraceElement ste : stackTrace) {
             if (s.startsWith("#")) {
                 return ste.getClassName().endsWith(s);
@@ -110,16 +108,33 @@ public class VaultPatcherPatch {
         return false;
     }
 
-    private String patchFormattingText(String s, String text) {
-        /*
-        int[] ftList = {};
-        String ttext = text.replaceAll("\\d", "%d");
-        ttext = ttext.replaceAll("\\w+", "%s");
-        if (s.length() == text.length() && ttext.equals(s)) {
-            s.substring(s.indexOf("%d"));
+    private String patchText(String value, String key, String text) {
+        char[] charList = {};
+        List<Integer> numList = null;
+        if (value.charAt(0) != '@' || value.contains("%d")) {
+            if (value.length() == text.length()) {
+                text.getChars(0, text.length(), charList, 0);
+                numList = getNumbers(charList);
+            }
         }
-        */
-        return I18n.get(s);
+
+        if (value.startsWith("@") && !value.startsWith("@@")) {
+            value = value.replace("@@", "@").substring(1);
+            return text.replace(key, I18n.get(value));
+        } else return I18n.get(value, numList);
+    }
+
+    private List<Integer> getNumbers(char[] str) {
+        List<Integer> rList = new ArrayList<>();
+        StringBuilder tmp = new StringBuilder();
+        for (char c : str) {
+            if (c >= '0' && c <= '9') {
+                tmp.append(c);
+            } else {
+                rList.add(Integer.valueOf(tmp.toString()));
+            }
+        }
+        return rList;
     }
 
     @Override

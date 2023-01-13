@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import me.fengming.vaultpatcher.config.VaultPatcherConfig;
 import me.fengming.vaultpatcher.config.VaultPatcherPatch;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.Bootstrap;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -24,26 +25,21 @@ public class VaultPatcher {
 
     @Mod.EventBusSubscriber(modid = Utils.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
     public static final class Events {
-        @SubscribeEvent(priority = EventPriority.HIGHEST)
+        @SubscribeEvent(priority = EventPriority.LOWEST)
         public static void loadConfig(FMLConstructModEvent event) {
             event.enqueueWork(() -> {
                 try {
                     VaultPatcherConfig.readConfig();
                     List<String> mods = VaultPatcherConfig.getMods();
-                    System.out.println("mods = " + mods);
                     for (String mod : mods) {
-                        System.out.println("mod = " + mod);
                         VaultPatcherPatch vpp = new VaultPatcherPatch(mod + ".json");
-                        System.out.println("vpp = " + vpp);
                         try {
                             vpp.readConfig();
                             vpps.add(vpp);
-                            System.out.println("vpps = " + vpps);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                     }
-                    System.out.println("mods = " + mods);
                 } catch (IOException e) {
                     LOGGER.error("Failed to load config: ", e);
                     throw new RuntimeException(e);
