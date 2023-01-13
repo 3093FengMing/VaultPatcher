@@ -8,9 +8,27 @@
 
 # 配置文件
 
+## 模块化
+
+在1.2.5以后，配置文件均采用模块的形式
+在`config/vaultpatcher/`下的格式为`config.json`、`模块.json`。
+
+`config.json`是必须的，`config.json`定义了`模块.json`。
+`config.json`如下：
+```json
+{
+  "mods": [
+    "模块"
+  ]
+}
+```
+这样`模块.json`才会被正常读取读取并使用
+
 ## 基础配置
 
-Vault Patcher会在`.minecraft\config\vaultpatcher`下生成config.json（下文统称***配置文件***）
+~~Vault Patcher会在`.minecraft\config\vaultpatcher`下生成config.json（下文统称***配置文件***）~~
+
+见[节-模块化](#模块化)
 
 配置文件的格式大概这样：
 
@@ -23,7 +41,7 @@ Vault Patcher会在`.minecraft\config\vaultpatcher`下生成config.json（下文
       "stack_depth": -1
     },
     "key": "I'm key",
-    "value": "I'm value"
+    "value": "@I'm value"
   },
   {
     "target_class": {
@@ -50,7 +68,7 @@ Vault Patcher会在`.minecraft\config\vaultpatcher`下生成config.json（下文
 [
   {
     "key": "I'm key",
-    "value": "I'm value"
+    "value": "@I'm value"
   },
   {
     "key": "Dragon Relic",
@@ -79,21 +97,53 @@ Vault Patcher会在`.minecraft\config\vaultpatcher`下生成config.json（下文
 
 就是一个翻译键值对，主要涉及到`key`、`value`和`target_class`。
 
-### 键值（key & value）
+### 键值对（key value pair）
 
+#### 键（Key）
 `key`，顾名思义，指定的是要翻译的字符串。
 
 如果我想翻译标题界面的``Copyright Mojang AB. Do not distribute!``，
 那么可以指定`"key":"Copyright Mojang AB. Do not distribute!"`。
+
+#### 值（Value）
 
 有了键，还得有值。
 
 那么我想将``Copyright Mojang AB. Do not distribute!``改为``Mojang AB.``。
 那就可以指定`"value":"Mojang AB."`。
 
+#### 半匹配
+#### (1.2.5+)
+以上的方式均为全匹配（即完全替换），只替换与`key`相同的文本。
+
+如果你想半匹配，或者原字符串中有格式化文本（例如`§a`、`%d`、`%s`等）。
+那么可以在`value`的前面加上'@'字符，实现半匹配。
+
+例子：
+```json
+{
+  "key": "Grass",
+  "value": "@CAO"
+}
+```
+这样就会把所有的`Grass`都替换为`CAO`（包括`Grass Block`、`Grass`、`Tall Grass`）
+
+
 这样一个基础的键值对就完成了。
 应该是这样子的：
 
+```json
+{
+  "target_class": {
+    "name": "",
+    "mapping": "SRG",
+    "stack_depth": 0
+  },
+  "key": "Copyright Mojang AB. Do not distribute!",
+  "value": "Mojang AB."
+}
+```
+或者
 ```json
 {
   "key": "Copyright Mojang AB. Do not distribute!",
@@ -137,10 +187,22 @@ Vault Patcher会在`.minecraft\config\vaultpatcher`下生成config.json（下文
 
 类名的匹配规则大概是这样的：
 
-* 以`#`开头的字符串会视为模糊匹配（示例：`#TitleScreen`会匹配`net.minecraft.client.gui.screens.TitleScreen`
+#### 类匹配
+
+* 以`#`开头的字符串会视为半匹配（示例：`#TitleScreen`会匹配`net.minecraft.client.gui.screens.TitleScreen`
   和`net.minecraft.client.gui.screens.titlescreen`
   但不匹配`net.minecraft.client.gui.titlescreen.screens`）
-* 不以`#`开头的字符串会视为全匹配（示例：`net.minecraft.client.gui.screens.TitleScreen`会匹配`net.minecraft.client.gui.screens.TitleScreen`
+
+#### 包匹配
+#### (1.2.5+)
+
+* 以`@`开头的字符串会视为半匹配（示例：`#net.minecraft.client`会匹配`net.minecraft.client.gui.screens.TitleScreen`
+  和`net.minecraft.client.gui.screens.BeaconScreen`等等
+  也匹配`net.minecraft.client.gui.titlescreen.screens`）
+
+#### 完全匹配
+
+* 不以`#`或`@`开头的字符串会视为全匹配（示例：`net.minecraft.client.gui.screens.TitleScreen`会匹配`net.minecraft.client.gui.screens.TitleScreen`
   和`net.minecraft.client.gui.screens.titlescreen`
   但不匹配`net.minecraft.client.gui.titlescreen.screens`）
 
@@ -149,6 +211,9 @@ Vault Patcher会在`.minecraft\config\vaultpatcher`下生成config.json（下文
 保留字段
 
 ### 堆栈深度（stack depth）
+
+#### **(Tips: 过于复杂，不建议新手用)**
+#### **(作者其实也不会)**
 
 堆栈深度在堆栈中用于更精准的匹配类，
 例如在如下堆栈中
@@ -226,4 +291,4 @@ TRANSFORMER/minecraft@1.18.2/net.minecraft.client.gui.screens.TitleScreen(TitleS
 
 #### 想法：yiqv([github](https://github.com/yiqv))
 
-#### Mod地址：[github](https://github.com/3093FengMing/VaultPatcher)，[mcmod](等)，[bilibili](等)
+#### Mod地址：[github](https://github.com/3093FengMing/VaultPatcher)，[mcmod](https://www.mcmod.cn/class/8765.html)，[bilibili](等)

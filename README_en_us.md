@@ -8,10 +8,29 @@
 
 # Configs
 
+## Modular
+
+After 1.2.5, config files are in the form of modules,
+the format in `config/vaultpatcher/` directory like is `config.json`, `module.json`.
+
+`config.json` must be provided, `config.json` defined `module.json`.
+
+`config.json` is as follows:
+```json
+{
+  "mods": [
+    "module"
+  ]
+}
+```
+Only in this way can `module.json` read and used normally.
+
 ## Basic Config
 
-`Vault Patcher` will generate config.json in `.minecraft\config\vaultpatcher`
-(Hereinafter collectively referred to as ***Config File***)
+~~`Vault Patcher` will generate config.json in `.minecraft\config\vaultpatcher`
+(Hereinafter collectively referred to as ***Config File***)~~
+
+See for [Section-Modular](#Modular)
 
 The format of the config file is roughly as follows:
 
@@ -24,7 +43,7 @@ The format of the config file is roughly as follows:
       "stack_depth": -1
     },
     "key": "I'm key",
-    "value": "I'm value"
+    "value": "@I'm value"
   },
   {
     "target_class": {
@@ -51,7 +70,7 @@ or
 [
   {
     "key": "I'm key",
-    "value": "I'm value"
+    "value": "@I'm value"
   },
   {
     "key": "Dragon Relic",
@@ -74,23 +93,44 @@ Where
     "stack_depth": -1
   },
   "key": "I'm key",
-  "value": "Im value"
+  "value": "@I'm value"
 }
 ``` 
 
 is a Translate Key Value Pair Objects, this object includes`key`, `value` and `target_class`.
 
-### Key & Value
+### Key Value Pairs
 
+#### Key
 `key`, as the name implies, it refers to the string to be translated.
 
 If you want to translate the `Copyright Mojang AB. Do not distribute!` in the title screen,
 you can type `"key":"Copyright Mojang AB. Do not distribute!"`.
 
+#### Value
+
 With keys, there must be values.
 
 So if you want to change `Copyright Mojang AB. Do not distribute!` to `Mojang AB.`.
 you can type `"value":"Mojang AB."`.
+
+#### Semi-match
+#### (1.2.5+)
+
+All of the above methods are full match (that is, full replace), and only replace the same text as `key`.
+
+If you want to semi-match, or the original string contains formatted text (such as `§a`, `%d`, `% s`, etc.),
+you can try to add the `@` character before the string of `value` to achieve semi-matching.
+
+For Example：
+```json
+{
+  "key": "Grass",
+  "value": "@GLASS"
+}
+```
+This will replace all `GLASS` with `Grass` (such as `Grass Block`, `Grass`, `Tall Grass`, etc.)
+
 
 This completes a basic key value pair.
 If there is no mistake, it should be as follows:
@@ -139,10 +179,24 @@ So we need`target_class`.
 
 The matching rules of `name` are as follows:
 
-* The string starts with `#`, will be regarded as fuzzy match (For Example: `#TitleScreen` will
-  match `net.minecraft.client.gui.screens.TitleScreen` and `net.minecraft.client.gui.screens.titlescreen`
+#### Class Match
+
+* The string starts with `#`, will be regarded as Class Match (For Example: `#TitleScreen` will
+  match `net.minecraft.client.gui.screens.TitleScreen` 
+  and `net.minecraft.client.gui.screens.titlescreen`.
   but will not match `net.minecraft.client.gui.titlescreen.screens`)
-* The string does not start with `#`, will be considered as a full match (For
+
+#### Package Match
+#### (1.2.5+)
+
+* The string starts with `@`, will be regarded as Package Match (For Example: `#net.minecraft.client` will
+  match `net.minecraft.client.gui.screens.TitleScreen`
+  and `net.minecraft.client.gui.screens.BeaconScreen`.
+  Also match `net.minecraft.client.gui.titlescreen.screens`)
+
+#### Full Match
+
+* The string does not start with `#` or `@`, will be considered as a full match (For
   Example: `net.minecraft.client.gui.screens.TitleScreen` will match `net.minecraft.client.gui.screens.TitleScreen`
   and `net.minecraft.client.gui.screens.titlescreen`
   but will not match `net.minecraft.client.gui.titlescreen.screens`)
@@ -153,8 +207,8 @@ Reserved Field.
 
 ### Stack Depth
 
-The stack depth is used for more accurate matching classes in the stack,
-for example, in the following stack:
+The stack depth is used for more accurate matching classes in the stack.
+For example:
 
 ```
 java.base/java.lang.Thread.getStackTrace(Thread.java:1610), 
@@ -163,6 +217,7 @@ TRANSFORMER/minecraft@1.18.2/net.minecraft.client.gui.screens.TitleScreen(TitleS
 ...
 ```
 
+In the example.
 `stack_depth` of `net.minecraft.client.gui.screens.TitleScreen` is 2.
 The size of `stack_depth` depends on the position of the stack to be located in the array,
 Use `stack_depth`, `name` cannot be fuzzy match.
@@ -229,4 +284,4 @@ If you look carefully, you will find that `target_class` key is rarely used in c
 
 #### Idea：yiqv([github](https://github.com/yiqv))
 
-#### Mod Link：[github](https://github.com/3093FengMing/VaultPatcher)，[mcmod](.)，[bilibili](.)
+#### Mod Link：[github](https://github.com/3093FengMing/VaultPatcher)，[mcmod](https://www.mcmod.cn/class/8765.html)，[bilibili](.)

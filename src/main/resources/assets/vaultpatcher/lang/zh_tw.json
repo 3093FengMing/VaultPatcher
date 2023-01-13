@@ -1,0 +1,6 @@
+{
+  "commands.vaultpatcher.export.tips.success": "完成！導出到langpatcher.json",
+  "commands.vaultpatcher.export.warning.wip": "警告：此功能仍是*WIP*！",
+  "commands.vaultpatcher.list.warning.wip": "警告：此功能仍是*WIP*！",
+  "commands.vaultpatcher.list.tips.modslist": "以下為已加載的模塊列表："
+}
