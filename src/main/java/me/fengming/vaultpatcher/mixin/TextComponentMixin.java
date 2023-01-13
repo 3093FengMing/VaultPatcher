@@ -26,6 +26,5 @@ public abstract class TextComponentMixin {
         if (c != null) cir.setReturnValue(c);
     }
 
-
 }
 
