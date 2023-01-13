@@ -23,7 +23,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'org.spongepowered.mixin'
 
 
-version = 'forge-1.2.4+1.16.5'
+version = 'forge-1.2.5+1.16.5'
 group = 'me.fengming.vaultpatcher' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'vaultpatcher'
 

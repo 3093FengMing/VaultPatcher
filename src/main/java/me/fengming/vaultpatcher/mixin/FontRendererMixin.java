@@ -1,20 +1,15 @@
 package me.fengming.vaultpatcher.mixin;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import me.fengming.vaultpatcher.ThePatcher;
 import net.minecraft.client.gui.FontRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
-
-import java.util.Objects;
 
 import static me.fengming.vaultpatcher.VaultPatcher.exportList;
 
-@Mixin(value = FontRenderer.class, priority = Integer.MAX_VALUE)
+@Mixin(value = FontRenderer.class, priority = -Integer.MAX_VALUE)
 public class FontRendererMixin {
     //GUI Transcription
     @ModifyArgs(

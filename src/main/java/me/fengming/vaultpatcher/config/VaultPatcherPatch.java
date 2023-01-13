@@ -4,8 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import me.fengming.vaultpatcher.VaultPatcher;
-import net.minecraft.client.resources.language.I18n;
-import net.minecraft.server.Bootstrap;
+import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fml.loading.FMLPaths;
 
 import java.io.IOException;
@@ -17,9 +16,7 @@ public class VaultPatcherPatch {
     private static final Gson GSON = new Gson();
 
     public VaultPatcherPatch(String patchFile) {
-        Bootstrap.realStdoutPrintln(patchFile);
         Path p = FMLPaths.CONFIGDIR.get().resolve("vaultpatcher").resolve(patchFile);
-        Bootstrap.realStdoutPrintln(p.toString());
         try {
             Files.createDirectories(p.getParent());
         } catch (IOException e) {
@@ -61,7 +58,7 @@ public class VaultPatcherPatch {
         if (Files.notExists(patchFile)) {
             throw new IOException("File is not exists.");
         }
-        try (var jsonReader = GSON.newJsonReader(Files.newBufferedReader(patchFile))) {
+        try (JsonReader jsonReader = GSON.newJsonReader(Files.newBufferedReader(patchFile))) {
             readConfig(jsonReader);
         }
     }

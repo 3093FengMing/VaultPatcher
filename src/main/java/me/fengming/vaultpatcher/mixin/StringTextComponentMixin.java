@@ -1,17 +1,15 @@
 package me.fengming.vaultpatcher.mixin;
 
 import me.fengming.vaultpatcher.ThePatcher;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import static me.fengming.vaultpatcher.VaultPatcher.exportList;
-
-@Mixin(value = TextComponent.class, priority = Integer.MAX_VALUE)
-public abstract class TextComponentMixin {
+@Mixin(value = StringTextComponent.class, priority = -Integer.MAX_VALUE)
+public abstract class StringTextComponentMixin {
     @Accessor("text")
     abstract String getText1();
 
