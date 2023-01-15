@@ -53,11 +53,11 @@ public class PatchInfo {
         reader.beginObject();
         while (reader.peek() != JsonToken.END_OBJECT) {
             switch (reader.nextName()) {
-                case "name" -> setName(reader.nextString());
-                case "desc" -> setDesc(reader.nextString());
-                case "mods" -> setMods(reader.nextString());
-                case "authors" -> setAuthors(reader.nextString());
-                default -> reader.skipValue();
+                case "name" : setName(reader.nextString()); break;
+                case "desc" : setDesc(reader.nextString()); break;
+                case "mods" : setMods(reader.nextString()); break;
+                case "authors" : setAuthors(reader.nextString()); break;
+                default : reader.skipValue(); break;
             }
         }
         reader.endObject();
