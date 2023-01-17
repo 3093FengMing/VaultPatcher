@@ -6,33 +6,53 @@
 
 ### Let the hard coded strings change into localization strings in some mods.
 
-# Configs
+# Configs File
 
 ## Modular
 
-After 1.2.5, config files are in the form of modules,
-the format in `config/vaultpatcher/` directory like is `config.json`, `module.json`.
+the format in `config/vaultpatcher/` directory like is `config.json` and several `module.json`.
 
-`config.json` must be provided, `config.json` defined `module.json`.
-
-`config.json` is as follows:
+`config.json` must be provided.
+It is as follows:
 ```json
 {
   "mods": [
     "module"
-  ]
+  ], 
+  "debug_mode": {
+    "is_enable": false,
+    "output_mode": 0,
+    "output_format": "<source> -> <target>"
+  }
 }
 ```
+
+### Mods
+`config.json` defined `module.json`.
 Only in this way can `module.json` read and used normally.
 
-## Basic Config
+### Debug Mode
+**(Tips: ONLY DEBUG)**
 
-~~`Vault Patcher` will generate config.json in `.minecraft\config\vaultpatcher`
-(Hereinafter collectively referred to as ***Config File***)~~
+`is_enable` determines whether the debugging feature is enabled.
+If it is `true`, a line of debugging information will be output to the log when replacing the string,
+The format of debugging information is `output_format`, and determines the content of debugging information by `output_format`.
+If it is `false`, Will not output anything to the log when replacing the string.
 
-See for [Section-Modular](#Modular)
+`output_format` determines the format of debugging information. The default is `<source> -> <target>`.
+`<source>` is the source string, that is, the string before replacement. and `<target>`is the replacement string.
+There is another `<stack>` that is not shown, if you include it in `output_format`,
+the log will be polluted because of the large amount of output information.
+`<stack>` is a stacktrace array, which is the `StackTrace` (including this mod) of the class of this string,
+This value is more for `stack_depth` and `name` in `target_class`.
 
-The format of the config file is roughly as follows:
+`output_mode` determines the content of debugging information.
+If it is 0, only the replaced string will be output,
+If it is 1, only the strings that are not replaced are output.
+
+## Module
+
+The format of the Module File is roughly as follows:
 
 ```json
 [
@@ -187,7 +207,6 @@ The matching rules of `name` are as follows:
   but will not match `net.minecraft.client.gui.titlescreen.screens`)
 
 #### Package Match
-#### (1.2.5+)
 
 * The string starts with `@`, will be regarded as Package Match (For Example: `#net.minecraft.client` will
   match `net.minecraft.client.gui.screens.TitleScreen`

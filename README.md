@@ -8,29 +8,48 @@
 
 # 配置文件
 
-## 模块化
+## 配置
 
 在1.2.5以后，配置文件均采用模块的形式
-在`config/vaultpatcher/`下的格式为`config.json`、`模块.json`。
+在`config/vaultpatcher/`下的格式为`config.json`和若干个`模块.json`。
 
-`config.json`是必须的，`config.json`定义了`模块.json`。
-`config.json`如下：
+`config.json`是必须的。 
+如下：
 ```json
 {
   "mods": [
     "模块"
-  ]
+  ],
+  "debug_mode": {
+    "is_enable": false,
+    "output_mode": 0,
+    "output_format": "<source> -> <target>"
+  }
 }
 ```
-这样`模块.json`才会被正常读取读取并使用
+### 模块（mods）
+`config.json`定义了`模块.json`，
+`模块.json`才会被正常读取读取并使用。反之亦然。
 
-## 基础配置
+### 调试模式（Debug Mode）
+**(Tips: 仅供调试使用)**
 
-~~Vault Patcher会在`.minecraft\config\vaultpatcher`下生成config.json（下文统称***配置文件***）~~
+`is_enable`决定调试功能是否开启。
+若为`true`，那么会在替换字符串时向日志中输出一行调试信息，调试信息的格式由`output_format`决定，调试信息的内容由`output_mode`决定。
+若为`false`，则不会在替换字符串时向日志中输出任何内容。
 
-见[节-模块化](#模块化)
+`output_format`决定了调试信息的格式，默认为`<source> -> <target>`。
+`<source>`为源内容，即未做替换前的字符串；`<target>`为做替换后的字符串。
+还有一个`<stack>`未展示出来，因为输出的很多，容易污染日志。
+`<stack>`为堆栈跟踪数组，是此字符串所在类的`StackTrace`(包括本mod)，它更多是为`target_class`中的`stack_depth`和`name`服务的。
 
-配置文件的格式大概这样：
+`output_mode`决定了调试信息的内容。
+若为 0, 则仅输出替换的字符串；
+若为 1, 则仅输出不被替换的字符串。
+
+## 模块
+
+模块的格式大概这样：
 
 ```json
 [
@@ -97,7 +116,7 @@
 
 就是一个翻译键值对，主要涉及到`key`、`value`和`target_class`。
 
-### 键值对（key value pair）
+### 键值对（key-value pair）
 
 #### 键（Key）
 `key`，顾名思义，指定的是要翻译的字符串。
@@ -113,11 +132,10 @@
 那就可以指定`"value":"Mojang AB."`。
 
 #### 半匹配
-#### (1.2.5+)
 以上的方式均为全匹配（即完全替换），只替换与`key`相同的文本。
 
 如果你想半匹配，或者原字符串中有格式化文本（例如`§a`、`%d`、`%s`等）。
-那么可以在`value`的前面加上'@'字符，实现半匹配。
+那么可以在`value`的前面加上`@`字符，实现半匹配。
 
 例子：
 ```json
@@ -150,10 +168,6 @@
   "value": "Mojang AB."
 }
 ```
-
-~~然而，光有这点东西是无法使用的。
-你还得加上虽然基本用不到但是还是要加上的``target_class``~~
-（1.2.4及以上不需要）
 
 例如
 
@@ -189,14 +203,13 @@
 
 #### 类匹配
 
-* 以`#`开头的字符串会视为半匹配（示例：`#TitleScreen`会匹配`net.minecraft.client.gui.screens.TitleScreen`
+* 以`#`开头的字符串会视为类匹配（示例：`#TitleScreen`会匹配`net.minecraft.client.gui.screens.TitleScreen`
   和`net.minecraft.client.gui.screens.titlescreen`
   但不匹配`net.minecraft.client.gui.titlescreen.screens`）
 
 #### 包匹配
-#### (1.2.5+)
 
-* 以`@`开头的字符串会视为半匹配（示例：`#net.minecraft.client`会匹配`net.minecraft.client.gui.screens.TitleScreen`
+* 以`@`开头的字符串会视为包匹配（示例：`#net.minecraft.client`会匹配`net.minecraft.client.gui.screens.TitleScreen`
   和`net.minecraft.client.gui.screens.BeaconScreen`等等
   也匹配`net.minecraft.client.gui.titlescreen.screens`）
 
