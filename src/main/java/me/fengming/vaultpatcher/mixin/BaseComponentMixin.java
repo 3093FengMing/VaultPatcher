@@ -43,7 +43,7 @@ public abstract class BaseComponentMixin {
             )
     )
     private FormattedText proxy_getVisualOrder(FormattedText p_128116_) {
-        if (!(p_128116_ instanceof TranslatableComponent)) {
+        if (p_128116_ instanceof TextComponent) {
             String c = ThePatcher.patch(p_128116_.getString());
             return new TextComponent(c);
         } else return p_128116_;

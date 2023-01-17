@@ -12,7 +12,7 @@ public class DebugMode {
 
     private int outputMode = 0;
 
-    private String outputFormat = "<source> -> <target> in <stack>";
+    private String outputFormat = "%s -> %s";
 
     public void setEnable(boolean enable) {
         isEnable = enable;
@@ -69,5 +69,14 @@ public class DebugMode {
     @Override
     public int hashCode() {
         return Objects.hash(isEnable(), getOutputMode(), getOutputFormat());
+    }
+
+    @Override
+    public String toString() {
+        return "DebugMode{" +
+                "isEnable=" + isEnable +
+                ", outputMode=" + outputMode +
+                ", outputFormat='" + outputFormat + '\'' +
+                '}';
     }
 }

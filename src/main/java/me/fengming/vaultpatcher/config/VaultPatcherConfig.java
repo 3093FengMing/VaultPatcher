@@ -26,33 +26,40 @@ public class VaultPatcherConfig {
         return debug;
     }
 
+    private static void writeConfig(JsonWriter jw) throws IOException {
+        debug.writeJson(jw);
+        jw.name("mods").beginArray();
+        jw.name("mods").endArray();
+    }
+
     public static void readConfig() throws IOException {
         File f = configFile.toFile();
-        if (!f.exists()) {
+        if (Files.notExists(configFile)) {
             if (!f.getParentFile().exists()) {
                 f.getParentFile().mkdirs();
             }
-            f.createNewFile();
+            Files.createFile(configFile);
             JsonWriter jw = GSON.newJsonWriter(Files.newBufferedWriter(configFile));
-            debug.writeJson(jw);
-            jw.name("mods").beginArray();
-            jw.name("mods").endArray();
+            writeConfig(jw);
         }
+
         JsonReader jr = GSON.newJsonReader(Files.newBufferedReader(configFile));
 
         jr.beginObject();
-        switch (jr.nextName()) {
-            case "mods" :
-                if (jr.peek() == JsonToken.BEGIN_ARRAY) {
-                    mods = GSON.fromJson(jr, new TypeToken<List<String>>() {}.getType());
-                }
-                break;
-            case "debug_mode" :
-                if (jr.peek() == JsonToken.BEGIN_OBJECT) {
-                    debug.readJson(jr);
-                }
-                break;
-            default : jr.skipValue();
+        while (jr.peek() != JsonToken.END_OBJECT) {
+            switch (jr.nextName()) {
+                case "debug_mode" :
+                    if (jr.peek() == JsonToken.BEGIN_OBJECT) {
+                        debug.readJson(jr);
+                    }
+                    break;
+                case "mods" :
+                    if (jr.peek() == JsonToken.BEGIN_ARRAY) {
+                        mods = GSON.fromJson(jr, new TypeToken<List<String>>() {}.getType());
+                    }
+                    break;
+                default : jr.skipValue(); break;
+            }
         }
         jr.endObject();
     }

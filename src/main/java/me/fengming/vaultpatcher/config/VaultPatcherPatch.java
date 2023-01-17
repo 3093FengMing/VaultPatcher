@@ -17,7 +17,7 @@ public class VaultPatcherPatch {
     private static final Gson GSON = new Gson();
 
     public VaultPatcherPatch(String patchFile) {
-        Bootstrap.realStdoutPrintln("Load Module " + patchFile);
+        VaultPatcher.LOGGER.info("Load Module " + patchFile);
         Path p = FMLPaths.CONFIGDIR.get().resolve("vaultpatcher").resolve(patchFile);
         try {
             Files.createDirectories(p.getParent());
@@ -75,11 +75,15 @@ public class VaultPatcherPatch {
         return null;
     }
 
+    private static boolean isSemimatch = false;
+
     public String patch(String text, StackTraceElement[] stackTrace) {
         List<TranslationInfo> list;
         if ((list = getList(text)) == null) return null;
 
         for (TranslationInfo info : list) {
+            isSemimatch = info.getValue().startsWith("@");
+            if (!isSemimatch && !text.equals(info.getKey())) continue;
             if (info.getValue() == null || info.getKey() == null || info.getKey().isEmpty() || info.getValue().isEmpty()) continue;
             final TargetClassInfo targetClassInfo = info.getTargetClassInfo();
             if (targetClassInfo.getName().isEmpty() || targetClassInfo.getStackDepth() <= 0 || matchStack(targetClassInfo.getName(), stackTrace)) {
@@ -108,7 +112,7 @@ public class VaultPatcherPatch {
     }
 
     private String patchText(String value, String key, String text) {
-        if (value.startsWith("@") && !value.startsWith("@@")) {
+        if (isSemimatch && !value.startsWith("@@")) {
             value = value.replace("@@", "@").substring(1);
             return text.replace(key, I18n.get(value));
         } else return I18n.get(value);

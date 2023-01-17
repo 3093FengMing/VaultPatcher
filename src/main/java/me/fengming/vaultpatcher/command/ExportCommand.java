@@ -7,6 +7,7 @@ import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraftforge.fml.loading.FMLPaths;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -30,8 +31,7 @@ public class ExportCommand implements Command<CommandSourceStack> {
         try {
             BufferedWriter bw = new BufferedWriter(
                     new FileWriter(
-                            Minecraft.getInstance().gameDirectory.toPath().
-                                    resolve("langpacther.json").toFile(),
+                            FMLPaths.GAMEDIR.get().resolve("langpacther.json").toFile(),
                             StandardCharsets.UTF_8));
             bw.write(json);
             bw.flush();
