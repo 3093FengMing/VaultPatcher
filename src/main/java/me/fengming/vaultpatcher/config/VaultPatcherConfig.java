@@ -43,7 +43,7 @@ public class VaultPatcherConfig {
             writeConfig(jw);
         }
 
-        JsonReader jr = GSON.newJsonReader(Files.newBufferedReader(configFile));
+        JsonReader jr = GSON.newJsonReader(new InputStreamReader(new FileInputStream(f)));
 
         jr.beginObject();
         while (jr.peek() != JsonToken.END_OBJECT) {

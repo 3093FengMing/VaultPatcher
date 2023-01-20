@@ -8,7 +8,9 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.server.Bootstrap;
 import net.minecraftforge.fml.loading.FMLPaths;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -60,7 +62,7 @@ public class VaultPatcherPatch {
         if (Files.notExists(patchFile)) {
             Files.createFile(patchFile);
         }
-        try (var jsonReader = GSON.newJsonReader(Files.newBufferedReader(patchFile))) {
+        try (var jsonReader = GSON.newJsonReader(new InputStreamReader(new FileInputStream(patchFile.toFile())))) {
             readConfig(jsonReader);
         }
     }
@@ -99,8 +101,10 @@ public class VaultPatcherPatch {
         return null;
     }
 
-    private boolean matchStack(String str, StackTraceElement[] stackTrace) {
+    private boolean matchStack(String str, StackTraceElement[] stack) {
         String s = str.toLowerCase();
+        List<StackTraceElement> stackTrace = Arrays.stream(stack).toList();
+        stackTrace = stackTrace.subList(7, stackTrace.size() - 13);
         for (StackTraceElement ste : stackTrace) {
             if (s.startsWith("#")) {
                 return ste.getClassName().endsWith(s);
