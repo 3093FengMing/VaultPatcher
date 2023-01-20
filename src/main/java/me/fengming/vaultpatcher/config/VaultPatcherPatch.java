@@ -4,10 +4,13 @@ import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import me.fengming.vaultpatcher.VaultPatcher;
-import net.minecraft.client.resources.I18n;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.server.Bootstrap;
 import net.minecraftforge.fml.loading.FMLPaths;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -16,6 +19,7 @@ public class VaultPatcherPatch {
     private static final Gson GSON = new Gson();
 
     public VaultPatcherPatch(String patchFile) {
+        VaultPatcher.LOGGER.info("Load Module " + patchFile);
         Path p = FMLPaths.CONFIGDIR.get().resolve("vaultpatcher").resolve(patchFile);
         try {
             Files.createDirectories(p.getParent());
@@ -56,9 +60,9 @@ public class VaultPatcherPatch {
 
     public void readConfig() throws IOException {
         if (Files.notExists(patchFile)) {
-            throw new IOException("File is not exists.");
+            Files.createFile(patchFile);
         }
-        try (JsonReader jsonReader = GSON.newJsonReader(Files.newBufferedReader(patchFile))) {
+        try (var jsonReader = GSON.newJsonReader(new InputStreamReader(new FileInputStream(patchFile.toFile())))) {
             readConfig(jsonReader);
         }
     }
@@ -73,12 +77,16 @@ public class VaultPatcherPatch {
         return null;
     }
 
+    private static boolean isSemimatch = false;
+
     public String patch(String text, StackTraceElement[] stackTrace) {
         List<TranslationInfo> list;
         if ((list = getList(text)) == null) return null;
 
         for (TranslationInfo info : list) {
-            if (info.getValue() == null || info.getKey() == null) continue;
+            isSemimatch = info.getValue().startsWith("@");
+            if (!isSemimatch && !text.equals(info.getKey())) continue;
+            if (info.getValue() == null || info.getKey() == null || info.getKey().isEmpty() || info.getValue().isEmpty()) continue;
             final TargetClassInfo targetClassInfo = info.getTargetClassInfo();
             if (targetClassInfo.getName().isEmpty() || targetClassInfo.getStackDepth() <= 0 || matchStack(targetClassInfo.getName(), stackTrace)) {
                 return patchText(info.getValue(), info.getKey(), text);
@@ -93,8 +101,10 @@ public class VaultPatcherPatch {
         return null;
     }
 
-    private boolean matchStack(String str, StackTraceElement[] stackTrace) {
+    private boolean matchStack(String str, StackTraceElement[] stack) {
         String s = str.toLowerCase();
+        List<StackTraceElement> stackTrace = Arrays.stream(stack).toList();
+        stackTrace = stackTrace.subList(7, stackTrace.size() - 13);
         for (StackTraceElement ste : stackTrace) {
             if (s.startsWith("#")) {
                 return ste.getClassName().endsWith(s);
@@ -106,33 +116,12 @@ public class VaultPatcherPatch {
     }
 
     private String patchText(String value, String key, String text) {
-        char[] charList = {};
-        List<Integer> numList = null;
-        if (value.charAt(0) != '@' || value.contains("%d")) {
-            if (value.length() == text.length()) {
-                text.getChars(0, text.length(), charList, 0);
-                numList = getNumbers(charList);
-            }
-        }
-
-        if (value.startsWith("@") && !value.startsWith("@@")) {
+        if (isSemimatch && !value.startsWith("@@")) {
             value = value.replace("@@", "@").substring(1);
             return text.replace(key, I18n.get(value));
-        } else return I18n.get(value, numList);
+        } else return I18n.get(value);
     }
 
-    private List<Integer> getNumbers(char[] str) {
-        List<Integer> rList = new ArrayList<>();
-        StringBuilder tmp = new StringBuilder();
-        for (char c : str) {
-            if (c >= '0' && c <= '9') {
-                tmp.append(c);
-            } else {
-                rList.add(Integer.valueOf(tmp.toString()));
-            }
-        }
-        return rList;
-    }
 
     @Override
     public String toString() {

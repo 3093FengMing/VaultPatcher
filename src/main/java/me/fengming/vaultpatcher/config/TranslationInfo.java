@@ -27,14 +27,6 @@ public class TranslationInfo {
         reader.endObject();
     }
 
-    public void writeJson(JsonWriter writer) throws IOException {
-        writer.beginObject();
-        writer.name("target_class");
-        getTargetClassInfo().writeJson(writer);
-        writer.name("key").value(getKey());
-        writer.name("value").value(getValue());
-        writer.endObject();
-    }
 
     public TargetClassInfo getTargetClassInfo() {
         return targetClassInfo;
