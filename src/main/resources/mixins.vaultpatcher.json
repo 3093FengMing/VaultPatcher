@@ -11,12 +11,12 @@
     "TextComponentMixin"
   ],
   "client": [
-    "TextComponentMixin",
     "FontRendererMixin",
-    "StringTextComponentMixin"
+    "StringTextComponentMixin",
+    "TextComponentMixin"
   ],
   "server": [
-    "TextComponentMixin",
-    "StringTextComponentMixin"
+    "StringTextComponentMixin",
+    "TextComponentMixin"
   ]
 }
