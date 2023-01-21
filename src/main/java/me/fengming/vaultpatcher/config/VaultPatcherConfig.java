@@ -7,18 +7,20 @@ import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import net.minecraftforge.fml.loading.FMLPaths;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class VaultPatcherConfig {
     private static final Gson GSON = new Gson();
     private static final Path configFile = FMLPaths.CONFIGDIR.get().resolve("vaultpatcher").resolve("config.json");
+    private static final DebugMode debug = new DebugMode();
     private static List<String> mods = new ArrayList<>();
-    private static DebugMode debug = new DebugMode();
 
     public static List<String> getMods() {
         return mods;
@@ -50,17 +52,20 @@ public class VaultPatcherConfig {
         jr.beginObject();
         while (jr.peek() != JsonToken.END_OBJECT) {
             switch (jr.nextName()) {
-                case "debug_mode" :
+                case "debug_mode":
                     if (jr.peek() == JsonToken.BEGIN_OBJECT) {
                         debug.readJson(jr);
                     }
                     break;
-                case "mods" :
+                case "mods":
                     if (jr.peek() == JsonToken.BEGIN_ARRAY) {
-                        mods = GSON.fromJson(jr, new TypeToken<List<String>>() {}.getType());
+                        mods = GSON.fromJson(jr, new TypeToken<List<String>>() {
+                        }.getType());
                     }
                     break;
-                default : jr.skipValue(); break;
+                default:
+                    jr.skipValue();
+                    break;
             }
         }
         jr.endObject();

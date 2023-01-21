@@ -2,7 +2,6 @@ package me.fengming.vaultpatcher.config;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
-import com.google.gson.stream.JsonWriter;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -18,10 +17,18 @@ public class TranslationInfo {
         reader.beginObject();
         while (reader.peek() != JsonToken.END_OBJECT) {
             switch (reader.nextName()) {
-                case "target_class" : getTargetClassInfo().readJson(reader); break;
-                case "key" : setKey(reader.nextString()); break;
-                case "value" : setValue(reader.nextString()); break;
-                default : reader.skipValue(); break;
+                case "target_class":
+                    getTargetClassInfo().readJson(reader);
+                    break;
+                case "key":
+                    setKey(reader.nextString());
+                    break;
+                case "value":
+                    setValue(reader.nextString());
+                    break;
+                default:
+                    reader.skipValue();
+                    break;
             }
         }
         reader.endObject();

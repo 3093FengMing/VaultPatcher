@@ -18,6 +18,7 @@ public abstract class StringTextComponentMixin {
         String c = ThePatcher.patch(this.getText1());
         if (c != null) cir.setReturnValue(c);
     }
+
     @Inject(method = "getText", at = @At("HEAD"), cancellable = true)
     private void proxy_getText(CallbackInfoReturnable<String> cir) {
         String c = ThePatcher.patch(this.getText1());

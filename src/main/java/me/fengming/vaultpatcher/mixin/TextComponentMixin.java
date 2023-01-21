@@ -1,7 +1,7 @@
 package me.fengming.vaultpatcher.mixin;
 
 import me.fengming.vaultpatcher.ThePatcher;
-import net.minecraft.network.chat.*;
+import net.minecraft.util.text.*;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -12,8 +12,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
 
-@Mixin(BaseComponent.class)
-public abstract class BaseComponentMixin {
+@Mixin(TextComponent.class)
+public abstract class TextComponentMixin {
     /*
     @Accessor("siblings")
     abstract List<Component> getSiblings();
@@ -32,21 +32,24 @@ public abstract class BaseComponentMixin {
     }
     */
 
-    @Shadow public abstract MutableComponent copy();
+    @Shadow
+    @Final
+    protected List<ITextComponent> siblings;
 
-    @Shadow @Final protected List<Component> siblings;
+    @Shadow
+    public abstract IFormattableTextComponent copy();
 
     @ModifyArg(
             method = "getVisualOrderText",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/locale/Language;getVisualOrder(Lnet/minecraft/network/chat/FormattedText;)Lnet/minecraft/util/FormattedCharSequence;"
+                    target = "Lnet/minecraft/util/text/LanguageMap;getVisualOrder(Lnet/minecraft/util/text/ITextProperties;)Lnet/minecraft/util/IReorderingProcessor;"
             )
     )
-    private FormattedText proxy_getVisualOrder(FormattedText p_128116_) {
+    private ITextProperties proxy_getVisualOrder(ITextProperties p_128116_) {
         if (p_128116_ instanceof TextComponent) {
             String c = ThePatcher.patch(p_128116_.getString());
-            return new TextComponent(c);
+            return new StringTextComponent(c);
         }
         return p_128116_;
     }
@@ -56,9 +59,9 @@ public abstract class BaseComponentMixin {
             at = @At("HEAD"),
             cancellable = true
     )
-    private void proxy_append(Component p_130585_, CallbackInfoReturnable<MutableComponent> cir) {
-        String c = ThePatcher.patch(p_130585_.getString());
-        this.siblings.add(new TextComponent(c));
+    private void proxy_append(ITextComponent p_230529_1_, CallbackInfoReturnable<IFormattableTextComponent> cir) {
+        String c = ThePatcher.patch(p_230529_1_.getString());
+        this.siblings.add(new StringTextComponent(c));
         cir.setReturnValue(this.copy());
     }
 

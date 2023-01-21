@@ -7,13 +7,16 @@
   "refmap": "mixins.vaultpatcher.refmap.json",
   "mixins": [
     "FontRendererMixin",
-    "StringTextComponentMixin"
+    "StringTextComponentMixin",
+    "TextComponentMixin"
   ],
   "client": [
+    "TextComponentMixin",
     "FontRendererMixin",
     "StringTextComponentMixin"
   ],
   "server": [
+    "TextComponentMixin",
     "StringTextComponentMixin"
   ]
 }

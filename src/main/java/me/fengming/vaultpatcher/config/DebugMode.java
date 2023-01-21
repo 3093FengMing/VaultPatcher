@@ -14,12 +14,12 @@ public class DebugMode {
 
     private String outputFormat = "%s -> %s";
 
-    public void setEnable(boolean enable) {
-        isEnable = enable;
-    }
-
     public boolean isEnable() {
         return isEnable;
+    }
+
+    public void setEnable(boolean enable) {
+        isEnable = enable;
     }
 
     public int getOutputMode() {
@@ -42,10 +42,18 @@ public class DebugMode {
         reader.beginObject();
         while (reader.peek() != JsonToken.END_OBJECT) {
             switch (reader.nextName()) {
-                case "is_enable" : setEnable(reader.nextBoolean()); break;
-                case "output_format" : setOutputFormat(reader.nextString()); break;
-                case "output_mode" : setOutputMode(reader.nextInt()); break;
-                default : reader.skipValue(); break;
+                case "is_enable":
+                    setEnable(reader.nextBoolean());
+                    break;
+                case "output_format":
+                    setOutputFormat(reader.nextString());
+                    break;
+                case "output_mode":
+                    setOutputMode(reader.nextInt());
+                    break;
+                default:
+                    reader.skipValue();
+                    break;
             }
         }
         reader.endObject();
@@ -62,8 +70,9 @@ public class DebugMode {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof DebugMode debugMode)) return false;
-        return isEnable() == debugMode.isEnable() && getOutputMode() == debugMode.getOutputMode() && Objects.equals(getOutputFormat(), debugMode.getOutputFormat());
+        if (!(o instanceof DebugMode)) return false;
+        DebugMode debugMode = (DebugMode) o;
+        return isEnable() == debugMode.isEnable() && getOutputMode() == debugMode.getOutputMode() && getOutputFormat().equals(debugMode.getOutputFormat());
     }
 
     @Override

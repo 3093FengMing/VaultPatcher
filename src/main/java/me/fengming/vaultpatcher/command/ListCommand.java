@@ -17,9 +17,11 @@ public class ListCommand implements Command<CommandSource> {
         context.getSource().sendSuccess(new TranslationTextComponent("commands.vaultpatcher.list.warning.wip"), false);
         context.getSource().sendSuccess(new TranslationTextComponent("commands.vaultpatcher.list.tips.modslist"), false);
         List<String> mods = VaultPatcherConfig.getMods();
+        StringBuilder str = new StringBuilder();
         for (String mod : mods) {
-            context.getSource().sendSuccess(new StringTextComponent("§a" + mod), false);
+            str.append("§a").append(mod).append(",");
         }
+        context.getSource().sendSuccess(new StringTextComponent(str.toString()), false);
         return 0;
     }
 }

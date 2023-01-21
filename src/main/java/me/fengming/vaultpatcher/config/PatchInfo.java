@@ -19,29 +19,28 @@ public class PatchInfo {
         return name;
     }
 
-    public String getDesc() {
-        return desc;
-    }
-
-    public String getMods() {
-        return mods;
-    }
-
-    public String getAuthors() {
-        return authors;
-    }
-
-
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDesc() {
+        return desc;
     }
 
     public void setDesc(String desc) {
         this.desc = desc;
     }
 
+    public String getMods() {
+        return mods;
+    }
+
     public void setMods(String mods) {
         this.mods = mods;
+    }
+
+    public String getAuthors() {
+        return authors;
     }
 
     public void setAuthors(String authors) {
@@ -53,11 +52,21 @@ public class PatchInfo {
         reader.beginObject();
         while (reader.peek() != JsonToken.END_OBJECT) {
             switch (reader.nextName()) {
-                case "name" : setName(reader.nextString()); break;
-                case "desc" : setDesc(reader.nextString()); break;
-                case "mods" : setMods(reader.nextString()); break;
-                case "authors" : setAuthors(reader.nextString()); break;
-                default : reader.skipValue(); break;
+                case "name":
+                    setName(reader.nextString());
+                    break;
+                case "desc":
+                    setDesc(reader.nextString());
+                    break;
+                case "mods":
+                    setMods(reader.nextString());
+                    break;
+                case "authors":
+                    setAuthors(reader.nextString());
+                    break;
+                default:
+                    reader.skipValue();
+                    break;
             }
         }
         reader.endObject();
