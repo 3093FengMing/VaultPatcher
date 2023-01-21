@@ -32,9 +32,12 @@ public abstract class BaseComponentMixin {
     }
     */
 
-    @Shadow public abstract MutableComponent copy();
+    @Shadow
+    @Final
+    protected List<Component> siblings;
 
-    @Shadow @Final protected List<Component> siblings;
+    @Shadow
+    public abstract MutableComponent copy();
 
     @ModifyArg(
             method = "getVisualOrderText",

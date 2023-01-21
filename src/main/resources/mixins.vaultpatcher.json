@@ -6,14 +6,14 @@
   "package": "me.fengming.vaultpatcher.mixin",
   "refmap": "mixins.vaultpatcher.refmap.json",
   "mixins": [
-    "TextComponentMixin",
     "BaseComponentMixin",
-    "FontMixin"
+    "FontMixin",
+    "TextComponentMixin"
   ],
   "client": [
     "BaseComponentMixin",
-    "TextComponentMixin",
-    "FontMixin"
+    "FontMixin",
+    "TextComponentMixin"
   ],
   "server": [
     "BaseComponentMixin",

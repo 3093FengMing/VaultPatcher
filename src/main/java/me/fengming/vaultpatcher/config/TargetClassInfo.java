@@ -19,10 +19,18 @@ public class TargetClassInfo {
         reader.beginObject();
         while (reader.peek() != JsonToken.END_OBJECT) {
             switch (reader.nextName()) {
-                case "name" : setName(reader.nextString()); break;
-                case "mapping" : setMapping(reader.nextString()); break;
-                case "stack_depth" : setStackDepth(reader.nextInt()); break;
-                default : reader.skipValue(); break;
+                case "name":
+                    setName(reader.nextString());
+                    break;
+                case "mapping":
+                    setMapping(reader.nextString());
+                    break;
+                case "stack_depth":
+                    setStackDepth(reader.nextInt());
+                    break;
+                default:
+                    reader.skipValue();
+                    break;
             }
         }
         reader.endObject();

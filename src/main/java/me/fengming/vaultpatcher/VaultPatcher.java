@@ -3,13 +3,9 @@ package me.fengming.vaultpatcher;
 import com.mojang.logging.LogUtils;
 import me.fengming.vaultpatcher.config.VaultPatcherConfig;
 import me.fengming.vaultpatcher.config.VaultPatcherPatch;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.Bootstrap;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLConstructModEvent;
 import org.slf4j.Logger;
 
