@@ -1,6 +1,7 @@
 package me.fengming.vaultpatcher.mixin;
 
 import me.fengming.vaultpatcher.ThePatcher;
+import me.fengming.vaultpatcher.Utils;
 import net.minecraft.client.gui.Font;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -8,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 import java.util.Objects;
 
-@Mixin(value = Font.class, priority = Integer.MAX_VALUE)
+@Mixin(value = Font.class)
 public class FontMixin {
 
     // String

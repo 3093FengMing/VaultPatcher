@@ -12,7 +12,7 @@ public class DebugMode {
 
     private int outputMode = 0;
 
-    private String outputFormat = "%s -> %s";
+    private String outputFormat = "<source> -> <target>";
 
     public boolean isEnable() {
         return isEnable;

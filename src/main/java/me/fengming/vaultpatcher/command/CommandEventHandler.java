@@ -1,6 +1,7 @@
 package me.fengming.vaultpatcher.command;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 import me.fengming.vaultpatcher.Utils;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -14,18 +15,18 @@ public class CommandEventHandler {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void registerClientCommands(RegisterClientCommandsEvent event) {
         CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
-        dispatcher.register(
+        LiteralCommandNode<CommandSourceStack> cmd = dispatcher.register(
                 Commands.literal(Utils.MOD_ID
-                ).then(
-                        Commands.literal("export")
-                                .executes(ExportCommand.instance)
-                ).then(
-                        Commands.literal("list")
-                                .executes(ListCommand.instance)
-                ).then(
-                        Commands.literal("reload")
-                                .executes(ReloadCommand.instance)
-                )
-        );
+        ).then(
+                Commands.literal("export")
+                        .executes(ExportCommand.instance)
+        ).then(
+                Commands.literal("list")
+                        .executes(ListCommand.instance)
+        ).then(
+                Commands.literal("reload")
+                        .executes(ReloadCommand.instance)
+        ));
+        dispatcher.register(Commands.literal("vp").redirect(cmd));
     }
 }

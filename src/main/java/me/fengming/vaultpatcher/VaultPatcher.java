@@ -16,7 +16,6 @@ import java.util.List;
 @Mod(Utils.MOD_ID)
 public class VaultPatcher {
     public static final Logger LOGGER = LogUtils.getLogger();
-    public static ArrayList<String> exportList = new ArrayList<>();
     public static List<VaultPatcherPatch> vpps = new ArrayList<>();
 
     @Mod.EventBusSubscriber(modid = Utils.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)

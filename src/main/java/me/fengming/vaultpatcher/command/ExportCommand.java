@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
+import me.fengming.vaultpatcher.Utils;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.fml.loading.FMLPaths;
@@ -14,7 +15,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
-import static me.fengming.vaultpatcher.VaultPatcher.exportList;
 
 
 public class ExportCommand implements Command<CommandSourceStack> {
@@ -24,9 +24,9 @@ public class ExportCommand implements Command<CommandSourceStack> {
     public int run(CommandContext<CommandSourceStack> context) {
         context.getSource().sendSuccess(new TranslatableComponent("commands.vaultpatcher.export.warning.wip"), true);
         Gson gson = new Gson();
-        String json = gson.toJson(exportList, new TypeToken<ArrayList<String>>() {
+        String json = gson.toJson(Utils.exportList, new TypeToken<ArrayList<String>>() {
         }.getType());
-        //Export langs
+        // Export
         try {
             BufferedWriter bw = new BufferedWriter(
                     new FileWriter(

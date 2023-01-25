@@ -1,6 +1,7 @@
 package me.fengming.vaultpatcher.mixin;
 
 import me.fengming.vaultpatcher.ThePatcher;
+import me.fengming.vaultpatcher.Utils;
 import net.minecraft.network.chat.*;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -39,6 +40,9 @@ public abstract class BaseComponentMixin {
     @Shadow
     public abstract MutableComponent copy();
 
+    @Shadow
+    public abstract Style getStyle();
+
     @ModifyArg(
             method = "getVisualOrderText",
             at = @At(
@@ -49,7 +53,7 @@ public abstract class BaseComponentMixin {
     private FormattedText proxy_getVisualOrder(FormattedText p_128116_) {
         if (p_128116_ instanceof TextComponent) {
             String c = ThePatcher.patch(p_128116_.getString());
-            return new TextComponent(c);
+            return new TextComponent(c).setStyle(this.getStyle());
         }
         return p_128116_;
     }
@@ -61,7 +65,7 @@ public abstract class BaseComponentMixin {
     )
     private void proxy_append(Component p_130585_, CallbackInfoReturnable<MutableComponent> cir) {
         String c = ThePatcher.patch(p_130585_.getString());
-        this.siblings.add(new TextComponent(c));
+        this.siblings.add(new TextComponent(c).setStyle(this.getStyle()));
         cir.setReturnValue(this.copy());
     }
 
