@@ -19,8 +19,8 @@ import java.util.List;
 public class VaultPatcherConfig {
     private static final Gson GSON = new Gson();
     private static final Path configFile = FMLPaths.CONFIGDIR.get().resolve("vaultpatcher").resolve("config.json");
-    private static final DebugMode debug = new DebugMode();
     private static List<String> mods = new ArrayList<>();
+    private static final DebugMode debug = new DebugMode();
 
     public static List<String> getMods() {
         return mods;
