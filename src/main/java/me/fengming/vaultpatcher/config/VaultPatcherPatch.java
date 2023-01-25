@@ -101,8 +101,9 @@ public class VaultPatcherPatch {
 
     private boolean matchStack(String str, StackTraceElement[] stack) {
         String s = str.toLowerCase();
-        stack = Arrays.copyOfRange(stack, 7, 13);
-        for (StackTraceElement ste : stack) {
+        List<StackTraceElement> stackTrace = Arrays.asList(stack);
+        stackTrace = stackTrace.subList(7, stackTrace.size() - 13);
+        for (StackTraceElement ste : stackTrace) {
             if (s.startsWith("#")) {
                 return ste.getClassName().endsWith(s);
             } else if (s.startsWith("@")) {
