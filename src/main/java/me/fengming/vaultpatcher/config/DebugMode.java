@@ -70,8 +70,9 @@ public class DebugMode {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof DebugMode debugMode)) return false;
-        return isEnable() == debugMode.isEnable() && getOutputMode() == debugMode.getOutputMode() && Objects.equals(getOutputFormat(), debugMode.getOutputFormat());
+        if (!(o instanceof DebugMode)) return false;
+        DebugMode debugMode = (DebugMode) o;
+        return isEnable() == debugMode.isEnable() && getOutputMode() == debugMode.getOutputMode() && getOutputFormat().equals(debugMode.getOutputFormat());
     }
 
     @Override

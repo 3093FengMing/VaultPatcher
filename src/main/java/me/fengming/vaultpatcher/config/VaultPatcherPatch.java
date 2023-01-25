@@ -4,10 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import me.fengming.vaultpatcher.VaultPatcher;
-import net.minecraft.client.resources.language.I18n;
+import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fml.loading.FMLPaths;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
@@ -61,7 +60,7 @@ public class VaultPatcherPatch {
         if (Files.notExists(patchFile)) {
             Files.createFile(patchFile);
         }
-        try (JsonReader jsonReader = GSON.newJsonReader(new InputStreamReader(new FileInputStream(patchFile.toFile())))) {
+        try (JsonReader jsonReader = GSON.newJsonReader(new InputStreamReader(Files.newInputStream(patchFile)))) {
             readConfig(jsonReader);
         }
     }

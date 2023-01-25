@@ -11,7 +11,7 @@ public class ThePatcher {
     }
 
     public static String patch(String s) {
-        if (s == null || s.isBlank()) {
+        if (s == null || s.trim().equals("")) {
             return s;
         }
         Utils.addToExportList(s);

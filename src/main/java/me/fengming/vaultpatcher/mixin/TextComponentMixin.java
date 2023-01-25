@@ -39,6 +39,8 @@ public abstract class TextComponentMixin {
     @Shadow
     public abstract IFormattableTextComponent copy();
 
+    @Shadow public abstract Style getStyle();
+
     @ModifyArg(
             method = "getVisualOrderText",
             at = @At(
@@ -49,7 +51,7 @@ public abstract class TextComponentMixin {
     private ITextProperties proxy_getVisualOrder(ITextProperties p_128116_) {
         if (p_128116_ instanceof TextComponent) {
             String c = ThePatcher.patch(p_128116_.getString());
-            return new StringTextComponent(c);
+            return new StringTextComponent(c).setStyle(this.getStyle());
         }
         return p_128116_;
     }
@@ -61,7 +63,7 @@ public abstract class TextComponentMixin {
     )
     private void proxy_append(ITextComponent p_230529_1_, CallbackInfoReturnable<IFormattableTextComponent> cir) {
         String c = ThePatcher.patch(p_230529_1_.getString());
-        this.siblings.add(new StringTextComponent(c));
+        this.siblings.add(new StringTextComponent(c).setStyle(this.getStyle()));
         cir.setReturnValue(this.copy());
     }
 
