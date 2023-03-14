@@ -1,16 +1,13 @@
-# Vault Patcher ~~（Vanilla Hardcoded Breaker）~~
+# Vault Patcher
+## **Language：[简体中文](README.md)丨[English](README_en_us.md)**
 
-**Language：[简体中文](README.md)丨[English](README_en_us.md)**
-
-### Hardcoded -> Localization
-
-### Let the hard coded strings change into localization strings in some mods.
+## ⚠Warning: Version 1.2.7 and below is no longer supported!
 
 # Configs File
 
 ## Modular
 
-the format in `config/vaultpatcher/` directory like is `config.json` and several `module.json`.
+The format in `config/vaultpatcher/` directory like is `config.json` and several `module.json`.
 
 `config.json` must be provided.
 It is as follows:
@@ -23,6 +20,11 @@ It is as follows:
     "is_enable": false,
     "output_mode": 0,
     "output_format": "<source> -> <target>"
+  },
+  "optimize_params": {
+    "disable_export": true,
+    "stack_min": -1,
+    "stack_max": -1
   }
 }
 ```
@@ -32,23 +34,33 @@ It is as follows:
 Only in this way can `module.json` read and used normally.
 
 ### Debug Mode
-**(Tips: ONLY DEBUG)**
 
-`is_enable` determines whether the debugging feature is enabled.
-If it is `true`, a line of debugging information will be output to the log when replacing the string,
-The format of debugging information is `output_format`, and determines the content of debugging information by `output_format`.
-If it is `false`, Will not output anything to the log when replacing the string.
+Can be used when debugging and finding text.
+
+`is_enable` determines whether the debugging feature is enabled. If it is `true`, a line of debugging information will be output to the log when replacing the string,
+The format of debugging information is `output_format`, and determines the content of debugging information by `output_mode`.
 
 `output_format` determines the format of debugging information. The default is `<source> -> <target>`.
-`<source>` is the source string, that is, the string before replacement. and `<target>`is the replacement string.
-There is another `<stack>` that is not shown, if you include it in `output_format`,
-the log will be polluted because of the large amount of output information.
-`<stack>` is a stacktrace array, which is the `StackTrace` (including this mod) of the class of this string,
-This value is more for `stack_depth` and `name` in `target_class`.
+* `<source>`: Source string, the string before replacement.
+* `<target>`: The replacement string.
+* `<stack>`: Stacktrace array, which is the `StackTrace` (including this mod) of the class of this string.
+* `<method>`: The method called when this text rendering.
 
 `output_mode` determines the content of debugging information.
 If it is 0, only the replaced string will be output,
 If it is 1, only the strings that are not replaced are output.
+
+### Optimization Parameters
+
+Optimize the parameters of the algorithm.
+
+`disable_export` determines whether to disable the `export` feature, which is very useful for optimization.
+But at the same time, `/vaultpatcher export` will also be disabled.
+The default is false.
+
+`stack_min` and `stack_max` determines the upper and lower limits of the stack trace array,
+and the optimization effect can be achieved by properly adjusting the parameters.
+The default is -1 (The upper and lower limits are not changed).
 
 ## Module
 

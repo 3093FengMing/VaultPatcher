@@ -1,10 +1,7 @@
-# Vault Patcher ~~（Vanilla Hardcoded Breaker）~~
+# Vault Patcher
+## 语言：**[简体中文](README.md)丨[English](README_en_us.md)**
 
-语言：**[简体中文](README.md)丨[English](README_en_us.md)**
-
-### 硬编码 -> 本地化
-
-### Let the hard coded strings change into localization strings in some mods.
+## ⚠警告：1.2.7及以下的版本不再受支持！
 
 # 配置文件
 
@@ -24,6 +21,11 @@
     "is_enable": false,
     "output_mode": 0,
     "output_format": "<source> -> <target>"
+  },
+  "optimize_params": {
+    "disable_export": true,
+    "stack_min": -1,
+    "stack_max": -1
   }
 }
 ```
@@ -32,20 +34,32 @@
 `模块.json`才会被正常读取读取并使用。反之亦然。
 
 ### 调试模式（Debug Mode）
-**(Tips: 仅供调试使用)**
 
-`is_enable`决定调试功能是否开启。
-若为`true`，那么会在替换字符串时向日志中输出一行调试信息，调试信息的格式由`output_format`决定，调试信息的内容由`output_mode`决定。
-若为`false`，则不会在替换字符串时向日志中输出任何内容。
+可以在调试和查找文本时使用。
+
+`is_enable`决定调试功能是否开启。开启时会在替换字符串时向日志中输出一行调试信息，调试信息的格式由`output_format`决定，调试信息的内容由`output_mode`决定。
+默认为 false。
 
 `output_format`决定了调试信息的格式，默认为`<source> -> <target>`。
-`<source>`为源内容，即未做替换前的字符串；`<target>`为做替换后的字符串。
-还有一个`<stack>`未展示出来，因为输出的很多，容易污染日志。
-`<stack>`为堆栈跟踪数组，是此字符串所在类的`StackTrace`(包括本mod)，它更多是为`target_class`中的`stack_depth`和`name`服务的。
+允许占位符，支持的占位符如下：
+* `<source>`：源内容，即未做替换前的字符串。
+* `<target>`：替换后的字符串。
+* `<stack>`：堆栈跟踪数组，是此字符串所在类的`StackTrace`(包括本mod)。
+* `<method>`：该文本渲染所调用的方法。
 
 `output_mode`决定了调试信息的内容。
 若为 0, 则仅输出替换的字符串；
 若为 1, 则仅输出不被替换的字符串。
+
+### 优化参数（Optimization Parameters）
+
+更改优化替换算法的参数。
+
+`disable_export`决定是否禁用`export`功能，该选项对于优化有很大的作用。但同时`/vaultpatcher export`也将禁用。
+默认为 false。
+
+`stack_min`和`stack_max`，决定了堆栈跟踪数组中的上限与下限，适当调整参数可以达到优化效果。
+默认均为 -1（即不更改上限下限）。
 
 ## 模块
 
