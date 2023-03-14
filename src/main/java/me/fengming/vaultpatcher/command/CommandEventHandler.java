@@ -17,16 +17,16 @@ public class CommandEventHandler {
         CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
         LiteralCommandNode<CommandSourceStack> cmd = dispatcher.register(
                 Commands.literal(Utils.MOD_ID
-        ).then(
-                Commands.literal("export")
-                        .executes(ExportCommand.instance)
-        ).then(
-                Commands.literal("list")
-                        .executes(ListCommand.instance)
-        ).then(
-                Commands.literal("reload")
-                        .executes(ReloadCommand.instance)
-        ));
+                ).then(
+                        Commands.literal("export")
+                                .executes(ExportCommand.instance)
+                ).then(
+                        Commands.literal("list")
+                                .executes(ListCommand.instance)
+                ).then(
+                        Commands.literal("reload")
+                                .executes(ReloadCommand.instance)
+                ));
         dispatcher.register(Commands.literal("vp").redirect(cmd));
     }
 }
