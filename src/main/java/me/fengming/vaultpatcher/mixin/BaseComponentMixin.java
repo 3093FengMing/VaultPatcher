@@ -1,7 +1,6 @@
 package me.fengming.vaultpatcher.mixin;
 
 import me.fengming.vaultpatcher.ThePatcher;
-import me.fengming.vaultpatcher.Utils;
 import net.minecraft.network.chat.*;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -35,8 +34,10 @@ public abstract class BaseComponentMixin {
     )
     private FormattedText proxy_getVisualOrder(FormattedText p_128116_) {
         if (p_128116_ instanceof TextComponent text) {
-            String c = ThePatcher.patch(text.getContents(), "BaseComponent#getVisualOrder");
-            return new TextComponent(c).setStyle(this.getStyle());
+            String c = ThePatcher.patch(text.getText(), "BaseComponent#getVisualOrder");
+            if (c != null && !c.equals("")) {
+                return new TextComponent(c).setStyle(this.getStyle());
+            }
         }
         return p_128116_;
     }
@@ -44,9 +45,11 @@ public abstract class BaseComponentMixin {
     @Inject(method = "append", at = @At("HEAD"), cancellable = true)
     private void proxy_append(Component p_130585_, CallbackInfoReturnable<MutableComponent> cir) {
         if (p_130585_ instanceof TextComponent text) {
-            String c = ThePatcher.patch(text.getContents(), "BaseComponent#append");
-            this.siblings.add(new TextComponent(c).setStyle(text.getStyle()));
-            cir.setReturnValue(this.copy());
+            String c = ThePatcher.patch(text.getText(), "BaseComponent#append");
+            if (c != null && !c.equals("")) {
+                this.siblings.add(new TextComponent(c).setStyle(text.getStyle()));
+                cir.setReturnValue(this.copy());
+            }
         }
     }
 

@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import me.fengming.vaultpatcher.Utils;
+import me.fengming.vaultpatcher.config.VaultPatcherConfig;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.fml.loading.FMLPaths;
@@ -16,7 +17,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 
-
 public class ExportCommand implements Command<CommandSourceStack> {
     public static ExportCommand instance = new ExportCommand();
 
@@ -25,6 +25,11 @@ public class ExportCommand implements Command<CommandSourceStack> {
         Gson gson = new Gson();
         String json = gson.toJson(Utils.exportList, new TypeToken<ArrayList<String>>() {
         }.getType());
+
+        if (VaultPatcherConfig.getOptimize().isDisableExport()) {
+            context.getSource().sendFailure(new TranslatableComponent("commands.vaultpatcher.export.tips.disabled"));
+            return 1;
+        }
         // Export
         try {
             BufferedWriter bw = new BufferedWriter(

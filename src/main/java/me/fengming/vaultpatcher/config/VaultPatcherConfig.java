@@ -22,24 +22,25 @@ public class VaultPatcherConfig {
     private static final Path configFile = FMLPaths.CONFIGDIR.get().resolve("vaultpatcher").resolve("config.json");
     private static List<String> mods = new ArrayList<>();
     private static final DebugMode debug = new DebugMode();
-    private static int stackMin = -1;
-    private static int stackMax = -1;
-    public static int getStackMin() {
-        return stackMin;
-    }
-    public static int getStackMax() {
-        return stackMax;
-    }
+    private static final OptimizeParams optimize = new OptimizeParams();
+
     public static List<String> getMods() {
         return mods;
     }
+
     public static DebugMode getDebugMode() {
         return debug;
     }
+
+    public static OptimizeParams getOptimize() {
+        return optimize;
+    }
+
     private static void writeConfig(JsonWriter jw) throws IOException {
         debug.writeJson(jw);
         jw.name("mods").beginArray();
         jw.name("mods").endArray();
+        optimize.writeJson(jw);
     }
 
     public static void readConfig() throws IOException {
@@ -71,13 +72,9 @@ public class VaultPatcherConfig {
                     break;
                 case "optimize_params":
                     if (jr.peek() == JsonToken.BEGIN_OBJECT) {
-                        if (jr.peek() == JsonToken.NUMBER) {
-                            stackMin = jr.nextInt();
-                        } else jr.skipValue();
-                        if (jr.peek() == JsonToken.NUMBER) {
-                            stackMax = jr.nextInt();
-                        } else jr.skipValue();
+                        optimize.readJson(jr);
                     }
+                    break;
                 default:
                     jr.skipValue();
                     break;

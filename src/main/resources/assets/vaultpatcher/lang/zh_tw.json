@@ -1,5 +1,6 @@
 {
   "commands.vaultpatcher.export.tips.success": "完成！導出到langpatcher.json",
+  "commands.vaultpatcher.export.tips.disabled": "錯誤！導出功能已被禁用",
   "commands.vaultpatcher.list.tips.modslist": "以下為已加載的模塊列表：",
   "commands.vaultpatcher.list.tips.authors": "作者：%s",
   "commands.vaultpatcher.list.tips.name": "名稱：%s",

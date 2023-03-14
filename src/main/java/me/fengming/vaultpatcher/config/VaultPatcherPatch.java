@@ -84,8 +84,9 @@ public class VaultPatcherPatch {
         for (TranslationInfo info : list) {
             isSemimatch = info.getValue().startsWith("@");
             if (!isSemimatch && !text.equals(info.getKey())) continue;
-            if (info.getValue() == null || info.getKey() == null || info.getKey().isEmpty() || info.getValue().isEmpty())
+            if (info.getValue() == null || info.getKey() == null || info.getKey().isEmpty() || info.getValue().isEmpty()) {
                 continue;
+            }
 
             final TargetClassInfo targetClassInfo = info.getTargetClassInfo();
             if (targetClassInfo.getName().isEmpty() || targetClassInfo.getStackDepth() <= 0 || matchStack(targetClassInfo.getName(), stackTrace)) {
@@ -104,8 +105,8 @@ public class VaultPatcherPatch {
 
     private boolean matchStack(String str, StackTraceElement[] stack) {
         String s = str.toLowerCase();
-        int min = VaultPatcherConfig.getStackMin();
-        int max = VaultPatcherConfig.getStackMax();
+        int min = VaultPatcherConfig.getOptimize().getStackMin();
+        int max = VaultPatcherConfig.getOptimize().getStackMax();
         stack = Arrays.copyOfRange(stack, min == -1 ? 0 : min, max == -1 ? stack.length : max);
         for (StackTraceElement ste : stack) {
             if (s.startsWith("#")) {

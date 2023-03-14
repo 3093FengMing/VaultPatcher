@@ -1,13 +1,10 @@
 package me.fengming.vaultpatcher.mixin;
 
 import me.fengming.vaultpatcher.ThePatcher;
-import me.fengming.vaultpatcher.Utils;
 import net.minecraft.client.gui.Font;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-
-import java.util.Objects;
 
 @Mixin(value = Font.class)
 public class FontMixin {
@@ -22,6 +19,10 @@ public class FontMixin {
             index = 0
     )
     private String proxy_renderText(String p_92898_) {
-        return Objects.requireNonNullElse(ThePatcher.patch(p_92898_, "Font#drawInternal(String;float;float;int;boolean;Matrix4f;MultiBufferSource;boolean;int;int;boolean)"), p_92898_);
+        String c = ThePatcher.patch(p_92898_, "Font#drawInternal(String;float;float;int;boolean;Matrix4f;MultiBufferSource;boolean;int;int;boolean)");
+        if (c != null && !c.equals("")) {
+            return c;
+        }
+        return p_92898_;
     }
 }
