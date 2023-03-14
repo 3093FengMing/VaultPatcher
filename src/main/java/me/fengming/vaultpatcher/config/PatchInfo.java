@@ -8,6 +8,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class PatchInfo {
     private String name;
@@ -16,7 +17,7 @@ public class PatchInfo {
     private String authors;
 
     public String getName() {
-        return name;
+        return name == null || name.isEmpty() ? "Unknown" : name;
     }
 
     public void setName(String name) {
@@ -24,7 +25,7 @@ public class PatchInfo {
     }
 
     public String getDesc() {
-        return desc;
+        return desc == null || desc.isEmpty() ? "No description" : desc;
     }
 
     public void setDesc(String desc) {
@@ -32,7 +33,7 @@ public class PatchInfo {
     }
 
     public String getMods() {
-        return mods;
+        return mods == null || mods.isEmpty() ? "Unknown" : mods;
     }
 
     public void setMods(String mods) {
@@ -40,7 +41,7 @@ public class PatchInfo {
     }
 
     public String getAuthors() {
-        return authors;
+        return authors == null || authors.isEmpty() ? "Unknown" : authors;
     }
 
     public void setAuthors(String authors) {

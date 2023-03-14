@@ -22,6 +22,6 @@ public class FontMixin {
             index = 0
     )
     private String proxy_renderText(String p_92898_) {
-        return Objects.requireNonNullElse(ThePatcher.patch(p_92898_), p_92898_);
+        return Objects.requireNonNullElse(ThePatcher.patch(p_92898_, "Font#drawInternal(String;float;float;int;boolean;Matrix4f;MultiBufferSource;boolean;int;int;boolean)"), p_92898_);
     }
 }

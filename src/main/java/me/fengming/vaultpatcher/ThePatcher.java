@@ -10,14 +10,14 @@ public class ThePatcher {
     public ThePatcher() {
     }
 
-    public static String patch(String s) {
+    public static String patch(String s, String m) {
         if (s == null || s.isBlank()) {
             return s;
         }
         Utils.addToExportList(s);
         // VaultPatcher.LOGGER.info(Arrays.toString(Thread.currentThread().getStackTrace()));
         String ret;
-        for (VaultPatcherPatch vpp : VaultPatcher.vpps) {
+        for (VaultPatcherPatch vpp : Utils.vpps) {
             StackTraceElement[] stacks = Thread.currentThread().getStackTrace();
             ret = vpp.patch(s, stacks);
             DebugMode debug = VaultPatcherConfig.getDebugMode();
@@ -27,6 +27,7 @@ public class ThePatcher {
                     VaultPatcher.LOGGER.info(
                             format.replace("<source>", s)
                                     .replace("<target>", ret)
+                                    .replace("<method>", m)
                                     .replace("<stack>", Arrays.toString(stacks))
                     );
                 }
@@ -36,6 +37,7 @@ public class ThePatcher {
                     VaultPatcher.LOGGER.info(
                             format.replace("<source>", s)
                                     .replace("<target>", s)
+                                    .replace("<method>", m)
                                     .replace("<stack>", Arrays.toString(stacks))
                     );
                 }

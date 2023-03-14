@@ -15,23 +15,6 @@ import java.util.List;
 
 @Mixin(BaseComponent.class)
 public abstract class BaseComponentMixin {
-    /*
-    @Accessor("siblings")
-    abstract List<Component> getSiblings();
-
-    @Inject(method = "getSiblings", at = @At("HEAD"), cancellable = true)
-    private void proxy_getSiblings(CallbackInfoReturnable<List<Component>> cir) {
-        List<Component> list = this.getSiblings();
-        if (!list.isEmpty()) {
-            list.replaceAll(component -> {
-                if (component instanceof TextComponent) {
-                    return new TextComponent(ThePatcher.patch(component.getContents()));
-                } else return component;
-            });
-        }
-        cir.setReturnValue(list);
-    }
-    */
 
     @Shadow
     @Final
@@ -51,22 +34,20 @@ public abstract class BaseComponentMixin {
             )
     )
     private FormattedText proxy_getVisualOrder(FormattedText p_128116_) {
-        if (p_128116_ instanceof TextComponent) {
-            String c = ThePatcher.patch(p_128116_.getString());
+        if (p_128116_ instanceof TextComponent text) {
+            String c = ThePatcher.patch(text.getContents(), "BaseComponent#getVisualOrder");
             return new TextComponent(c).setStyle(this.getStyle());
         }
         return p_128116_;
     }
 
-    @Inject(
-            method = "append",
-            at = @At("HEAD"),
-            cancellable = true
-    )
+    @Inject(method = "append", at = @At("HEAD"), cancellable = true)
     private void proxy_append(Component p_130585_, CallbackInfoReturnable<MutableComponent> cir) {
-        String c = ThePatcher.patch(p_130585_.getString());
-        this.siblings.add(new TextComponent(c).setStyle(this.getStyle()));
-        cir.setReturnValue(this.copy());
+        if (p_130585_ instanceof TextComponent text) {
+            String c = ThePatcher.patch(text.getContents(), "BaseComponent#append");
+            this.siblings.add(new TextComponent(c).setStyle(text.getStyle()));
+            cir.setReturnValue(this.copy());
+        }
     }
 
 }

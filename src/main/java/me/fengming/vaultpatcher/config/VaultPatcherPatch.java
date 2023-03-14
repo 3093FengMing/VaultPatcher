@@ -10,6 +10,7 @@ import net.minecraftforge.fml.loading.FMLPaths;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -18,12 +19,12 @@ public class VaultPatcherPatch {
     private static final Gson GSON = new Gson();
     private static boolean isSemimatch = false;
     private final Path patchFile;
-
     private Map<String, List<TranslationInfo>> map = new HashMap<>();
-
     private PatchInfo info = new PatchInfo();
+    private String pname = "";
 
     public VaultPatcherPatch(String patchFile) {
+        this.pname = patchFile;
         VaultPatcher.LOGGER.info("Load Module " + patchFile);
         Path p = FMLPaths.CONFIGDIR.get().resolve("vaultpatcher").resolve(patchFile);
         try {
@@ -39,7 +40,7 @@ public class VaultPatcherPatch {
         p.computeIfAbsent(key, k -> new ArrayList<>()).add(val);
     }
 
-    public void readConfig(JsonReader reader) throws IOException {
+    public void read(JsonReader reader) throws IOException {
         reader.beginArray();
 
         PatchInfo patchInfo = new PatchInfo();
@@ -57,12 +58,12 @@ public class VaultPatcherPatch {
         map = m;
     }
 
-    public void readConfig() throws IOException {
+    public void read() throws IOException {
         if (Files.notExists(patchFile)) {
             Files.createFile(patchFile);
         }
-        try (JsonReader jsonReader = GSON.newJsonReader(new InputStreamReader(new FileInputStream(patchFile.toFile())))) {
-            readConfig(jsonReader);
+        try (JsonReader jsonReader = GSON.newJsonReader(new InputStreamReader(new FileInputStream(patchFile.toFile()), StandardCharsets.UTF_8))) {
+            read(jsonReader);
         }
     }
 
@@ -85,10 +86,12 @@ public class VaultPatcherPatch {
             if (!isSemimatch && !text.equals(info.getKey())) continue;
             if (info.getValue() == null || info.getKey() == null || info.getKey().isEmpty() || info.getValue().isEmpty())
                 continue;
+
             final TargetClassInfo targetClassInfo = info.getTargetClassInfo();
             if (targetClassInfo.getName().isEmpty() || targetClassInfo.getStackDepth() <= 0 || matchStack(targetClassInfo.getName(), stackTrace)) {
                 return patchText(info.getValue(), info.getKey(), text);
             }
+
             int index = targetClassInfo.getStackDepth();
             if (index >= stackTrace.length) continue;
             if (stackTrace[index].getClassName().contains(targetClassInfo.getName())) {
@@ -101,7 +104,9 @@ public class VaultPatcherPatch {
 
     private boolean matchStack(String str, StackTraceElement[] stack) {
         String s = str.toLowerCase();
-        stack = Arrays.copyOfRange(stack, 7, 13);
+        int min = VaultPatcherConfig.getStackMin();
+        int max = VaultPatcherConfig.getStackMax();
+        stack = Arrays.copyOfRange(stack, min == -1 ? 0 : min, max == -1 ? stack.length : max);
         for (StackTraceElement ste : stack) {
             if (s.startsWith("#")) {
                 return ste.getClassName().endsWith(s);
@@ -127,5 +132,13 @@ public class VaultPatcherPatch {
                 ", map=" + map +
                 ", info=" + info +
                 '}';
+    }
+
+    public PatchInfo getInfo() {
+        return info;
+    }
+
+    public String getPname() {
+        return pname;
     }
 }

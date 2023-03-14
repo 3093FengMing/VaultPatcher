@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -21,15 +22,20 @@ public class VaultPatcherConfig {
     private static final Path configFile = FMLPaths.CONFIGDIR.get().resolve("vaultpatcher").resolve("config.json");
     private static List<String> mods = new ArrayList<>();
     private static final DebugMode debug = new DebugMode();
-
+    private static int stackMin = -1;
+    private static int stackMax = -1;
+    public static int getStackMin() {
+        return stackMin;
+    }
+    public static int getStackMax() {
+        return stackMax;
+    }
     public static List<String> getMods() {
         return mods;
     }
-
     public static DebugMode getDebugMode() {
         return debug;
     }
-
     private static void writeConfig(JsonWriter jw) throws IOException {
         debug.writeJson(jw);
         jw.name("mods").beginArray();
@@ -43,11 +49,11 @@ public class VaultPatcherConfig {
                 f.getParentFile().mkdirs();
             }
             Files.createFile(configFile);
-            JsonWriter jw = GSON.newJsonWriter(Files.newBufferedWriter(configFile));
+            JsonWriter jw = GSON.newJsonWriter(Files.newBufferedWriter(configFile, StandardCharsets.UTF_8));
             writeConfig(jw);
         }
 
-        JsonReader jr = GSON.newJsonReader(new InputStreamReader(new FileInputStream(f)));
+        JsonReader jr = GSON.newJsonReader(new InputStreamReader(new FileInputStream(f), StandardCharsets.UTF_8));
 
         jr.beginObject();
         while (jr.peek() != JsonToken.END_OBJECT) {
@@ -63,6 +69,15 @@ public class VaultPatcherConfig {
                         }.getType());
                     }
                     break;
+                case "optimize_params":
+                    if (jr.peek() == JsonToken.BEGIN_OBJECT) {
+                        if (jr.peek() == JsonToken.NUMBER) {
+                            stackMin = jr.nextInt();
+                        } else jr.skipValue();
+                        if (jr.peek() == JsonToken.NUMBER) {
+                            stackMax = jr.nextInt();
+                        } else jr.skipValue();
+                    }
                 default:
                     jr.skipValue();
                     break;

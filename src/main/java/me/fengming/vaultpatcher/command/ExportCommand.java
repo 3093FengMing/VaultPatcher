@@ -22,7 +22,6 @@ public class ExportCommand implements Command<CommandSourceStack> {
 
     @Override
     public int run(CommandContext<CommandSourceStack> context) {
-        context.getSource().sendSuccess(new TranslatableComponent("commands.vaultpatcher.export.warning.wip"), true);
         Gson gson = new Gson();
         String json = gson.toJson(Utils.exportList, new TypeToken<ArrayList<String>>() {
         }.getType());
