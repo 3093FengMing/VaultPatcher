@@ -1,5 +1,5 @@
 # Vault Patcher
-## 语言：**[简体中文](README.md)丨[English](README_en_us.md)**
+## 语言：**[简体中文](README.md)丨[English](README_en_us.md)丨[中文教程PLUS](README_PLUS.md)**
 
 ## ⚠警告：1.2.6及以下的版本不再受支持！
 
