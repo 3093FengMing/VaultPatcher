@@ -141,8 +141,8 @@ Bronze is no longer used to reroll bounties. Removed all existing bronze from yo
 ```json
 {
   "mods": [
-    "模块1.json",
-    "模块2.json"
+    "模块1",
+    "模块2"
   ],
   "debug_mode": {
     "is_enable": false,
