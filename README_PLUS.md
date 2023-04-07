@@ -98,7 +98,9 @@ java-decompiler的用户，打开`模组.jar`文件，找到其中放有大量`.
 这里有转码相关的[链接](https://wiki.biligame.com/mc/%E6%A0%BC%E5%BC%8F%E5%8C%96%E4%BB%A3%E7%A0%81)
 
 知识点2：内容大量带`__`和`.`的都不用提取
-**setRegistryName()**注册名 该模组在游戏里的名字 不是你看的
+
+**setRegistryName()** 注册名 该模组在游戏里的名字 不是你看的
+
 **StringTextComponent()** 字符串文本组件 为该物品创建展示文字 这就是我们需要汉化的
 
 ```java
