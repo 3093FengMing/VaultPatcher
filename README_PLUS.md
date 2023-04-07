@@ -464,7 +464,7 @@ TRANSFORMER/minecraft@1.18.2/net.minecraft.client.gui.screens.TitleScreen(TitleS
 
 **_（用于Vault Hunter 3rd Edition）_**
 
-[链接](https://github.com/KlparetlR/Vault-Patcher-Grocery-Store/blob/main/%E6%A8%A1%E7%BB%84%E9%85%8D%E7%BD%AE/the_vault/mod-the_vault-1.18.2.json)
+[链接](https://github.com/KlparetlR/Vault-Patcher-Grocery-Store/blob/main/%E6%A8%A1%E7%BB%84%E9%85%8D%E7%BD%AE/vault-hunters-official-mod/the_vault/mod-the_vault-1.18.2.json)
 
 ### 其他
 
