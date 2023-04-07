@@ -216,6 +216,12 @@ Bronze is no longer used to reroll bounties. Removed all existing bronze from yo
 ```json
 [
   {
+      "authors": "(authors)",
+      "name": "(name)",
+      "desc": "(describe)",
+      "mods": "(mods)"
+  },
+  {
     "target_class": {
       "name": "@iskallia.vault",
       "mapping": "SRG",
