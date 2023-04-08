@@ -28,16 +28,15 @@ public abstract class TextComponentMixin {
         if (c != null && !c.equals("")) {
             this.text = c;
             cir.setReturnValue(c);
-        }
+        } else cir.setReturnValue(this.text);
     }
 
     @Inject(method = "getText", at = @At("HEAD"), cancellable = true)
     private void proxy_getText(CallbackInfoReturnable<String> cir) {
         String c = ThePatcher.patch(this.getText_(), "TextComponent#getText");
-        if (c != null && !c.equals("")) {
-            this.text = c;
-            cir.setReturnValue(c);
-        }
+        if (c == null) {
+            cir.setReturnValue(this.text);
+        } else cir.setReturnValue(this.text);
     }
 
 }

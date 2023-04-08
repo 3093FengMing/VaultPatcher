@@ -11,7 +11,7 @@ public class ThePatcher {
     }
 
     public static String patch(String string, String method) {
-        if (string == null || string.equals("") || string.isBlank()) {
+        if (string == null || string.equals("")) {
             return string;
         }
         if (!VaultPatcherConfig.getOptimize().isDisableExport()) {

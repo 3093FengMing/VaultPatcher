@@ -33,6 +33,7 @@ public abstract class BaseComponentMixin {
             )
     )
     private FormattedText proxy_getVisualOrder(FormattedText p_128116_) {
+        if (p_128116_ instanceof TranslatableComponent) return p_128116_;
         if (p_128116_ instanceof TextComponent text) {
             String c = ThePatcher.patch(text.getText(), "BaseComponent#getVisualOrder");
             if (c != null && !c.equals("")) {
@@ -44,6 +45,7 @@ public abstract class BaseComponentMixin {
 
     @Inject(method = "append", at = @At("HEAD"), cancellable = true)
     private void proxy_append(Component p_130585_, CallbackInfoReturnable<MutableComponent> cir) {
+        if (p_130585_ instanceof TranslatableComponent) return;
         if (p_130585_ instanceof TextComponent text) {
             String c = ThePatcher.patch(text.getText(), "BaseComponent#append");
             if (c != null && !c.equals("")) {
