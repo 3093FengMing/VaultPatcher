@@ -3,6 +3,7 @@ package me.fengming.vaultpatcher.config;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
+import me.fengming.vaultpatcher.Utils;
 import me.fengming.vaultpatcher.VaultPatcher;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraftforge.fml.loading.FMLPaths;
@@ -17,7 +18,6 @@ import java.util.*;
 
 public class VaultPatcherPatch {
     private static final Gson GSON = new Gson();
-    private static boolean isSemimatch = false;
     private final Path patchFile;
     private Map<String, List<TranslationInfo>> map = new HashMap<>();
     private PatchInfo info = new PatchInfo();
@@ -82,21 +82,21 @@ public class VaultPatcherPatch {
         if ((list = getList(text)) == null) return null;
 
         for (TranslationInfo info : list) {
-            isSemimatch = info.getValue().startsWith("@");
+            boolean isSemimatch = info.getValue().startsWith("@");
             if (!isSemimatch && !text.equals(info.getKey())) continue;
             if (info.getValue() == null || info.getKey() == null || info.getKey().isEmpty() || info.getValue().isEmpty()) {
                 continue;
             }
 
             final TargetClassInfo targetClassInfo = info.getTargetClassInfo();
-            if (targetClassInfo.getName().isEmpty() || targetClassInfo.getStackDepth() <= 0 || matchStack(targetClassInfo.getName(), stackTrace)) {
-                return patchText(info.getValue(), info.getKey(), text);
+            if (stackTrace == null || targetClassInfo.getName().isEmpty() || targetClassInfo.getStackDepth() <= 0 || matchStack(targetClassInfo.getName(), stackTrace)) {
+                return patchText(info.getValue(), info.getKey(), text, isSemimatch);
             }
 
             int index = targetClassInfo.getStackDepth();
             if (index >= stackTrace.length) continue;
             if (stackTrace[index].getClassName().contains(targetClassInfo.getName())) {
-                return patchText(info.getValue(), info.getKey(), text);
+                return patchText(info.getValue(), info.getKey(), text, isSemimatch);
             }
         }
 
@@ -118,11 +118,21 @@ public class VaultPatcherPatch {
         return false;
     }
 
-    private String patchText(String value, String key, String text) {
+    private String patchText(String value, String key, String text, boolean isSemimatch) {
+        boolean isMarked = VaultPatcherConfig.getDebugMode().getTestMode();
+        boolean isSimilarity = isMarked && Utils.getSimilarityRatio(text, key) >= 0.5;
+        System.out.println("Utils.getSimilarityRatio(text, key) = " + Utils.getSimilarityRatio(text, key));
         if (isSemimatch && !value.startsWith("@@")) {
-            value = value.replace("@@", "@").substring(1);
-            return text.replace(key, I18n.get(value));
-        } else return I18n.get(value);
+            String i18nValue = I18n.get(value.replace("@@", "@").substring(1));
+            if (isMarked) i18nValue = "§a[REPLACE MARKED]§f" + i18nValue;
+            if (isSimilarity) i18nValue = "§b[SIMILAR MARKED]§f" + i18nValue;
+            return text.replace(key, i18nValue);
+        } else {
+            String i18nValue = I18n.get(value);
+            if (isMarked) i18nValue = "§a[REPLACE MARKED]§f" + i18nValue;
+            if (isSimilarity) i18nValue = "§b[SIMILAR MARKED]§f" + i18nValue;
+            return i18nValue;
+        }
     }
 
 

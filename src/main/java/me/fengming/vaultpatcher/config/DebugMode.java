@@ -14,6 +14,8 @@ public class DebugMode {
 
     private String outputFormat = "<source> -> <target>";
 
+    private boolean testMode = false;
+
     public boolean isEnable() {
         return isEnable;
     }
@@ -38,6 +40,14 @@ public class DebugMode {
         this.outputFormat = outputFormat;
     }
 
+    public boolean getTestMode() {
+        return testMode;
+    }
+
+    public void setTestMode(boolean testMode) {
+        this.testMode = testMode;
+    }
+
     public void readJson(JsonReader reader) throws IOException {
         reader.beginObject();
         while (reader.peek() != JsonToken.END_OBJECT) {
@@ -50,6 +60,9 @@ public class DebugMode {
                     break;
                 case "output_mode":
                     setOutputMode(reader.nextInt());
+                    break;
+                case "test_mode":
+                    setTestMode(reader.nextBoolean());
                     break;
                 default:
                     reader.skipValue();
@@ -64,19 +77,22 @@ public class DebugMode {
         writer.name("is_enable").value(isEnable());
         writer.name("output_format").value(getOutputFormat());
         writer.name("output_mode").value(getOutputMode());
+        writer.name("test_mode").value(getTestMode());
         writer.endObject();
     }
+
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof DebugMode debugMode)) return false;
-        return isEnable() == debugMode.isEnable() && getOutputMode() == debugMode.getOutputMode() && Objects.equals(getOutputFormat(), debugMode.getOutputFormat());
+        if (o == null || getClass() != o.getClass()) return false;
+        DebugMode debugMode = (DebugMode) o;
+        return isEnable() == debugMode.isEnable() && getOutputMode() == debugMode.getOutputMode() && getTestMode() == debugMode.getTestMode() && getOutputFormat().equals(debugMode.getOutputFormat());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(isEnable(), getOutputMode(), getOutputFormat());
+        return Objects.hash(isEnable(), getOutputMode(), getOutputFormat(), getTestMode());
     }
 
     @Override
@@ -85,6 +101,7 @@ public class DebugMode {
                 "isEnable=" + isEnable +
                 ", outputMode=" + outputMode +
                 ", outputFormat='" + outputFormat + '\'' +
+                ", testMode=" + testMode +
                 '}';
     }
 }

@@ -10,9 +10,14 @@ public class OptimizeParams {
     private int stackMin = -1;
     private int stackMax = -1;
     private boolean disableExport = false;
+    private boolean disableStacks = false;
 
     public boolean isDisableExport() {
         return disableExport;
+    }
+
+    public boolean isDisableStacks() {
+        return disableStacks;
     }
 
     public int getStackMin() {
@@ -25,6 +30,10 @@ public class OptimizeParams {
 
     public void setDisableExport(boolean disableExport) {
         this.disableExport = disableExport;
+    }
+
+    public void setDisableStacks(boolean disableStacks) {
+        this.disableStacks = disableStacks;
     }
 
     public void setStackMin(int stackMin) {
@@ -41,6 +50,9 @@ public class OptimizeParams {
             switch (reader.nextName()) {
                 case "disable_export":
                     setDisableExport(reader.nextBoolean());
+                    break;
+                case "disable_stacks":
+                    setDisableStacks(reader.nextBoolean());
                     break;
                 case "stack_min":
                     setStackMin(reader.nextInt());
@@ -59,6 +71,7 @@ public class OptimizeParams {
     public void writeJson(JsonWriter writer) throws IOException {
         writer.beginObject();
         writer.name("disable_export").value(isDisableExport());
+        writer.name("disable_stacks").value(isDisableStacks());
         writer.name("stack_min").value(getStackMin());
         writer.name("stack_max").value(getStackMax());
         writer.endObject();

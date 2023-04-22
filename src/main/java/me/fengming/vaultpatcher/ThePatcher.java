@@ -7,8 +7,6 @@ import me.fengming.vaultpatcher.config.VaultPatcherPatch;
 import java.util.Arrays;
 
 public class ThePatcher {
-    public ThePatcher() {
-    }
 
     public static String patch(String string, String method) {
         if (string == null || string.equals("")) {
@@ -20,7 +18,10 @@ public class ThePatcher {
 
         String ret;
         for (VaultPatcherPatch vpp : Utils.vpps) {
-            StackTraceElement[] stacks = Thread.currentThread().getStackTrace();
+            StackTraceElement[] stacks = null;
+            if (!VaultPatcherConfig.getOptimize().isDisableStacks()) {
+                stacks = Thread.currentThread().getStackTrace();
+            }
             ret = vpp.patch(string, stacks);
 
             DebugMode debug = VaultPatcherConfig.getDebugMode();
