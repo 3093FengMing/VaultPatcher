@@ -472,7 +472,13 @@ TRANSFORMER/minecraft@1.18.2/net.minecraft.client.gui.screens.TitleScreen(TitleS
 
 **_（用于Vault Hunter 3rd Edition）_**
 
-[链接](https://github.com/KlparetlR/Vault-Patcher-Grocery-Store/tree/main/ModConfigs/vault-hunters-official-mod/the_vault)
+[链接](https://github.com/KlparetlR/Vault-Patcher-Grocery-Store/blob/main/ModConfigs/Forge/vault-hunters-official-mod/the_vault/mod-the_vault-1.18.2.json)
+
+## 编者的其他话或思路
+
+1.`/vp export`输出的`langpacther.json`可以帮助你更快速的提取硬编码，只要你一开游戏，把鼠标移到你要提取的物品，或打开GUI
+
+2.保留字段
 
 ### 其他
 
