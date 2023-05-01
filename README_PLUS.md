@@ -232,7 +232,7 @@ Bronze is no longer used to reroll bounties. Removed all existing bronze from yo
   },
   {
     "target_class": {
-      "name": "#iskallia.vault.client.gui.screen.player.StatisticsElementContainerScreen.java",
+      "name": "#iskallia.vault.client.gui.screen.player.StatisticsElementContainerScreen",
       "mapping": "SRG",
       "stack_depth": 0
     },
@@ -378,7 +378,7 @@ Complete a%s %s altar for a chance to gain favour with %s. A favour will grant a
 
 #### 类匹配（功能模块3）
 
-内容根地址如何获取：与包名获取相同，找到那个文件夹（这里称它为`内容根初始地址`），里面的文件夹和.class文件是可以作为内容根地址，越深入，匹配范围越小。一般来说，你要用类匹配，就要知道这个key来源于哪个文件和文件夹，从`内容根初始地址`到某个文件夹或文件的地址，再把`\`全部改成`.`，就是`内容根地址`，然后在前面加上`#`即可。如：`#iskallia.vault.client.gui.screen.player.StatisticsElementContainerScreen.java`
+内容根地址如何获取：与包名获取相同，找到那个文件夹（这里称它为`内容根初始地址`），里面的文件夹和.class文件是可以作为内容根地址，越深入，匹配范围越小。一般来说，你要用类匹配，就要知道这个key来源于哪个文件和文件夹，从`内容根初始地址`到某个文件夹或文件的地址，再把`\`全部改成`.`，并删除文件后缀，就是`内容根地址`，然后在前面加上`#`即可。如：`#iskallia.vault.client.gui.screen.player.StatisticsElementContainerScreen`
 
 * 以`#`开头的字符串会视为类匹配（示例：`#TitleScreen`会匹配`net.minecraft.client.gui.screens.TitleScreen`
   和`net.minecraft.client.gui.screens.titlescreen`

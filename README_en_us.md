@@ -3,6 +3,15 @@
 
 ## ⚠Warning: Version 1.2.6 and below is no longer supported!
 
+## Module available commands
+
+Based on `/vaultpatcher` or `/vp`, there are 3 available commands or parameters: `export`, `list`, and `reload`.
+
+* `/vp export` will export a file called `langpacther.json` to the root directory of `.Minecraft`, which holds the content of the text you have loaded (it doesn't represent all the text of the loaded module and the game, put the mouse on the module item, the name and description of this item will be recorded in full)
+This command is related to the `optimize_params` function
+* `/vp list` lists the loaded `module.json` in the chat bar, mouse over the green string and it will show the relevant information
+* `/vp reload` reloads the contents of the resource package
+
 # Configs File
 
 ## Modular
@@ -18,6 +27,7 @@ It is as follows:
   ], 
   "debug_mode": {
     "is_enable": false,
+    "test_mode": false,
     "output_mode": 0,
     "output_format": "<source> -> <target>"
   },
@@ -32,6 +42,10 @@ It is as follows:
 ### Mods
 `config.json` defined `module.json`.
 Only in this way can `module.json` read and used normally.
+
+### Edit mode (test_mode, although there is no edit function)
+
+When it's on, the module will make a marker for string matches up to 50%, and a marker for replacements
 
 ### Debug Mode
 

@@ -3,6 +3,15 @@
 
 ## ⚠警告：1.2.6及以下的版本不再受支持！
 
+## 模组可用指令
+
+以`/vaultpatcher`或`/vp`为基础，共有3个可用的命令或参数，分别为：`export`、`list`、`reload`。
+
+* `/vp export`会向`.Minecraft`根目录输出一个叫`langpacther.json`的文件，里面存放的是你已经加载的文本内容（并不代表加载的模组和游戏的全部文本，将鼠标放在模组物品上，这个物品的名字和描述将全部记录）
+该指令与`optimize_params`功能有关
+* `/vp list`在聊天栏列举加载的`模块.json`，鼠标放在绿色字符串上会显示相关信息
+* `/vp reload`重新加载资源包内容
+
 # 配置文件
 
 ## 配置
@@ -19,6 +28,7 @@
   ],
   "debug_mode": {
     "is_enable": false,
+    "test_mode": false,
     "output_mode": 0,
     "output_format": "<source> -> <target>"
   },
@@ -32,6 +42,10 @@
 ### 模块（mods）
 `config.json`定义了`模块.json`，
 `模块.json`才会被正常读取读取并使用。反之亦然。
+
+### 编辑模式（test_mode，虽然没有编辑功能）
+
+开启后，模组会把字符串匹配度高达50%的做一个标记，替换的地方会做一个标记
 
 ### 调试模式（Debug Mode）
 
