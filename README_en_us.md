@@ -3,11 +3,11 @@
 
 ## ⚠Warning: Version 1.2.6 and below is no longer supported!
 
-## Module available commands
+## Mod available commands
 
 Based on `/vaultpatcher` or `/vp`, there are 3 available commands or parameters: `export`, `list`, and `reload`.
 
-* `/vp export` will export a file called `langpacther.json` to the root directory of `.Minecraft`, which holds the content of the text you have loaded (it doesn't represent all the text of the loaded module and the game, put the mouse on the module item, the name and description of this item will be recorded in full)
+* `/vp export` will export a file called `langpacther.json` to the root directory of `.Minecraft`, which holds the content of the text you have loaded (it doesn't represent all the text of the loaded module and the game, put the mouse on the mod item, the name and description of this item will be recorded in full)
 This command is related to the `optimize_params` function
 * `/vp list` lists the loaded `module.json` in the chat bar, mouse over the green string and it will show the relevant information
 * `/vp reload` reloads the contents of the resource package
