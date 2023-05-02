@@ -146,6 +146,7 @@ Bronze is no longer used to reroll bounties. Removed all existing bronze from yo
   ],
   "debug_mode": {
     "is_enable": false,
+    "test_mode": false,
     "output_mode": 0,
     "output_format": "<source> -> <target>"
   },
@@ -183,6 +184,10 @@ Bronze is no longer used to reroll bounties. Removed all existing bronze from yo
 `output_mode`决定了调试信息的内容。
 若为 0, 则仅输出替换的字符串；
 若为 1, 则仅输出不被替换的字符串。
+
+### 编辑模式（test_mode，虽然没有编辑功能）
+
+开启后，模组会把字符串匹配度高达50%的做一个标记，替换的地方会做一个标记
 
 ### 优化参数（optimize_params）
 
