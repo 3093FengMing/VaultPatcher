@@ -314,7 +314,7 @@ TRANSFORMER/minecraft@1.18.2/net.minecraft.client.gui.screens.TitleScreen(TitleS
 
 ## 其他
 
-#### 主作者：FengMing([github](https://github.com/3093FengMing), [爱发电](https://afdian.net/a/fengming3093))
+#### 主作者：FengMing([github](https://github.com/3093FengMing)，[爱发电](https://afdian.net/a/fengming3093))
 
 #### 配置部分：teddyxlandlee([github](https://github.com/teddyxlandlee))
 
