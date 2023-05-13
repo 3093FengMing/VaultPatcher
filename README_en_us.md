@@ -23,6 +23,7 @@ It is as follows:
   },
   "optimize_params": {
     "disable_export": true,
+    "disable_stacks": true,
     "stack_min": -1,
     "stack_max": -1
   }
@@ -58,6 +59,10 @@ Optimize the parameters of the algorithm.
 But at the same time, `/vaultpatcher export` will also be disabled.
 The default is false.
 
+`disable_stacks` determines whether to disable stacks match, which is very useful for optimization.
+But at the same time, "Class Match" will also be disabled.
+The default is false.
+
 `stack_min` and `stack_max` determines the upper and lower limits of the stack trace array,
 and the optimization effect can be achieved by properly adjusting the parameters.
 The default is -1 (The upper and lower limits are not changed).
@@ -71,7 +76,7 @@ The format of the Module File is roughly as follows:
   {
     "target_class": {
       "name": "",
-      "mapping": "SRG",
+      "method": "",
       "stack_depth": -1
     },
     "key": "I'm key",
@@ -80,7 +85,7 @@ The format of the Module File is roughly as follows:
   {
     "target_class": {
       "name": "me.modid.item.relics",
-      "mapping": "SRG",
+      "method": "",
       "stack_depth": 3
     },
     "key": "Dragon Relic",
@@ -89,7 +94,7 @@ The format of the Module File is roughly as follows:
   {
     "target_class": {
       "name": "",
-      "mapping": "SRG",
+      "method": "",
       "stack_depth": 0
     },
     "key": "Talents",
@@ -121,7 +126,7 @@ Where
 {
   "target_class": {
     "name": "",
-    "mapping": "SRG",
+    "method": "",
     "stack_depth": -1
   },
   "key": "I'm key",
@@ -136,22 +141,22 @@ is a Translate Key Value Pair Objects, this object includes`key`, `value` and `t
 #### Key
 `key`, as the name implies, it refers to the string to be translated.
 
-If you want to translate the `Copyright Mojang AB. Do not distribute!` in the title screen,
-you can type `"key":"Copyright Mojang AB. Do not distribute!"`.
+If you want to change the `Copyright Mojang AB. Do not distribute!` in the title screen,
+you can type `"key":"YOUR TEXT"`.
 
 #### Value
 
 With keys, there must be values.
 
-So if you want to change `Copyright Mojang AB. Do not distribute!` to `Mojang AB.`.
-you can type `"value":"Mojang AB."`.
+So if you want to change `Copyright Mojang AB.` to `Copyright Mojang ABCD.`.
+you can type `"value":"Copyright Mojang ABCD."`.
 
 #### Semi-match
 #### (1.2.5+)
 
 All of the above methods are full match (that is, full replace), and only replace the same text as `key`.
 
-If you want to semi-match, or the original string contains formatted text (such as `§a`, `%d`, `% s`, etc.),
+If you want to semi-match, or the original string contains formatted text that cannot be fully match (such as `§a`, `%d`, `% s`, etc.),
 you can try to add the `@` character before the string of `value` to achieve semi-matching.
 
 For Example：
@@ -174,17 +179,13 @@ If there is no mistake, it should be as follows:
 }
 ```
 
-~~However, this is not enough,
-you must add `target_class`~~.
-(1.2.4 and above are no longer required)
-
 For Example:
 
 ```json
 {
   "target_class": {
     "name": "",
-    "mapping": "SRG",
+    "method": "",
     "stack_depth": -1
   },
   "key": "Copyright Mojang AB. Do not distribute!",
@@ -217,6 +218,7 @@ The matching rules of `name` are as follows:
   match `net.minecraft.client.gui.screens.TitleScreen` 
   and `net.minecraft.client.gui.screens.titlescreen`.
   but will not match `net.minecraft.client.gui.titlescreen.screens`)
+* Actually, it is "String.endsWith", which matches the end content
 
 #### Package Match
 
@@ -224,6 +226,7 @@ The matching rules of `name` are as follows:
   match `net.minecraft.client.gui.screens.TitleScreen`
   and `net.minecraft.client.gui.screens.BeaconScreen`.
   Also match `net.minecraft.client.gui.titlescreen.screens`)
+* Actually, it is "String.startsWith", which matches the beginning content
 
 #### Full Match
 
@@ -231,10 +234,11 @@ The matching rules of `name` are as follows:
   Example: `net.minecraft.client.gui.screens.TitleScreen` will match `net.minecraft.client.gui.screens.TitleScreen`
   and `net.minecraft.client.gui.screens.titlescreen`
   but will not match `net.minecraft.client.gui.titlescreen.screens`)
+* Actually, it is "String.equals", which matches the text
 
-### Mapping
+### Method
 
-Reserved Field.
+Method within a class, can more accurately locate text content.
 
 ### Stack Depth
 
@@ -259,7 +263,7 @@ For Example：
 {
   "target_class": {
     "name": "net.minecraft.client.gui.screens.TitleScreen",
-    "mapping": "SRG",
+    "method": "",
     "stack_depth": 2
   },
   "key": "Copyright Mojang AB. Do not distribute!",
@@ -278,7 +282,7 @@ Now, you can accurately locate the class `net.minecraft.client.gui.screens.Title
   {
     "target_class": {
       "name": "",
-      "mapping": "SRG",
+      "method": "",
       "stack_depth": 0
     },
     "key": "Attack Damage",
@@ -287,7 +291,7 @@ Now, you can accurately locate the class `net.minecraft.client.gui.screens.Title
   {
     "target_class": {
       "name": "",
-      "mapping": "SRG",
+      "method": "",
       "stack_depth": 0
     },
     "key": "Dragon Relic",
@@ -296,7 +300,7 @@ Now, you can accurately locate the class `net.minecraft.client.gui.screens.Title
   {
     "target_class": {
       "name": "",
-      "mapping": "SRG",
+      "method": "",
       "stack_depth": 0
     },
     "key": "Talents",
@@ -304,8 +308,6 @@ Now, you can accurately locate the class `net.minecraft.client.gui.screens.Title
   }
 ]
 ```
-
-If you look carefully, you will find that `target_class` key is rarely used in config.
 
 ## Others
 
@@ -315,4 +317,4 @@ If you look carefully, you will find that `target_class` key is rarely used in c
 
 #### Idea：yiqv([github](https://github.com/yiqv))
 
-#### Mod Link：[github](https://github.com/3093FengMing/VaultPatcher)，[mcmod](https://www.mcmod.cn/class/8765.html)，[bilibili](.)
+#### Mod Link: [Modrith](https://modrinth.com/mod/vault-patcher), [github](https://github.com/3093FengMing/VaultPatcher), [mcmod](https://www.mcmod.cn/class/8765.html), [bilibili](.)

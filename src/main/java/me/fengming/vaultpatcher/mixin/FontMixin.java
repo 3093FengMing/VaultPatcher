@@ -19,10 +19,11 @@ public class FontMixin {
             index = 0
     )
     private String proxy_renderText(String p_92898_) {
-        String c = ThePatcher.patch(p_92898_, "Font#drawInternal(String;float;float;int;boolean;Matrix4f;MultiBufferSource;boolean;int;int;boolean)");
+        String c = ThePatcher.patch(p_92898_, "Font#drawInternal(String)");
         if (c != null && !c.equals("")) {
             return c;
         }
         return p_92898_;
     }
+
 }

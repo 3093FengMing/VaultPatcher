@@ -62,4 +62,27 @@ public class Utils {
         int max = Math.max(source.length(), target.length());
         return 1 - (float) compare(source, target) / max;
     }
+
+    //TODO
+//    public static String[] findTargetClass(String[] classAndMethodInStacks, String method) {
+//        switch (method) {
+//            case "TextComponent#init": {
+//
+//                break;
+//            }
+//            case "Font#drawInternal(String)": {
+//
+//                break;
+//            }
+//            case "BaseComponent#getVisualOrder": {
+//
+//                break;
+//            }
+//            case "BaseComponent#append": {
+//
+//                break;
+//            }
+//        }
+//        return null;
+//    }
 }

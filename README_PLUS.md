@@ -104,15 +104,22 @@ java-decompiler的用户，打开`模组.jar`文件，找到其中放有大量`.
 **StringTextComponent()** 字符串文本组件 为该物品创建展示文字 这就是我们需要汉化的
 
 ```java
-#需要汉化
-msg1 = TextFormatting.GRAY + "You need to wager an XP Coin in your Off Hand to play!";
-return new TextComponent("Loot Statue Options");
-player.m_6352_((new TextComponent("Bronze is no longer used to reroll bounties. Removed all existing bronze from your bounty table and placed in your inventory or dropped if your inventory is full.")).m_130940_(ChatFormatting.YELLOW), player.m_142081_());
-list.add(new StringTextComponent("§7Sonic The Hedgehog"));
-#不需要汉化
-this.setRegistryName("cartridge_sonic_1");
-public static BasicItem VAULT_ROCK = new BasicItem(VaultMod.id("vault_rock"));
-CRYSTAL_SHARD_BENEVOLENT = new CrystalShardItem(VaultMod.id("shard_benevolent"), VAULT_MOD_GROUP, new MutableComponent[]{new TranslatableComponent("tooltip.the_vault.shard_benevolent")});
+class aClassInMod {
+    TextComponent function1() {
+        //需要汉化
+        msg1 = TextFormatting.GRAY + "You need to wager an XP Coin in your Off Hand to play!";
+        player.m_6352_((new TextComponent("Bronze is no longer used to reroll bounties. Removed all existing bronze from your bounty table and placed in your inventory or dropped if your inventory is full.")).m_130940_(ChatFormatting.YELLOW), player.m_142081_());
+        list.add(new StringTextComponent("§7Sonic The Hedgehog"));
+        return new TextComponent("Loot Statue Options");
+    }
+    //不需要汉化
+    public static BasicItem VAULT_ROCK = new BasicItem(VaultMod.id("vault_rock"));
+    void function2() {
+        //不需要汉化
+        this.setRegistryName("cartridge_sonic_1");
+        CRYSTAL_SHARD_BENEVOLENT = new CrystalShardItem(VaultMod.id("shard_benevolent"), VAULT_MOD_GROUP, new MutableComponent[]{new TranslatableComponent("tooltip.the_vault.shard_benevolent")});
+  }
+}
 ```
 
 将`" "`包起来的内容**作为一个**`key`:
@@ -224,7 +231,7 @@ Bronze is no longer used to reroll bounties. Removed all existing bronze from yo
   {
     "target_class": {
       "name": "@iskallia.vault",
-      "mapping": "SRG",
+      "method": "",
       "stack_depth": 0
     },
     "key": "被汉化文本",
@@ -232,8 +239,8 @@ Bronze is no longer used to reroll bounties. Removed all existing bronze from yo
   },
   {
     "target_class": {
-      "name": "#iskallia.vault.client.gui.screen.player.StatisticsElementContainerScreen.java",
-      "mapping": "SRG",
+      "name": "#iskallia.vault.client.gui.screen.player.StatisticsElementContainerScreen",
+      "method": "",
       "stack_depth": 0
     },
     "key": "被汉化文本",
@@ -337,7 +344,7 @@ Complete a%s %s altar for a chance to gain favour with %s. A favour will grant a
 {
   "target_class": {
     "name": "",
-    "mapping": "SRG",
+    "method": "",
     "stack_depth": -1
   },
   "key": "I'm key",
@@ -422,7 +429,7 @@ TRANSFORMER/minecraft@1.18.2/net.minecraft.client.gui.screens.TitleScreen(TitleS
 {
   "target_class": {
     "name": "net.minecraft.client.gui.screens.TitleScreen",
-    "mapping": "SRG",
+    "method": "",
     "stack_depth": 2
   },
   "key": "Copyright Mojang AB. Do not distribute!",
@@ -441,7 +448,7 @@ TRANSFORMER/minecraft@1.18.2/net.minecraft.client.gui.screens.TitleScreen(TitleS
   {
     "target_class": {
       "name": "",
-      "mapping": "SRG",
+      "method": "",
       "stack_depth": 0
     },
     "key": "Attack Damage",
@@ -450,7 +457,7 @@ TRANSFORMER/minecraft@1.18.2/net.minecraft.client.gui.screens.TitleScreen(TitleS
   {
     "target_class": {
       "name": "",
-      "mapping": "SRG",
+      "method": "",
       "stack_depth": 0
     },
     "key": "Dragon Relic",
@@ -459,7 +466,7 @@ TRANSFORMER/minecraft@1.18.2/net.minecraft.client.gui.screens.TitleScreen(TitleS
   {
     "target_class": {
       "name": "",
-      "mapping": "SRG",
+      "method": "",
       "stack_depth": 0
     },
     "key": "Talents",

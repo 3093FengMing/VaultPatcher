@@ -18,7 +18,7 @@ public class ThePatcher {
 
         String ret;
         for (VaultPatcherPatch vpp : Utils.vpps) {
-            StackTraceElement[] stacks = null;
+            StackTraceElement[] stacks = {};
             if (!VaultPatcherConfig.getOptimize().isDisableStacks()) {
                 stacks = Thread.currentThread().getStackTrace();
             }
@@ -36,13 +36,17 @@ public class ThePatcher {
 
     private static String outputDebugIndo(String s, String m, String ret, StackTraceElement[] stacks, DebugMode debug) {
         String format = debug.getOutputFormat();
+        String[] outputStacks = new String[stacks.length];
+        for (int i = 0; i < stacks.length; i++) {
+            outputStacks[i] = stacks[i].getClassName() + "#" + stacks[i].getMethodName();
+        }
         if (ret != null && !ret.equals(s)) {
             if (debug.getOutputMode() == 1 || debug.getOutputMode() == 0) {
                 VaultPatcher.LOGGER.info(
                         format.replace("<source>", s)
                                 .replace("<target>", ret)
                                 .replace("<method>", m)
-                                .replace("<stack>", Arrays.toString(stacks))
+                                .replace("<stack>", Arrays.toString(outputStacks))
                 );
             }
         } else {
@@ -51,7 +55,7 @@ public class ThePatcher {
                         format.replace("<source>", s)
                                 .replace("<target>", s)
                                 .replace("<method>", m)
-                                .replace("<stack>", Arrays.toString(stacks))
+                                .replace("<stack>", Arrays.toString(outputStacks))
                 );
             }
         }

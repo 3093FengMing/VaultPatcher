@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = TextComponent.class)
@@ -19,24 +20,14 @@ public abstract class TextComponentMixin {
     @Final
     private String text;
 
-    @Accessor("text")
-    abstract String getText_();
+    // So, just this
 
-    @Inject(method = "getContents", at = @At("HEAD"), cancellable = true)
-    private void proxy_getContents(CallbackInfoReturnable<String> cir) {
-        String c = ThePatcher.patch(this.getText_(), "TextComponent#getContents");
-        if (c != null && !c.equals("")) {
-            this.text = c;
-            cir.setReturnValue(c);
-        } else cir.setReturnValue(this.text);
-    }
-
-    @Inject(method = "getText", at = @At("HEAD"), cancellable = true)
-    private void proxy_getText(CallbackInfoReturnable<String> cir) {
-        String c = ThePatcher.patch(this.getText_(), "TextComponent#getText");
+    @Inject(method = "<init>", at = @At("RETURN"))
+    private void proxy_init(String pText, CallbackInfo ci) {
+        String c = ThePatcher.patch(this.text, "TextComponent#init");
         if (c == null) {
-            cir.setReturnValue(this.text);
-        } else cir.setReturnValue(this.text);
+            this.text = pText;
+        } else this.text = c;
     }
 
 }

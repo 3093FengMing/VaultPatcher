@@ -1,6 +1,5 @@
 package me.fengming.vaultpatcher.config;
 
-import com.google.common.base.Preconditions;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
@@ -12,7 +11,7 @@ import java.io.IOException;
 
 public class TargetClassInfo {
     private String name = "";
-    private String mapping = "SRG";
+    private String method = "";
     private int stackDepth = -1;
 
     public void readJson(JsonReader reader) throws IOException {
@@ -22,8 +21,8 @@ public class TargetClassInfo {
                 case "name":
                     setName(reader.nextString());
                     break;
-                case "mapping":
-                    setMapping(reader.nextString());
+                case "method":
+                    setMethod(reader.nextString());
                     break;
                 case "stack_depth":
                     setStackDepth(reader.nextInt());
@@ -39,7 +38,7 @@ public class TargetClassInfo {
     public void writeJson(JsonWriter writer) throws IOException {
         writer.beginObject();
         writer.name("name").value(getName());
-        writer.name("mapping").value(getMapping());
+        writer.name("method").value(getMethod());
         writer.name("stack_depth").value(getStackDepth());
         writer.endObject();
     }
@@ -52,14 +51,12 @@ public class TargetClassInfo {
         this.name = name;
     }
 
-    public String getMapping() {
-        return mapping;
+    public String getMethod() {
+        return method;
     }
 
-    public void setMapping(String mapping) {
-        // Compatibility
-        Preconditions.checkArgument("SRG".equalsIgnoreCase(mapping));
-        this.mapping = mapping;
+    public void setMethod(String method) {
+        this.method = method;
     }
 
     public int getStackDepth() {
@@ -80,7 +77,7 @@ public class TargetClassInfo {
 
         return new EqualsBuilder()
                 .append(name, that.name)
-                .append(mapping, that.mapping)
+                .append(method, that.method)
                 .append(stackDepth, that.stackDepth)
                 .isEquals();
     }
@@ -89,7 +86,7 @@ public class TargetClassInfo {
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
                 .append(name)
-                .append(mapping)
+                .append(method)
                 .append(stackDepth)
                 .toHashCode();
     }
@@ -98,7 +95,7 @@ public class TargetClassInfo {
     public String toString() {
         return new ToStringBuilder(this)
                 .append("name", name)
-                .append("mapping", mapping)
+                .append("method", method)
                 .append("stackDepth", stackDepth)
                 .toString();
     }
