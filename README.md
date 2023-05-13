@@ -320,4 +320,4 @@ TRANSFORMER/minecraft@1.18.2/net.minecraft.client.gui.screens.TitleScreen(TitleS
 
 #### 想法：yiqv([github](https://github.com/yiqv))
 
-#### Mod地址：[Modrith](https://modrinth.com/mod/vault-patcher)，[Github](https://github.com/3093FengMing/VaultPatcher)，[mcmod](https://www.mcmod.cn/class/8765.html)，[bilibili](等)
+#### Mod地址：[Modrith](https://modrinth.com/mod/vault-patcher)，[Github](https://github.com/3093FengMing/VaultPatcher)，[mcmod](https://www.mcmod.cn/class/8765.html)，[bilibili](https://img.shields.io/badge/bilibili-%E7%AD%89-blue)
