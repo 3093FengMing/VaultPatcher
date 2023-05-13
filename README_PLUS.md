@@ -104,22 +104,15 @@ java-decompiler的用户，打开`模组.jar`文件，找到其中放有大量`.
 **StringTextComponent()** 字符串文本组件 为该物品创建展示文字 这就是我们需要汉化的
 
 ```java
-class aClassInMod {
-    TextComponent function1() {
-        //需要汉化
-        msg1 = TextFormatting.GRAY + "You need to wager an XP Coin in your Off Hand to play!";
-        player.m_6352_((new TextComponent("Bronze is no longer used to reroll bounties. Removed all existing bronze from your bounty table and placed in your inventory or dropped if your inventory is full.")).m_130940_(ChatFormatting.YELLOW), player.m_142081_());
-        list.add(new StringTextComponent("§7Sonic The Hedgehog"));
-        return new TextComponent("Loot Statue Options");
-    }
-    //不需要汉化
-    public static BasicItem VAULT_ROCK = new BasicItem(VaultMod.id("vault_rock"));
-    void function2() {
-        //不需要汉化
-        this.setRegistryName("cartridge_sonic_1");
-        CRYSTAL_SHARD_BENEVOLENT = new CrystalShardItem(VaultMod.id("shard_benevolent"), VAULT_MOD_GROUP, new MutableComponent[]{new TranslatableComponent("tooltip.the_vault.shard_benevolent")});
-  }
-}
+#需要汉化
+msg1 = TextFormatting.GRAY + "You need to wager an XP Coin in your Off Hand to play!";
+return new TextComponent("Loot Statue Options");
+player.m_6352_((new TextComponent("Bronze is no longer used to reroll bounties. Removed all existing bronze from your bounty table and placed in your inventory or dropped if your inventory is full.")).m_130940_(ChatFormatting.YELLOW), player.m_142081_());
+list.add(new StringTextComponent("§7Sonic The Hedgehog"));
+#不需要汉化
+this.setRegistryName("cartridge_sonic_1");
+public static BasicItem VAULT_ROCK = new BasicItem(VaultMod.id("vault_rock"));
+CRYSTAL_SHARD_BENEVOLENT = new CrystalShardItem(VaultMod.id("shard_benevolent"), VAULT_MOD_GROUP, new MutableComponent[]{new TranslatableComponent("tooltip.the_vault.shard_benevolent")});
 ```
 
 将`" "`包起来的内容**作为一个**`key`:
@@ -153,6 +146,7 @@ Bronze is no longer used to reroll bounties. Removed all existing bronze from yo
   ],
   "debug_mode": {
     "is_enable": false,
+    "test_mode": false,
     "output_mode": 0,
     "output_format": "<source> -> <target>"
   },
@@ -190,6 +184,10 @@ Bronze is no longer used to reroll bounties. Removed all existing bronze from yo
 `output_mode`决定了调试信息的内容。
 若为 0, 则仅输出替换的字符串；
 若为 1, 则仅输出不被替换的字符串。
+
+### 编辑模式（test_mode，虽然没有编辑功能）
+
+开启后，模组会把字符串匹配度高达50%的做一个标记，替换的地方会做一个标记
 
 ### 优化参数（optimize_params）
 
@@ -231,7 +229,7 @@ Bronze is no longer used to reroll bounties. Removed all existing bronze from yo
   {
     "target_class": {
       "name": "@iskallia.vault",
-      "method": "",
+      "mapping": "SRG",
       "stack_depth": 0
     },
     "key": "被汉化文本",
@@ -240,7 +238,7 @@ Bronze is no longer used to reroll bounties. Removed all existing bronze from yo
   {
     "target_class": {
       "name": "#iskallia.vault.client.gui.screen.player.StatisticsElementContainerScreen",
-      "method": "",
+      "mapping": "SRG",
       "stack_depth": 0
     },
     "key": "被汉化文本",
@@ -344,7 +342,7 @@ Complete a%s %s altar for a chance to gain favour with %s. A favour will grant a
 {
   "target_class": {
     "name": "",
-    "method": "",
+    "mapping": "SRG",
     "stack_depth": -1
   },
   "key": "I'm key",
@@ -385,7 +383,7 @@ Complete a%s %s altar for a chance to gain favour with %s. A favour will grant a
 
 #### 类匹配（功能模块3）
 
-内容根地址如何获取：与包名获取相同，找到那个文件夹（这里称它为`内容根初始地址`），里面的文件夹和.class文件是可以作为内容根地址，越深入，匹配范围越小。一般来说，你要用类匹配，就要知道这个key来源于哪个文件和文件夹，从`内容根初始地址`到某个文件夹或文件的地址，再把`\`全部改成`.`，就是`内容根地址`，然后在前面加上`#`即可。如：`#iskallia.vault.client.gui.screen.player.StatisticsElementContainerScreen.java`
+内容根地址如何获取：与包名获取相同，找到那个文件夹（这里称它为`内容根初始地址`），里面的文件夹和.class文件是可以作为内容根地址，越深入，匹配范围越小。一般来说，你要用类匹配，就要知道这个key来源于哪个文件和文件夹，从`内容根初始地址`到某个文件夹或文件的地址，再把`\`全部改成`.`，并删除文件后缀，就是`内容根地址`，然后在前面加上`#`即可。如：`#iskallia.vault.client.gui.screen.player.StatisticsElementContainerScreen`
 
 * 以`#`开头的字符串会视为类匹配（示例：`#TitleScreen`会匹配`net.minecraft.client.gui.screens.TitleScreen`
   和`net.minecraft.client.gui.screens.titlescreen`
@@ -429,7 +427,7 @@ TRANSFORMER/minecraft@1.18.2/net.minecraft.client.gui.screens.TitleScreen(TitleS
 {
   "target_class": {
     "name": "net.minecraft.client.gui.screens.TitleScreen",
-    "method": "",
+    "mapping": "SRG",
     "stack_depth": 2
   },
   "key": "Copyright Mojang AB. Do not distribute!",
@@ -448,7 +446,7 @@ TRANSFORMER/minecraft@1.18.2/net.minecraft.client.gui.screens.TitleScreen(TitleS
   {
     "target_class": {
       "name": "",
-      "method": "",
+      "mapping": "SRG",
       "stack_depth": 0
     },
     "key": "Attack Damage",
@@ -457,7 +455,7 @@ TRANSFORMER/minecraft@1.18.2/net.minecraft.client.gui.screens.TitleScreen(TitleS
   {
     "target_class": {
       "name": "",
-      "method": "",
+      "mapping": "SRG",
       "stack_depth": 0
     },
     "key": "Dragon Relic",
@@ -466,7 +464,7 @@ TRANSFORMER/minecraft@1.18.2/net.minecraft.client.gui.screens.TitleScreen(TitleS
   {
     "target_class": {
       "name": "",
-      "method": "",
+      "mapping": "SRG",
       "stack_depth": 0
     },
     "key": "Talents",
