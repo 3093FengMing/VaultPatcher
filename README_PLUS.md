@@ -10,7 +10,12 @@
 [![mcmod-HP](https://img.shields.io/badge/mcmod-Hardcode%20Patcher-blue)](https://www.mcmod.cn/class/9315.html)
 [![VPtool](https://img.shields.io/badge/github-VPtool-blue)](https://github.com/KlparetlR/Vault-Patcher-Grocery-Store/tree/main/VPtool%E7%BC%96%E5%86%99%E5%B7%A5%E5%85%B7)
 
-## ⚠警告：此教程以1.2.6及以上的版本为主
+[![114514](https://img.shields.io/badge/github-%E6%A8%A1%E7%BB%84%E5%88%B6%E4%BD%9C%E4%B8%BB%E9%A1%B5-gold)](https://github.com/3093FengMing)
+[![a](https://img.shields.io/badge/github-%E6%9C%AC%E6%95%99%E7%A8%8B%E4%BD%9C%E8%80%85%E4%B8%BB%E9%A1%B5-gold)](https://github.com/KlparetlR)
+[![b](https://img.shields.io/badge/afdian-%E6%A8%A1%E7%BB%84%E4%BD%9C%E8%80%85%E4%B8%BB%E9%A1%B5-purple)](https://afdian.net/a/fengming3093)
+[![c](https://img.shields.io/badge/QQ-%E6%A8%A1%E7%BB%84QQ%E4%BA%A4%E6%B5%81%E7%BE%A4-aqua)](https://jq.qq.com/?_wv=1027&k=3Slm2Zso)
+
+## ⚠警告：此教程对标 1.8.10 版本
 
 ## 模组可用指令
 
@@ -31,7 +36,7 @@
 
 * 配置编写工具（可选的）：[VPtool](https://github.com/KlparetlR/Vault-Patcher-Grocery-Store/tree/main/VPtool%E7%BC%96%E5%86%99%E5%B7%A5%E5%85%B7)
 
-* 环境：JDK17
+* 环境：JDK17或JDK8
 
 ## 选择模组和提取硬编码内容
 
@@ -45,10 +50,11 @@
 
 ### 首先准备工具的相关配置
 
-#### java-decompiler 推荐指数：★★★★☆（个人观点）
+#### java-decompiler
 
 IDEA的`java-decompiler.jar`文件可以在这里的[网盘链接](https://123pan.com/s/MMQ9-gwnzv)下载,提取码:vpvp
-如果链接挂了，就要你**安装jdk17**后，再**安装IDEA**可以得到（IDEA其实在这里就起一个下载的作用，也就是说你要下载一个2.65 GB大小的软件，就为了一个340 kb的文件）
+
+如果链接挂了，就要你**安装jdk17**后，再**安装IDEA**可以得到（IDEA其实在这里就起一个下载的作用，也就是说你要下载一个2.65 GB大小的软件，就为了一个 340 kb的文件）
 
 它是作为IDEA的捆绑包存放在目录`IntelliJ IDEA Community Edition 202X.X.X\plugins\java-decompiler\lib\`中
 
@@ -59,11 +65,19 @@ java -cp "<java-decompiler.jar的地址>" org.jetbrains.java.decompiler.main.dec
 java -cp "D:\java-decompiler\lib\java-decompiler.jar" org.jetbrains.java.decompiler.main.decompiler.ConsoleDecompiler -dgs=true "D:\.gz\Minecraft\DawnCraft-Tweaks-1.18.2-1.2.1i.jar" "D:\.gz\Minecraft\jd-output"
 ```
 
-#### [jadx](https://github.com/skylot/jadx) 推荐指数：★★★★★（非个人观点|ू･ω･` )）
+#### [jadx](https://github.com/skylot/jadx)
 
 这里直接放一个[教程链接](https://blog.csdn.net/weixin_39142112/article/details/80356244)，自己看着搞
 
 PS：IDEA本身也能反编译，但它限制你只能一个一个弄，还不能全局查找内容，所以这个办法被抛弃
+
+#### 其他的方式（各有优点）
+
+* **拍照识字**，可以快速提取内容，但要确认大小写以及其他的问题
+
+* **[/vp report](https://github.com/3093FengMing/VaultPatcher/blob/master/README_PLUS.md#模组可用指令)**,可以批量获取你要提取的内容，只要你用鼠标加载了它
+
+* **手打**，没什么好说的...
 
 ### 反编译
 
@@ -94,7 +108,9 @@ java-decompiler的用户，打开`模组.jar`文件，找到其中放有大量`.
 可能需要汉化的文本类型都是字符串，它们是用`" "`包起来的（不一定用它包起来的都是要汉化的），并且文本颜色在文本编辑器中也辨别度很高
 
 知识点1：TextFormatting.颜色 + "内容"。比如`TextFormatting.GRAY`这类颜色代码要转码为`§7`。
+
 但是，有些不能转，即使从意思上是颜色，如：`.m_130940_(ChatFormatting.YELLOW)`等
+
 这里有转码相关的[链接](https://wiki.biligame.com/mc/%E6%A0%BC%E5%BC%8F%E5%8C%96%E4%BB%A3%E7%A0%81)
 
 知识点2：内容大量带`__`和`.`的都不用提取
@@ -152,6 +168,7 @@ Bronze is no longer used to reroll bounties. Removed all existing bronze from yo
   },
   "optimize_params": {
     "disable_export": true,
+    "disable_stacks": true,
     "stack_min": -1,
     "stack_max": -1
   }
@@ -196,6 +213,9 @@ Bronze is no longer used to reroll bounties. Removed all existing bronze from yo
 `disable_export`决定是否禁用`export`功能，该选项对于优化有很大的作用。但同时指令`/vaultpatcher export`也将被禁用。
 `disable_export`默认为 false。
 
+`disable_stacks`决定是否禁用堆栈匹配，该选项对于优化有很大的作用。但同时类匹配也将禁用。
+默认为 false。
+
 `stack_min`和`stack_max`，决定了堆栈跟踪数组中的上限与下限，适当调整参数可以达到优化效果。
 默认均为 -1（即不更改上限下限）。
 
@@ -229,7 +249,7 @@ Bronze is no longer used to reroll bounties. Removed all existing bronze from yo
   {
     "target_class": {
       "name": "@iskallia.vault",
-      "mapping": "SRG",
+      "method": "",
       "stack_depth": 0
     },
     "key": "被汉化文本",
@@ -238,7 +258,7 @@ Bronze is no longer used to reroll bounties. Removed all existing bronze from yo
   {
     "target_class": {
       "name": "#iskallia.vault.client.gui.screen.player.StatisticsElementContainerScreen",
-      "mapping": "SRG",
+      "method": "",
       "stack_depth": 0
     },
     "key": "被汉化文本",
@@ -342,7 +362,7 @@ Complete a%s %s altar for a chance to gain favour with %s. A favour will grant a
 {
   "target_class": {
     "name": "",
-    "mapping": "SRG",
+    "method": "",
     "stack_depth": -1
   },
   "key": "I'm key",
@@ -383,7 +403,13 @@ Complete a%s %s altar for a chance to gain favour with %s. A favour will grant a
 
 #### 类匹配（功能模块3）
 
-内容根地址如何获取：与包名获取相同，找到那个文件夹（这里称它为`内容根初始地址`），里面的文件夹和.class文件是可以作为内容根地址，越深入，匹配范围越小。一般来说，你要用类匹配，就要知道这个key来源于哪个文件和文件夹，从`内容根初始地址`到某个文件夹或文件的地址，再把`\`全部改成`.`，并删除文件后缀，就是`内容根地址`，然后在前面加上`#`即可。如：`#iskallia.vault.client.gui.screen.player.StatisticsElementContainerScreen`
+内容根地址如何获取：
+
+对于没有java语言概念的：与包名获取相同，找到那个文件夹（这里称它为`内容根初始地址`），里面的文件夹和.class文件是可以作为内容根地址，越深入，匹配范围越小。一般来说，你要用类匹配，就要知道这个key来源于哪个文件和文件夹，从`内容根初始地址`到某个文件夹或文件的地址，再把`\`全部改成`.`，并删除文件后缀，就是`内容根地址`，然后在前面加上`#`即可。如：`#iskallia.vault.client.gui.screen.player.StatisticsElementContainerScreen`
+
+有概念的：就是java中的`类全限定名`，详见[教程](https://blog.csdn.net/weixin_36873225/article/details/117060872),(比如：import `类全限定名`;)
+
+* `method`如何获取：指的是java中的`方法名`，详见[教程](https://www.runoob.com/java/java-methods.html)，要配合类匹配使用
 
 * 以`#`开头的字符串会视为类匹配（示例：`#TitleScreen`会匹配`net.minecraft.client.gui.screens.TitleScreen`
   和`net.minecraft.client.gui.screens.titlescreen`
@@ -405,7 +431,7 @@ Complete a%s %s altar for a chance to gain favour with %s. A favour will grant a
 
 #### **(Tips: 过于复杂，不建议新手用)**
 
-#### **(作者其实也不会)**
+#### **(模组作者其实也不会)**
 
 堆栈深度在堆栈中用于更精准的匹配类，
 例如在如下堆栈中
@@ -427,7 +453,7 @@ TRANSFORMER/minecraft@1.18.2/net.minecraft.client.gui.screens.TitleScreen(TitleS
 {
   "target_class": {
     "name": "net.minecraft.client.gui.screens.TitleScreen",
-    "mapping": "SRG",
+    "method": "",
     "stack_depth": 2
   },
   "key": "Copyright Mojang AB. Do not distribute!",
@@ -446,7 +472,7 @@ TRANSFORMER/minecraft@1.18.2/net.minecraft.client.gui.screens.TitleScreen(TitleS
   {
     "target_class": {
       "name": "",
-      "mapping": "SRG",
+      "method": "",
       "stack_depth": 0
     },
     "key": "Attack Damage",
@@ -455,7 +481,7 @@ TRANSFORMER/minecraft@1.18.2/net.minecraft.client.gui.screens.TitleScreen(TitleS
   {
     "target_class": {
       "name": "",
-      "mapping": "SRG",
+      "method": "",
       "stack_depth": 0
     },
     "key": "Dragon Relic",
@@ -464,7 +490,7 @@ TRANSFORMER/minecraft@1.18.2/net.minecraft.client.gui.screens.TitleScreen(TitleS
   {
     "target_class": {
       "name": "",
-      "mapping": "SRG",
+      "method": "",
       "stack_depth": 0
     },
     "key": "Talents",
@@ -479,12 +505,6 @@ TRANSFORMER/minecraft@1.18.2/net.minecraft.client.gui.screens.TitleScreen(TitleS
 
 [链接](https://github.com/KlparetlR/Vault-Patcher-Grocery-Store/blob/main/ModConfigs/Forge/vault-hunters-official-mod/the_vault/mod-the_vault-1.18.2.json)
 
-## 编者的其他话或思路
-
-1.`/vp export`输出的`langpacther.json`可以帮助你更快速的提取硬编码，只要你一开游戏，把鼠标移到你要提取的物品，或打开GUI
-
-2.保留字段
-
 ### 其他
 
 #### 主作者：FengMing([github](https://github.com/3093FengMing))
@@ -496,5 +516,3 @@ TRANSFORMER/minecraft@1.18.2/net.minecraft.client.gui.screens.TitleScreen(TitleS
 #### 想法：yiqv([github](https://github.com/yiqv))
 
 #### Mod地址：[github](https://github.com/3093FengMing/VaultPatcher)，[mcmod](https://www.mcmod.cn/class/8765.html)，[bilibili](等)
-
-模组QQ交流群：点击链接加入群聊[【Vault Patcher 模组讨论群】](https://jq.qq.com/?_wv=1027&k=3Slm2Zso)
