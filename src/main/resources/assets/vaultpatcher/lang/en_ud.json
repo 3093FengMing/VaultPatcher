@@ -1,0 +1,9 @@
+{
+  "commands.vaultpatcher.export.tips.success": "uosɾ˙ɹǝɥɔʇɐdƃuɐl oʇ ʇɹodxǝ ¡ǝuop",
+  "commands.vaultpatcher.export.tips.disabled": "pǝlqɐsıp sı ǝɹnʇɐǝɟ ʇɹodxǝ ¡ɹoɹɹǝ",
+  "commands.vaultpatcher.list.tips.modslist": "sǝlnpoɯ pǝpɐol ɟo ʇsıl ɐ sı ƃuıʍolloɟ ǝɥʇ:",
+  "commands.vaultpatcher.list.tips.authors": "%s :sɹoɥʇnɐ",
+  "commands.vaultpatcher.list.tips.name": "%s :ǝɯɐu",
+  "commands.vaultpatcher.list.tips.desc": "%s :uoıʇdıɹɔsǝp",
+  "commands.vaultpatcher.list.tips.mods": "%s :spoɯ pǝılddɐ"
+}
