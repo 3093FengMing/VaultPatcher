@@ -15,7 +15,11 @@
 [![b](https://img.shields.io/badge/afdian-%E6%A8%A1%E7%BB%84%E4%BD%9C%E8%80%85%E4%B8%BB%E9%A1%B5-purple)](https://afdian.net/a/fengming3093)
 [![c](https://img.shields.io/badge/QQ-%E6%A8%A1%E7%BB%84QQ%E4%BA%A4%E6%B5%81%E7%BE%A4-aqua)](https://jq.qq.com/?_wv=1027&k=3Slm2Zso)
 
-## ⚠警告：此教程对标 1.8.10 版本
+[Vault-Patcher-Grocery-Store](https://github.com/KlparetlR/Vault-Patcher-Grocery-Store)本教程作者创建的一个收集库，接收中文简体，欢迎提pr，QAQ
+
+## ⚠警告：此教程对标 1.2.10 版本
+
+客户端和服务端都可以安装，看配置内容针对什么
 
 ## 模组可用指令
 
@@ -402,6 +406,8 @@ Complete a%s %s altar for a chance to gain favour with %s. A favour will grant a
   也匹配`net.minecraft.client.gui.titlescreen.screens`）
 
 #### 类匹配（功能模块3）
+
+效果：在匹配替换范围限定在类地址的范围，可以有效避免一些替换效果不好，且不是你要替换的内容
 
 内容根地址如何获取：
 
