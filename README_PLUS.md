@@ -56,7 +56,7 @@
 
 #### java-decompiler
 
-IDEA的`java-decompiler.jar`文件可以在这里的[网盘链接](https://123pan.com/s/MMQ9-gwnzv)下载,提取码:vpvp
+IDEA的`java-decompiler.jar`文件可以在这里的[网盘链接](https://www.123pan.com/s/MMQ9-1tnzv.html)下载,提取码:vpvp
 
 如果链接挂了，就要你**安装jdk17**后，再**安装IDEA**可以得到（IDEA其实在这里就起一个下载的作用，也就是说你要下载一个2.65 GB大小的软件，就为了一个 340 kb的文件）
 
