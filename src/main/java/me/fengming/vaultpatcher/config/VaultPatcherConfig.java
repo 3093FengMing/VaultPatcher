@@ -37,10 +37,22 @@ public class VaultPatcherConfig {
     }
 
     private static void writeConfig(JsonWriter jw) throws IOException {
+        jw.setIndent("  ");
+        jw.beginObject();
+
+        jw.name("mods");
+        jw.beginArray();
+        jw.value("example");
+        jw.endArray();
+
+        jw.name("debug_mode");
         debug.writeJson(jw);
-        jw.name("mods").beginArray();
-        jw.name("mods").endArray();
+
+        jw.name("optimize_params");
         optimize.writeJson(jw);
+
+        jw.endObject();
+        jw.close();
     }
 
     public static void readConfig() throws IOException {
