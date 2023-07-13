@@ -30,7 +30,7 @@ public class VPClassTransformer implements ITransformer<ClassNode> {
         while (it.hasNext()) {
             TranslationInfo info = it.next();
             DebugMode debug = VaultPatcherConfig.getDebugMode();
-            if (input.name.equals(info.getTargetClassInfo().getName().replace('.', '/'))) {
+            if (info.getTargetClassInfo().getName().isEmpty() || input.name.equals(info.getTargetClassInfo().getName().replace('.', '/'))) {
                 // Method
                 methodReplace(input, info, debug);
                 // Field
