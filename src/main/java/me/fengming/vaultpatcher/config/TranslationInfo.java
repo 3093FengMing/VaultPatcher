@@ -46,37 +46,4 @@ public class TranslationInfo {
     public void setValue(String value) {
         this.value = value;
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-
-        if (o == null || getClass() != o.getClass()) return false;
-
-        TranslationInfo that = (TranslationInfo) o;
-
-        return new EqualsBuilder()
-                .append(targetClassInfo, that.targetClassInfo)
-                .append(key, that.key)
-                .append(value, that.value)
-                .isEquals();
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder(17, 37)
-                .append(targetClassInfo)
-                .append(key)
-                .append(value)
-                .toHashCode();
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this)
-                .append("targetClassInfo", targetClassInfo)
-                .append("key", key)
-                .append("value", value)
-                .toString();
-    }
 }

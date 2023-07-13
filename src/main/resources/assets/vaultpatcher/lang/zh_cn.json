@@ -1,9 +1,0 @@
-{
-  "commands.vaultpatcher.export.tips.success": "完成！导出到langpatcher.json",
-  "commands.vaultpatcher.export.tips.disabled": "错误！导出功能已被禁用",
-  "commands.vaultpatcher.list.tips.modslist": "以下为已加载的模块列表：",
-  "commands.vaultpatcher.list.tips.authors": "作者：%s",
-  "commands.vaultpatcher.list.tips.name": "名称：%s",
-  "commands.vaultpatcher.list.tips.desc": "描述：%s",
-  "commands.vaultpatcher.list.tips.mods": "模组：%s"
-}

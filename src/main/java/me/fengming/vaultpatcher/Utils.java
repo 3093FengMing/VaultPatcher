@@ -1,88 +1,53 @@
 package me.fengming.vaultpatcher;
 
+import cpw.mods.modlauncher.api.ITransformer;
+import me.fengming.vaultpatcher.config.DebugMode;
+import me.fengming.vaultpatcher.config.TranslationInfo;
+import me.fengming.vaultpatcher.config.VaultPatcherConfig;
 import me.fengming.vaultpatcher.config.VaultPatcherPatch;
+import org.objectweb.asm.tree.ClassNode;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Utils {
-    public static final String MOD_ID = "vaultpatcher";
-    public static final String MOD_NAME = "Vault Patcher";
-
     public static List<VaultPatcherPatch> vpps = new ArrayList<>();
-    public static ArrayList<String> exportList = new ArrayList<>();
-    public static Map<String, Boolean> exported = new HashMap<>();
+    public static List<TranslationInfo> translationInfos = new ArrayList<>();
 
-    public static void addToExportList(String text) {
-        if (!exported.getOrDefault(text, false) || !isInExportList(text)) {
-            exported.put(text, true);
-            exportList.add(text);
-        }
+    public static Iterator<TranslationInfo> getIterator() {
+        return translationInfos.iterator();
     }
 
-    public static boolean isInExportList(String text) {
-        return exportList.lastIndexOf(text) != -1;
-    }
-
-    private static int compare(String source, String target) {
-        int n = source.length();
-        int m = target.length();
-
-        if (n == 0) return m;
-        if (m == 0) return n;
-
-        int[][] d = new int[n + 1][m + 1];
-        int temp;
-
-        for (int i = 0; i <= n; i++) d[i][0] = i;
-        for (int i = 0; i <= m; i++) d[0][i] = i;
-
-        for (int i = 1; i <= n; i++) {
-            char ch1 = source.charAt(i - 1);
-            for (int j = 1; j <= m; j++) {
-                if (ch1 == target.charAt(j - 1)) {
-                    temp = 0;
-                } else {
-                    temp = 1;
-                }
-                d[i][j] = min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + temp);
+    public static List<ITransformer.Target> addTargetClasses() {
+        List<ITransformer.Target> list = new ArrayList<>();
+        VaultPatcherConfig.getClasses().forEach(s -> list.add(ITransformer.Target.targetClass(s.replace(".", "/"))));
+        for (VaultPatcherPatch vpp : vpps) {
+            for (TranslationInfo translationInfo : vpp.getTranslationInfoList()) {
+                list.add(ITransformer.Target.targetClass(translationInfo.getTargetClassInfo().getName().replace(".", "/")));
             }
         }
-
-        return d[n][m];
+        return list;
     }
 
-    private static int min(int one, int two, int three) {
-        return (one = one < two ? one : two) < three ? one : three;
+    public static void outputDebugIndo(String s, String m, String ret, String c, DebugMode debug) {
+        String format = debug.getOutputFormat();
+        if (ret != null && !ret.equals(s)) {
+            if (debug.getOutputMode() == 1 || debug.getOutputMode() == 0) {
+                VaultPatcher.LOGGER.info(
+                        format.replace("<source>", s)
+                                .replace("<target>", ret)
+                                .replace("<method>", m)
+                                .replace("<class>", c)
+                );
+            }
+        } else {
+            if (debug.getOutputMode() == 1) {
+                VaultPatcher.LOGGER.info(
+                        format.replace("<source>", s)
+                                .replace("<target>", s)
+                                .replace("<method>", m)
+                                .replace("<class>", c)
+                );
+            }
+        }
     }
-
-    public static float getSimilarityRatio(String source, String target) {
-        int max = Math.max(source.length(), target.length());
-        return 1 - (float) compare(source, target) / max;
-    }
-
-    //TODO
-//    public static String[] findTargetClass(String[] classAndMethodInStacks, String method) {
-//        switch (method) {
-//            case "TextComponent#init": {
-//
-//                break;
-//            }
-//            case "Font#drawInternal(String)": {
-//
-//                break;
-//            }
-//            case "BaseComponent#getVisualOrder": {
-//
-//                break;
-//            }
-//            case "BaseComponent#append": {
-//
-//                break;
-//            }
-//        }
-//        return null;
-//    }
 }

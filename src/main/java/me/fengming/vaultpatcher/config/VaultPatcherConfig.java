@@ -16,34 +16,60 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class VaultPatcherConfig {
     private static final Gson GSON = new Gson();
-    private static final Path configFile = FMLPaths.CONFIGDIR.get().resolve("vaultpatcher").resolve("config.json");
     private static List<String> mods = new ArrayList<>();
+    private static List<String> classes = new ArrayList<>();
+    private static boolean allClasses = false;
     private static final DebugMode debug = new DebugMode();
-    private static final OptimizeParams optimize = new OptimizeParams();
+
+    public static Path config = null;
 
     public static List<String> getMods() {
         return mods;
+    }
+
+    public static List<String> getClasses() {
+        return classes;
+    }
+
+    public static boolean isAllClasses() {
+        return allClasses;
     }
 
     public static DebugMode getDebugMode() {
         return debug;
     }
 
-    public static OptimizeParams getOptimize() {
-        return optimize;
-    }
 
     private static void writeConfig(JsonWriter jw) throws IOException {
+        jw.setIndent("  ");
+        jw.beginObject();
+
+        jw.name("mods");
+        jw.beginArray();
+        jw.value("example");
+        jw.endArray();
+
+        jw.name("classes");
+        jw.beginArray();
+        jw.endArray();
+
+        jw.name("all_classes");
+        jw.value(false);
+
+        jw.name("debug_mode");
         debug.writeJson(jw);
-        jw.name("mods").beginArray();
-        jw.name("mods").endArray();
-        optimize.writeJson(jw);
+
+        jw.endObject();
+        jw.close();
     }
 
-    public static void readConfig() throws IOException {
+    public static void readConfig(Path path) throws IOException {
+        config = path;
+        Path configFile = config.resolve("config.json");
         File f = configFile.toFile();
         if (Files.notExists(configFile)) {
             if (!f.getParentFile().exists()) {
@@ -66,15 +92,18 @@ public class VaultPatcherConfig {
                     break;
                 case "mods":
                     if (jr.peek() == JsonToken.BEGIN_ARRAY) {
-                        mods = GSON.fromJson(jr, new TypeToken<List<String>>() {
-                        }.getType());
+                        mods = GSON.fromJson(jr, new TypeToken<List<String>>(){}.getType());
                     }
                     break;
-                case "optimize_params":
-                    if (jr.peek() == JsonToken.BEGIN_OBJECT) {
-                        optimize.readJson(jr);
+                case "classes":
+                    if (jr.peek() == JsonToken.BEGIN_ARRAY) {
+                        classes = GSON.fromJson(jr, new TypeToken<List<String>>(){}.getType());
                     }
                     break;
+                case "all_classes":
+                    if (jr.peek() == JsonToken.BOOLEAN) {
+                        allClasses = jr.nextBoolean();
+                    }
                 default:
                     jr.skipValue();
                     break;

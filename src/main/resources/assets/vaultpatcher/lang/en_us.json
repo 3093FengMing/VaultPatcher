@@ -1,9 +1,0 @@
-{
-  "commands.vaultpatcher.export.tips.success": "Done! Export to langpatcher.json",
-  "commands.vaultpatcher.export.tips.disabled": "Error! Export feature is disabled",
-  "commands.vaultpatcher.list.tips.modslist": "The following is a list of loaded modules: ",
-  "commands.vaultpatcher.list.tips.authors": "Authors: %s",
-  "commands.vaultpatcher.list.tips.name": "Name: %s",
-  "commands.vaultpatcher.list.tips.desc": "Description: %s",
-  "commands.vaultpatcher.list.tips.mods": "Applied Mods: %s"
-}

@@ -81,40 +81,4 @@ public class PatchInfo {
         writer.name("authors").value(getAuthors());
         writer.endObject();
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-
-        if (o == null || getClass() != o.getClass()) return false;
-
-        PatchInfo that = (PatchInfo) o;
-
-        return new EqualsBuilder()
-                .append(name, that.name)
-                .append(desc, that.desc)
-                .append(mods, that.mods)
-                .append(authors, that.authors)
-                .isEquals();
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder(23, 53)
-                .append(name)
-                .append(desc)
-                .append(mods)
-                .append(authors)
-                .toHashCode();
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this)
-                .append("name", name)
-                .append("desc", desc)
-                .append("mods", mods)
-                .append("authors", authors)
-                .toString();
-    }
 }
