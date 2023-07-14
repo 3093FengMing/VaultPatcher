@@ -36,6 +36,7 @@ public class VPClassTransformer implements ITransformer<ClassNode> {
                 // Field
                 fieldReplace(input, info, debug);
             }
+
             it.remove();
         }
         return input;
@@ -46,14 +47,30 @@ public class VPClassTransformer implements ITransformer<ClassNode> {
             String methodName = info.getTargetClassInfo().getMethod();
             if (methodName.isEmpty() || methodName.equals(method.name)) {
                 for (AbstractInsnNode instruction : method.instructions) {
-                    if (instruction.getType() == AbstractInsnNode.LDC_INSN) {
+                    if (instruction.getType() == AbstractInsnNode.LDC_INSN) { // 字符串常量
                         LdcInsnNode ldcInsnNode = (LdcInsnNode) instruction;
                         if (ldcInsnNode.cst instanceof String v && v.equals(info.getKey())) {
                             if (debug.isEnable()) {
                                 VaultPatcher.LOGGER.warn("[VaultPatcher] Trying replacing!");
-                                Utils.outputDebugIndo((String) ldcInsnNode.cst, "ASMTransformMethod", info.getValue(), input.name, debug);
+                                Utils.outputDebugIndo((String) ldcInsnNode.cst, "ASMTransformMethod-Ldc", info.getValue(), input.name, debug);
                             }
                             ldcInsnNode.cst = info.getValue();
+                        }
+                    } else if (instruction.getType() == AbstractInsnNode.INVOKE_DYNAMIC_INSN) { // 字符串拼接
+                        InvokeDynamicInsnNode invokeDynamicInsnNode = (InvokeDynamicInsnNode) instruction;
+                        if (invokeDynamicInsnNode.name.equals("makeConcatWithConstants") && invokeDynamicInsnNode.desc.equals("(I)Ljava/lang/String;")) {
+                            for (int i = 0; i < invokeDynamicInsnNode.bsmArgs.length; i++) {
+                                if (invokeDynamicInsnNode.bsmArgs[i] instanceof String v) {
+                                    v = Utils.removeUnicodeEscapes(v);
+                                    if (v.equals(info.getKey())) {
+                                        if (debug.isEnable()) {
+                                            VaultPatcher.LOGGER.warn("[VaultPatcher] Trying replacing!");
+                                            Utils.outputDebugIndo(v, "ASMTransformMethod-Invoke", info.getValue(), input.name, debug);
+                                        }
+                                        invokeDynamicInsnNode.bsmArgs[i] = info.getValue();
+                                    }
+                                }
+                            }
                         }
                     }
                 }
