@@ -5,9 +5,10 @@ import me.fengming.vaultpatcher.config.DebugMode;
 import me.fengming.vaultpatcher.config.TranslationInfo;
 import me.fengming.vaultpatcher.config.VaultPatcherConfig;
 import me.fengming.vaultpatcher.config.VaultPatcherPatch;
-import org.objectweb.asm.tree.ClassNode;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class Utils {
     public static List<VaultPatcherPatch> vpps = new ArrayList<>();
@@ -51,21 +52,5 @@ public class Utils {
         }
     }
 
-    public static String removeUnicodeEscapes(String s) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < s.length(); i++) {
-            if (i + 5 < s.length() && s.charAt(i) == '\\' && s.charAt(i + 1) == 'u' &&
-                    isHexChar(s.charAt(i + 2)) && isHexChar(s.charAt(i + 3)) &&
-                    isHexChar(s.charAt(i + 4)) && isHexChar(s.charAt(i + 5))) {
-                i += 5;
-            } else {
-                sb.append(s.charAt(i));
-            }
-        }
-        return sb.toString();
-    }
 
-    private static boolean isHexChar(char c) {
-        return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
-    }
 }

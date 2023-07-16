@@ -1,6 +1,5 @@
 package me.fengming.vaultpatcher.core;
 
-import cpw.mods.modlauncher.api.ITransformationService;
 import cpw.mods.modlauncher.api.ITransformer;
 import cpw.mods.modlauncher.api.ITransformerVotingContext;
 import cpw.mods.modlauncher.api.TransformerVoteResult;
@@ -9,13 +8,11 @@ import me.fengming.vaultpatcher.VaultPatcher;
 import me.fengming.vaultpatcher.config.DebugMode;
 import me.fengming.vaultpatcher.config.TranslationInfo;
 import me.fengming.vaultpatcher.config.VaultPatcherConfig;
-import me.fengming.vaultpatcher.config.VaultPatcherPatch;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.tree.*;
 
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 public class VPClassTransformer implements ITransformer<ClassNode> {
@@ -35,9 +32,8 @@ public class VPClassTransformer implements ITransformer<ClassNode> {
                 methodReplace(input, info, debug);
                 // Field
                 fieldReplace(input, info, debug);
+                it.remove();
             }
-
-            it.remove();
         }
         return input;
     }
@@ -58,17 +54,21 @@ public class VPClassTransformer implements ITransformer<ClassNode> {
                         }
                     } else if (instruction.getType() == AbstractInsnNode.INVOKE_DYNAMIC_INSN) { // 字符串拼接
                         InvokeDynamicInsnNode invokeDynamicInsnNode = (InvokeDynamicInsnNode) instruction;
-                        if (invokeDynamicInsnNode.name.equals("makeConcatWithConstants") && invokeDynamicInsnNode.desc.equals("(I)Ljava/lang/String;")) {
+                        if (invokeDynamicInsnNode.name.equals("makeConcatWithConstants")) {
                             for (int i = 0; i < invokeDynamicInsnNode.bsmArgs.length; i++) {
-                                if (invokeDynamicInsnNode.bsmArgs[i] instanceof String v) {
-                                    v = Utils.removeUnicodeEscapes(v);
-                                    if (v.equals(info.getKey())) {
-                                        if (debug.isEnable()) {
-                                            VaultPatcher.LOGGER.warn("[VaultPatcher] Trying replacing!");
-                                            Utils.outputDebugIndo(v, "ASMTransformMethod-Invoke", info.getValue(), input.name, debug);
+                                if (invokeDynamicInsnNode.bsmArgs[i] instanceof String str) {
+                                    String[] parts = str.split("\u0001", -1);
+                                    for (int j = 0; j < parts.length; j++) {
+                                        if (parts[j].equals(info.getKey())) {
+                                            parts[j] = info.getValue();
                                         }
-                                        invokeDynamicInsnNode.bsmArgs[i] = info.getValue();
                                     }
+                                    String v = String.join("\u0001", parts);
+                                    if (debug.isEnable()) {
+                                        VaultPatcher.LOGGER.warn("[VaultPatcher] Trying replacing!");
+                                        Utils.outputDebugIndo(str, "ASMTransformMethod-InvokeDynamic", v, input.name, debug);
+                                    }
+                                    invokeDynamicInsnNode.bsmArgs[i] = v;
                                 }
                             }
                         }
@@ -97,6 +97,7 @@ public class VPClassTransformer implements ITransformer<ClassNode> {
 
     @Override
     public @NotNull Set<Target> targets() {
+        // TODO all classes
         return VaultPatcherConfig.isAllClasses() ? new HashSet<>() : new HashSet<>(Utils.addTargetClasses());
     }
 }
