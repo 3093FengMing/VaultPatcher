@@ -1,19 +1,17 @@
-package me.fengming.vaultpatcher.core;
+package me.fengming.vaultpatcher_asm.core;
 
 import cpw.mods.modlauncher.api.ITransformer;
 import cpw.mods.modlauncher.api.ITransformerVotingContext;
 import cpw.mods.modlauncher.api.TransformerVoteResult;
-import me.fengming.vaultpatcher.Utils;
-import me.fengming.vaultpatcher.VaultPatcher;
-import me.fengming.vaultpatcher.config.DebugMode;
-import me.fengming.vaultpatcher.config.TranslationInfo;
-import me.fengming.vaultpatcher.config.VaultPatcherConfig;
+import me.fengming.vaultpatcher_asm.Utils;
+import me.fengming.vaultpatcher_asm.VaultPatcher;
+import me.fengming.vaultpatcher_asm.config.DebugMode;
+import me.fengming.vaultpatcher_asm.config.TranslationInfo;
+import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.tree.*;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 public class VPClassTransformer implements ITransformer<ClassNode> {
 
@@ -23,16 +21,13 @@ public class VPClassTransformer implements ITransformer<ClassNode> {
 
     @Override
     public @NotNull ClassNode transform(ClassNode input, ITransformerVotingContext context) {
-        Iterator<TranslationInfo> it = Utils.getIterator();
-        while (it.hasNext()) {
-            TranslationInfo info = it.next();
+        for (TranslationInfo info : Utils.translationInfos) {
             DebugMode debug = VaultPatcherConfig.getDebugMode();
-            if (info.getTargetClassInfo().getName().isEmpty() || input.name.equals(info.getTargetClassInfo().getName().replace('.', '/'))) {
-                // Method
+            if (info.getTargetClassInfo().getName().isEmpty()
+                    || input.name.equals(info.getTargetClassInfo().getName().replace('.', '/'))
+            ) {
                 methodReplace(input, info, debug);
-                // Field
                 fieldReplace(input, info, debug);
-                it.remove();
             }
         }
         return input;
@@ -43,7 +38,7 @@ public class VPClassTransformer implements ITransformer<ClassNode> {
             String methodName = info.getTargetClassInfo().getMethod();
             if (methodName.isEmpty() || methodName.equals(method.name)) {
                 for (AbstractInsnNode instruction : method.instructions) {
-                    if (instruction.getType() == AbstractInsnNode.LDC_INSN) { // 字符串常量
+                    if (instruction.getType() == AbstractInsnNode.LDC_INSN) { // String Constants
                         LdcInsnNode ldcInsnNode = (LdcInsnNode) instruction;
                         if (ldcInsnNode.cst instanceof String v && v.equals(info.getKey())) {
                             if (debug.isEnable()) {
@@ -52,7 +47,7 @@ public class VPClassTransformer implements ITransformer<ClassNode> {
                             }
                             ldcInsnNode.cst = info.getValue();
                         }
-                    } else if (instruction.getType() == AbstractInsnNode.INVOKE_DYNAMIC_INSN) { // 字符串拼接
+                    } else if (instruction.getType() == AbstractInsnNode.INVOKE_DYNAMIC_INSN) { // String Concatenation
                         InvokeDynamicInsnNode invokeDynamicInsnNode = (InvokeDynamicInsnNode) instruction;
                         if (invokeDynamicInsnNode.name.equals("makeConcatWithConstants")) {
                             for (int i = 0; i < invokeDynamicInsnNode.bsmArgs.length; i++) {
@@ -97,7 +92,15 @@ public class VPClassTransformer implements ITransformer<ClassNode> {
 
     @Override
     public @NotNull Set<Target> targets() {
-        // TODO all classes
-        return VaultPatcherConfig.isAllClasses() ? new HashSet<>() : new HashSet<>(Utils.addTargetClasses());
+        Set<Target> targetModClasses = new HashSet<>();
+        List<String> targetMods = VaultPatcherConfig.getApplyMods();
+        for (String targetMod : targetMods) {
+            List<String> classes = Utils.getClassNameByJar(Utils.mcPath.resolve("mods").resolve(targetMod + ".jar").toString(), true);
+            classes.forEach((s) -> targetModClasses.add(Target.targetClass(s)));
+        }
+        HashSet<Target> targets = new HashSet<>();
+        targets.addAll(Utils.addTargetClasses());
+        targets.addAll(targetModClasses); // May cause unnecessary resource waste
+        return targets;
     }
 }

@@ -1,10 +1,7 @@
-package me.fengming.vaultpatcher.config;
+package me.fengming.vaultpatcher_asm.config;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.IOException;
 

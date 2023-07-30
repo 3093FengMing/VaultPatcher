@@ -1,9 +1,9 @@
-package me.fengming.vaultpatcher.core;
+package me.fengming.vaultpatcher_asm.core;
 
 import cpw.mods.modlauncher.api.IEnvironment;
 import cpw.mods.modlauncher.api.ITransformationService;
 import cpw.mods.modlauncher.api.ITransformer;
-import me.fengming.vaultpatcher.VaultPatcher;
+import me.fengming.vaultpatcher_asm.VaultPatcher;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;

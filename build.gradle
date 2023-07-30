@@ -18,7 +18,7 @@ apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
 
 
-version = 'forge-1.2.13-asm'
+version = 'forge-1.2.14-asm'
 group = 'me.fengming.vaultpatcher' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'vaultpatcher'
 

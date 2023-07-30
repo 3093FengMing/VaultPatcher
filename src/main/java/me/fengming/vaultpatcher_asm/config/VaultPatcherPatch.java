@@ -1,12 +1,9 @@
-package me.fengming.vaultpatcher.config;
+package me.fengming.vaultpatcher_asm.config;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
-import me.fengming.vaultpatcher.Utils;
-import me.fengming.vaultpatcher.VaultPatcher;
-import net.minecraft.client.resources.language.I18n;
-import net.minecraftforge.fml.loading.FMLPaths;
+import me.fengming.vaultpatcher_asm.VaultPatcher;
 
 import java.io.FileInputStream;
 import java.io.IOException;

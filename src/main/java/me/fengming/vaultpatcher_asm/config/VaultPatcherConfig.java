@@ -1,11 +1,10 @@
-package me.fengming.vaultpatcher.config;
+package me.fengming.vaultpatcher_asm.config;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
-import net.minecraftforge.fml.loading.FMLPaths;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,13 +15,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class VaultPatcherConfig {
     private static final Gson GSON = new Gson();
     private static List<String> mods = new ArrayList<>();
     private static List<String> classes = new ArrayList<>();
-    private static boolean allClasses = false;
+    private static List<String> applyMods = new ArrayList<>();
     private static final DebugMode debug = new DebugMode();
 
     public static Path config = null;
@@ -35,8 +33,8 @@ public class VaultPatcherConfig {
         return classes;
     }
 
-    public static boolean isAllClasses() {
-        return allClasses;
+    public static List<String> getApplyMods() {
+        return applyMods;
     }
 
     public static DebugMode getDebugMode() {
@@ -57,8 +55,9 @@ public class VaultPatcherConfig {
         jw.beginArray();
         jw.endArray();
 
-        jw.name("all_classes");
-        jw.value(false);
+        jw.name("apply_mods");
+        jw.beginArray();
+        jw.endArray();
 
         jw.name("debug_mode");
         debug.writeJson(jw);
@@ -100,9 +99,9 @@ public class VaultPatcherConfig {
                         classes = GSON.fromJson(jr, new TypeToken<List<String>>(){}.getType());
                     }
                     break;
-                case "all_classes":
-                    if (jr.peek() == JsonToken.BOOLEAN) {
-                        allClasses = jr.nextBoolean();
+                case "apply_mods":
+                    if (jr.peek() == JsonToken.BEGIN_ARRAY) {
+                        applyMods =  GSON.fromJson(jr, new TypeToken<List<String>>(){}.getType());
                     }
                 default:
                     jr.skipValue();
