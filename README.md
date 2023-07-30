@@ -22,9 +22,12 @@
   "mods": [
     "模块"
   ],
-  "classes":[
+  "classes": [
     "some.thing.class",
     "another.class"
+  ],
+  "apply_mods": [
+    "yourmod-abc-1.0"
   ],
   "debug_mode": {
     "is_enable": false,
