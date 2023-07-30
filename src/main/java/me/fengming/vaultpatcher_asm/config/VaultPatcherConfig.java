@@ -84,28 +84,27 @@ public class VaultPatcherConfig {
         jr.beginObject();
         while (jr.peek() != JsonToken.END_OBJECT) {
             switch (jr.nextName()) {
-                case "debug_mode":
+                case "debug_mode" -> {
                     if (jr.peek() == JsonToken.BEGIN_OBJECT) {
                         debug.readJson(jr);
                     }
-                    break;
-                case "mods":
+                }
+                case "mods" -> {
                     if (jr.peek() == JsonToken.BEGIN_ARRAY) {
-                        mods = GSON.fromJson(jr, new TypeToken<List<String>>(){}.getType());
+                        mods = GSON.fromJson(jr, new TypeToken<List<String>>() {}.getType());
                     }
-                    break;
-                case "classes":
+                }
+                case "classes" -> {
                     if (jr.peek() == JsonToken.BEGIN_ARRAY) {
-                        classes = GSON.fromJson(jr, new TypeToken<List<String>>(){}.getType());
+                        classes = GSON.fromJson(jr, new TypeToken<List<String>>() {}.getType());
                     }
-                    break;
-                case "apply_mods":
+                }
+                case "apply_mods" -> {
                     if (jr.peek() == JsonToken.BEGIN_ARRAY) {
-                        applyMods =  GSON.fromJson(jr, new TypeToken<List<String>>(){}.getType());
+                        applyMods = GSON.fromJson(jr, new TypeToken<List<String>>() {}.getType());
                     }
-                default:
-                    jr.skipValue();
-                    break;
+                }
+                default -> jr.skipValue();
             }
         }
         jr.endObject();

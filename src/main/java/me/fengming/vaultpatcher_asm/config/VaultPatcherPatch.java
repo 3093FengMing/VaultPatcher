@@ -35,8 +35,8 @@ public class VaultPatcherPatch {
 
         PatchInfo patchInfo = new PatchInfo();
         patchInfo.readJson(reader);
-        VaultPatcher.LOGGER.warn("[VaultPatcher] Loading {}!", patchInfo.getName());
-        VaultPatcher.LOGGER.warn("[VaultPatcher] About Information:\nAuthor(s): {}\nApply to Mod(s): {}\nDescription: {}", patchInfo.getAuthors(), patchInfo.getMods(), patchInfo.getDesc());
+        VaultPatcher.LOGGER.info("[VaultPatcher] Loading {}!", patchInfo.getName());
+        VaultPatcher.LOGGER.info("[VaultPatcher] About Information:\nAuthor(s): {}\nApply to Mod(s): {}\nDescription: {}", patchInfo.getAuthors(), patchInfo.getMods(), patchInfo.getDesc());
 
         Map<String, List<TranslationInfo>> m = new HashMap<>();
         while (reader.peek() != JsonToken.END_ARRAY) {

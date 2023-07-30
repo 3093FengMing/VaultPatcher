@@ -95,7 +95,7 @@ public class VPClassTransformer implements ITransformer<ClassNode> {
         Set<Target> targetModClasses = new HashSet<>();
         List<String> targetMods = VaultPatcherConfig.getApplyMods();
         for (String targetMod : targetMods) {
-            List<String> classes = Utils.getClassNameByJar(Utils.mcPath.resolve("mods").resolve(targetMod + ".jar").toString(), true);
+            List<String> classes = Utils.getClassNameByJar(Utils.mcPath.resolve("mods").resolve(targetMod + ".jar").toString());
             classes.forEach((s) -> targetModClasses.add(Target.targetClass(s)));
         }
         HashSet<Target> targets = new HashSet<>();
