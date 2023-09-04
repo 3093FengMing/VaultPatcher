@@ -9,15 +9,34 @@ public class TranslationInfo {
     private final TargetClassInfo targetClassInfo = new TargetClassInfo();
     private String key;
     private String value;
+    private final Pairs pairs = new Pairs();
 
     public void readJson(JsonReader reader) throws IOException {
         reader.beginObject();
         while (reader.peek() != JsonToken.END_OBJECT) {
             switch (reader.nextName()) {
-                case "target_class" -> getTargetClassInfo().readJson(reader);
-                case "key" -> setKey(reader.nextString());
-                case "value" -> setValue(reader.nextString());
-                default -> reader.skipValue();
+                case "t":
+                case "target_class" :
+                case "target" : {
+                    getTargetClassInfo().readJson(reader);
+                    break;
+                }
+                case "key" : {
+                    setKey(reader.nextString());
+                    break;
+                }
+                case "value" : {
+                    setValue(reader.nextString());
+                    break;
+                }
+                case "pairs" : {
+                    getPairs().readJson(reader);
+                    break;
+                }
+                default : {
+                    reader.skipValue();
+                    break;
+                }
             }
         }
         reader.endObject();
@@ -28,19 +47,17 @@ public class TranslationInfo {
         return targetClassInfo;
     }
 
-    public String getKey() {
-        return key;
+    public Pairs getPairs() {
+        return pairs;
     }
+
 
     public void setKey(String key) {
-        this.key = key;
+        pairs.setKey(key);
     }
 
-    public String getValue() {
-        return value;
-    }
 
     public void setValue(String value) {
-        this.value = value;
+        pairs.setValue(value);
     }
 }

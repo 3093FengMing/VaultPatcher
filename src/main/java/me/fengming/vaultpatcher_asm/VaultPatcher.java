@@ -1,16 +1,16 @@
 package me.fengming.vaultpatcher_asm;
 
-import com.mojang.logging.LogUtils;
 import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
 import me.fengming.vaultpatcher_asm.config.VaultPatcherPatch;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
 public class VaultPatcher {
-    public static final Logger LOGGER = LogUtils.getLogger();
+    public static final Logger LOGGER = LoggerFactory.getLogger("vaultpatcher");
 
     public static void init(Path mcPath) {
         try {

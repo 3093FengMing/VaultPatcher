@@ -1,12 +1,16 @@
+import me.fengming.vaultpatcher_asm.config.TranslationInfo;
+
 public class A114514 {
     /// WARNING: you should manually try-catch IllegalArgumentException
     public static void test(int givenDepth, String className) throws IllegalArgumentException {
         StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
         //Preconditions.checkArgument(givenDepth < stackTraceElements.length, "Too deep: %d", givenDepth);
         if (givenDepth >= stackTraceElements.length) return;    // may not match, should not throw
-        var element = stackTraceElements[givenDepth];
-        if (className.equals(element.getClassName())) {
-            // modify it
-        }
+//        var element = stackTraceElements[givenDepth];
+//        if (className.equals(element.getClassName())) {
+//            // modify it
+//        }
     }
+
+    public static TranslationInfo info = new TranslationInfo();
 }

@@ -1,16 +1,10 @@
 package me.fengming.vaultpatcher_asm;
 
 import cpw.mods.modlauncher.api.ITransformer;
-import me.fengming.vaultpatcher_asm.config.DebugMode;
-import me.fengming.vaultpatcher_asm.config.TranslationInfo;
-import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
-import me.fengming.vaultpatcher_asm.config.VaultPatcherPatch;
+import me.fengming.vaultpatcher_asm.config.*;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -36,7 +30,7 @@ public class Utils {
         return list;
     }
 
-    public static List<String> getClassNameByJar(String jarPath) {
+    public static List<String> getClassesNameByJar(String jarPath) {
         List<String> retClassName = new ArrayList<>();
         try {
             JarFile jarFile = new JarFile(jarPath);
@@ -55,10 +49,12 @@ public class Utils {
         return retClassName;
     }
 
-    public static void outputDebugIndo(String s, String m, String ret, String c, DebugMode debug) {
+    public static void printDebugIndo(String s, String m, String ret, String c, DebugMode debug) {
         String format = debug.getOutputFormat();
+        if (!debug.isEnable()) return;
         if (ret != null && !ret.equals(s)) {
             if (debug.getOutputMode() == 1 || debug.getOutputMode() == 0) {
+                VaultPatcher.LOGGER.info("[VaultPatcher] Trying replacing!");
                 VaultPatcher.LOGGER.info(
                         format.replace("<source>", s)
                                 .replace("<target>", ret)
@@ -68,6 +64,7 @@ public class Utils {
             }
         } else {
             if (debug.getOutputMode() == 1) {
+                VaultPatcher.LOGGER.info("[VaultPatcher] Trying replacing!");
                 VaultPatcher.LOGGER.info(
                         format.replace("<source>", s)
                                 .replace("<target>", s)
@@ -76,6 +73,25 @@ public class Utils {
                 );
             }
         }
+    }
+
+    public static String matchPairs(Pairs p, String key) {
+        String v = p.getValue(key);
+        return v == null ? key : v;
+    }
+
+    public static boolean matchLocal(TranslationInfo info, String name, boolean isMethod) {
+        if (name == null) return false;
+        String l = info.getTargetClassInfo().getLocal();
+        if (l.isEmpty()) return false;
+        if ((l.charAt(0) == 'M' && isMethod) || (l.charAt(0) == 'V' && !isMethod)) {
+            return l.substring(1).equals(name);
+        }
+        return false;
+    }
+
+    public static List<ITransformer> listOf(ITransformer<?>... transformers) {
+        return new ArrayList<>(Arrays.asList(transformers));
     }
 
 
