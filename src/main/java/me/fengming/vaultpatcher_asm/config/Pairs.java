@@ -2,15 +2,14 @@ package me.fengming.vaultpatcher_asm.config;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
-import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
 import java.util.HashMap;
 
 public class Pairs {
+    private final HashMap<String, String> pairs;
     private String lastKey = null;
     private String lastValue = null;
-    private final HashMap<String, String> pairs;
 
     public Pairs(HashMap<String, String> map) {
         this.pairs = new HashMap<>(map);
@@ -26,15 +25,15 @@ public class Pairs {
             reader.beginObject();
             while (reader.peek() != JsonToken.END_OBJECT) {
                 switch (reader.nextName()) {
-                    case "key" : {
+                    case "key": {
                         setKey(reader.nextString());
                         break;
                     }
-                    case "value" : {
+                    case "value": {
                         setValue(reader.nextString());
                         break;
                     }
-                    default : {
+                    default: {
                         reader.skipValue();
                         break;
                     }

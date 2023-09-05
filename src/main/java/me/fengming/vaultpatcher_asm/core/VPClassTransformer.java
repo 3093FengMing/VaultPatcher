@@ -3,38 +3,21 @@ package me.fengming.vaultpatcher_asm.core;
 import cpw.mods.modlauncher.api.ITransformer;
 import cpw.mods.modlauncher.api.ITransformerVotingContext;
 import cpw.mods.modlauncher.api.TransformerVoteResult;
-import me.fengming.vaultpatcher_asm.ASMUtils;
 import me.fengming.vaultpatcher_asm.Utils;
 import me.fengming.vaultpatcher_asm.VaultPatcher;
-import me.fengming.vaultpatcher_asm.config.DebugMode;
-import me.fengming.vaultpatcher_asm.config.Pairs;
-import me.fengming.vaultpatcher_asm.config.TranslationInfo;
-import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
+import me.fengming.vaultpatcher_asm.config.*;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
-import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 public class VPClassTransformer implements ITransformer<ClassNode> {
 
-    private static final HashMap<String, HashMap<Integer, String>> localVariableMap = new HashMap<>();
-
     VPClassTransformer() {
         VaultPatcher.LOGGER.warn("[VaultPatcher] Loading VPTransformer!");
-    }
-
-    @Override
-    public @NotNull ClassNode transform(ClassNode input, ITransformerVotingContext context) {
-        for (TranslationInfo info : Utils.translationInfos) {
-            DebugMode debug = VaultPatcherConfig.getDebugMode();
-            if (info.getTargetClassInfo().getName().isEmpty() || input.name.equals(info.getTargetClassInfo().getName().replace('.', '/'))) {
-                methodReplace(input, info, debug);
-                fieldReplace(input, info, debug);
-            }
-        }
-        return input;
     }
 
     private static void methodReplace(ClassNode input, TranslationInfo info, DebugMode debug) {
@@ -118,7 +101,6 @@ public class VPClassTransformer implements ITransformer<ClassNode> {
     }
 
     public static InsnList __makeNewArray(Set<Map.Entry<String, String>> set) {
-        VaultPatcher.LOGGER.warn(Arrays.deepToString(set.toArray()));
         // insert two arrays (keys & values)
         int size = set.size();
 
@@ -170,14 +152,24 @@ public class VPClassTransformer implements ITransformer<ClassNode> {
         Pairs pairs = info.getPairs();
         for (FieldNode field : input.fields) {
             if (field.value instanceof String) {
-                String v = Utils.matchPairs(pairs, (String) field.value);
-                if (debug.isEnable()) {
-                    VaultPatcher.LOGGER.warn("[VaultPatcher] Trying replacing!");
-                    Utils.printDebugIndo((String) field.value, "ASMTransformField", v, input.name, debug);
-                }
+                String o = (String) field.value;
+                String v = Utils.matchPairs(pairs, o);
+                Utils.printDebugIndo(o, "ASMTransformField", v, input.name, debug);
                 field.value = v;
             }
         }
+    }
+
+    @Override
+    public @NotNull ClassNode transform(ClassNode input, ITransformerVotingContext context) {
+        for (TranslationInfo info : Utils.translationInfos) {
+            DebugMode debug = VaultPatcherConfig.getDebugMode();
+            if (info.getTargetClassInfo().getName().isEmpty() || input.name.equals(info.getTargetClassInfo().getName().replace('.', '/'))) {
+                methodReplace(input, info, debug);
+                fieldReplace(input, info, debug);
+            }
+        }
+        return input;
     }
 
     @Override
@@ -190,11 +182,43 @@ public class VPClassTransformer implements ITransformer<ClassNode> {
         Set<Target> targetModClasses = new HashSet<>();
         List<String> targetMods = VaultPatcherConfig.getApplyMods();
         for (String targetMod : targetMods) {
-            Utils.getClassesNameByJar(Utils.mcPath.resolve("mods").resolve(targetMod + ".jar").toString()).forEach((s) -> targetModClasses.add(Target.targetClass(s)));
+            getClassesNameByJar(Utils.mcPath.resolve("mods").resolve(targetMod + ".jar").toString()).forEach((s) -> targetModClasses.add(Target.targetClass(s)));
         }
         HashSet<Target> targets = new HashSet<>();
-        targets.addAll(Utils.addTargetClasses());
+        targets.addAll(addTargetClasses());
         targets.addAll(targetModClasses); // May cause unnecessary resource waste
         return targets;
+    }
+
+    public static List<String> getClassesNameByJar(String jarPath) {
+        List<String> retClassName = new ArrayList<>();
+        try {
+            JarFile jarFile = new JarFile(jarPath);
+            Enumeration<JarEntry> entries = jarFile.entries();
+            while (entries.hasMoreElements()) {
+                JarEntry entry = entries.nextElement();
+                String name = entry.getName();
+                if (name.isEmpty()) continue;
+                if (name.endsWith(".class")) {
+                    retClassName.add(name);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return retClassName;
+    }
+
+    public static List<ITransformer.Target> addTargetClasses() {
+        List<ITransformer.Target> list = new ArrayList<>();
+        VaultPatcherConfig.getClasses().forEach(s -> list.add(ITransformer.Target.targetClass(s.replace(".", "/"))));
+        for (VaultPatcherPatch vpp : Utils.vpps) {
+            for (TranslationInfo translationInfo : vpp.getTranslationInfoList()) {
+                String name = translationInfo.getTargetClassInfo().getName();
+                if (name.isEmpty()) continue;
+                list.add(ITransformer.Target.targetClass(translationInfo.getTargetClassInfo().getName().replace(".", "/")));
+            }
+        }
+        return list;
     }
 }

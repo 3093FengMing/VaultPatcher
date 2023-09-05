@@ -15,19 +15,19 @@ public class TargetClassInfo {
         reader.beginObject();
         while (reader.peek() != JsonToken.END_OBJECT) {
             switch (reader.nextName()) {
-                case "name" : {
+                case "name": {
                     setName(reader.nextString());
                     break;
                 }
-                case "method" : {
+                case "method": {
                     setMethod(reader.nextString());
                     break;
                 }
-                case "local" : {
+                case "local": {
                     setLocal(reader.nextString());
                     break;
                 }
-                default : {
+                default: {
                     reader.skipValue();
                     break;
                 }

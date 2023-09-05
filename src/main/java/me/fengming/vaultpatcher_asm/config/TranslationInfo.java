@@ -7,33 +7,32 @@ import java.io.IOException;
 
 public class TranslationInfo {
     private final TargetClassInfo targetClassInfo = new TargetClassInfo();
+    private final Pairs pairs = new Pairs();
     private String key;
     private String value;
-    private final Pairs pairs = new Pairs();
 
     public void readJson(JsonReader reader) throws IOException {
         reader.beginObject();
         while (reader.peek() != JsonToken.END_OBJECT) {
             switch (reader.nextName()) {
-                case "t":
-                case "target_class" :
-                case "target" : {
+                case "target_class":
+                case "target": {
                     getTargetClassInfo().readJson(reader);
                     break;
                 }
-                case "key" : {
+                case "key": {
                     setKey(reader.nextString());
                     break;
                 }
-                case "value" : {
+                case "value": {
                     setValue(reader.nextString());
                     break;
                 }
-                case "pairs" : {
+                case "pairs": {
                     getPairs().readJson(reader);
                     break;
                 }
-                default : {
+                default: {
                     reader.skipValue();
                     break;
                 }

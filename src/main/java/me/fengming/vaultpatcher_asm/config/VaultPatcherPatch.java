@@ -5,13 +5,15 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import me.fengming.vaultpatcher_asm.VaultPatcher;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class VaultPatcherPatch {
     private static final Gson GSON = new Gson();
@@ -19,12 +21,12 @@ public class VaultPatcherPatch {
     private final List<TranslationInfo> translationInfoList = new ArrayList<>();
 
     public VaultPatcherPatch(String patchFile) {
-        VaultPatcher.LOGGER.info("Found Module " + patchFile);
+        VaultPatcher.LOGGER.info("[VaultPatcher] Found Module " + patchFile);
         Path p = VaultPatcherConfig.config.resolve(patchFile);
         try {
             Files.createDirectories(p.getParent());
         } catch (IOException e) {
-            VaultPatcher.LOGGER.error("Failed to create {}", p.getParent(), e);
+            VaultPatcher.LOGGER.error("[VaultPatcher] Failed to create {}", p.getParent(), e);
             throw new RuntimeException(e);
         }
         this.patchFile = p;
@@ -52,7 +54,7 @@ public class VaultPatcherPatch {
         if (Files.notExists(patchFile)) {
             Files.createFile(patchFile);
         }
-        try (JsonReader jsonReader = GSON.newJsonReader(new InputStreamReader(new FileInputStream(patchFile.toFile()), StandardCharsets.UTF_8))) {
+        try (JsonReader jsonReader = GSON.newJsonReader(new InputStreamReader(Files.newInputStream(patchFile), StandardCharsets.UTF_8))) {
             read(jsonReader);
         }
     }

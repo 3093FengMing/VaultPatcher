@@ -7,7 +7,6 @@ import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -18,12 +17,11 @@ import java.util.List;
 
 public class VaultPatcherConfig {
     private static final Gson GSON = new Gson();
+    private static final DebugMode debug = new DebugMode();
+    public static Path config = null;
     private static List<String> mods = new ArrayList<>();
     private static List<String> classes = new ArrayList<>();
     private static List<String> applyMods = new ArrayList<>();
-    private static final DebugMode debug = new DebugMode();
-
-    public static Path config = null;
 
     public static List<String> getMods() {
         return mods;
@@ -79,36 +77,36 @@ public class VaultPatcherConfig {
             writeConfig(jw);
         }
 
-        JsonReader jr = GSON.newJsonReader(new InputStreamReader(new FileInputStream(f), StandardCharsets.UTF_8));
+        JsonReader jr = GSON.newJsonReader(new InputStreamReader(Files.newInputStream(f.toPath()), StandardCharsets.UTF_8));
 
         jr.beginObject();
         while (jr.peek() != JsonToken.END_OBJECT) {
             switch (jr.nextName()) {
-                case "debug_mode" : {
+                case "debug_mode": {
                     if (jr.peek() == JsonToken.BEGIN_OBJECT) {
                         debug.readJson(jr);
                     }
                     break;
                 }
-                case "mods" : {
+                case "mods": {
                     if (jr.peek() == JsonToken.BEGIN_ARRAY) {
                         mods = GSON.fromJson(jr, new TypeToken<List<String>>() {}.getType());
                     }
                     break;
                 }
-                case "classes" : {
+                case "classes": {
                     if (jr.peek() == JsonToken.BEGIN_ARRAY) {
                         classes = GSON.fromJson(jr, new TypeToken<List<String>>() {}.getType());
                     }
                     break;
                 }
-                case "apply_mods" : {
+                case "apply_mods": {
                     if (jr.peek() == JsonToken.BEGIN_ARRAY) {
                         applyMods = GSON.fromJson(jr, new TypeToken<List<String>>() {}.getType());
                     }
                     break;
                 }
-                default : {
+                default: {
                     jr.skipValue();
                     break;
                 }

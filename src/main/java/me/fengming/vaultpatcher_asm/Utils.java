@@ -1,12 +1,15 @@
 package me.fengming.vaultpatcher_asm;
 
-import cpw.mods.modlauncher.api.ITransformer;
-import me.fengming.vaultpatcher_asm.config.*;
+import me.fengming.vaultpatcher_asm.config.DebugMode;
+import me.fengming.vaultpatcher_asm.config.Pairs;
+import me.fengming.vaultpatcher_asm.config.TranslationInfo;
+import me.fengming.vaultpatcher_asm.config.VaultPatcherPatch;
 
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.*;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class Utils {
     public static List<VaultPatcherPatch> vpps = new ArrayList<>();
@@ -17,37 +20,7 @@ public class Utils {
         return translationInfos.iterator();
     }
 
-    public static List<ITransformer.Target> addTargetClasses() {
-        List<ITransformer.Target> list = new ArrayList<>();
-        VaultPatcherConfig.getClasses().forEach(s -> list.add(ITransformer.Target.targetClass(s.replace(".", "/"))));
-        for (VaultPatcherPatch vpp : vpps) {
-            for (TranslationInfo translationInfo : vpp.getTranslationInfoList()) {
-                String name = translationInfo.getTargetClassInfo().getName();
-                if (name.isEmpty()) continue;
-                list.add(ITransformer.Target.targetClass(translationInfo.getTargetClassInfo().getName().replace(".", "/")));
-            }
-        }
-        return list;
-    }
-
-    public static List<String> getClassesNameByJar(String jarPath) {
-        List<String> retClassName = new ArrayList<>();
-        try {
-            JarFile jarFile = new JarFile(jarPath);
-            Enumeration<JarEntry> entrys = jarFile.entries();
-            while (entrys.hasMoreElements()) {
-                JarEntry entry = entrys.nextElement();
-                String name = entry.getName();
-                if (name.isEmpty()) continue;
-                if (name.endsWith(".class")) {
-                    retClassName.add(name);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return retClassName;
-    }
+    // debug
 
     public static void printDebugIndo(String s, String m, String ret, String c, DebugMode debug) {
         String format = debug.getOutputFormat();
@@ -75,14 +48,32 @@ public class Utils {
         }
     }
 
+    // transformer
+
     public static String matchPairs(Pairs p, String key) {
+        if (key.isEmpty() || isBlank(key)) return key;
         String v = p.getValue(key);
         return v == null ? key : v;
     }
 
-    public static List<ITransformer> listOf(ITransformer<?>... transformers) {
-        return new ArrayList<>(Arrays.asList(transformers));
+    public static boolean isBlank(String s) {
+        if (s.isEmpty()) return true;
+        for (int i = 0; i < s.getBytes(StandardCharsets.UTF_8).length; i++) {
+            if (!Character.isWhitespace(s.charAt(i))) return false;
+        }
+        return true;
     }
 
+    public static String __getClassName(Class<?> c) {
+        return c.getName().replace(".", "/");
+    }
 
+    public static String __makeMethodDesc(Class<?> ret, Class<?>... param) {
+        StringBuilder r = new StringBuilder("(");
+        for (Class<?> p1 : param) {
+            r.append("L").append(__getClassName(p1)).append(";");
+        }
+        r.append(")L").append(__getClassName(ret)).append(";");
+        return r.toString();
+    }
 }

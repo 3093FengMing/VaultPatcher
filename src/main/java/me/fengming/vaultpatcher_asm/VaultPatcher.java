@@ -29,7 +29,7 @@ public class VaultPatcher {
                 }
             }
         } catch (IOException e) {
-            LOGGER.error("Failed to load config: ", e);
+            LOGGER.error("[VaultPatcher] Failed to load config: ", e);
             throw new RuntimeException(e);
         }
     }
