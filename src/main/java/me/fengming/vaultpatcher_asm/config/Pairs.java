@@ -10,7 +10,15 @@ import java.util.HashMap;
 public class Pairs {
     private String lastKey = null;
     private String lastValue = null;
-    private final HashMap<String, String> pairs = new HashMap<>();
+    private final HashMap<String, String> pairs;
+
+    public Pairs(HashMap<String, String> map) {
+        this.pairs = new HashMap<>(map);
+    }
+
+    public Pairs() {
+        this.pairs = new HashMap<>();
+    }
 
     public void readJson(JsonReader reader) throws IOException {
         reader.beginArray();

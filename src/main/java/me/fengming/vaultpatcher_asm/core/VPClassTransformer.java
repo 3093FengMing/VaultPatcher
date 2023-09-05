@@ -3,6 +3,7 @@ package me.fengming.vaultpatcher_asm.core;
 import cpw.mods.modlauncher.api.ITransformer;
 import cpw.mods.modlauncher.api.ITransformerVotingContext;
 import cpw.mods.modlauncher.api.TransformerVoteResult;
+import me.fengming.vaultpatcher_asm.ASMUtils;
 import me.fengming.vaultpatcher_asm.Utils;
 import me.fengming.vaultpatcher_asm.VaultPatcher;
 import me.fengming.vaultpatcher_asm.config.DebugMode;
@@ -13,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class VPClassTransformer implements ITransformer<ClassNode> {
@@ -41,7 +43,11 @@ public class VPClassTransformer implements ITransformer<ClassNode> {
             if (methodName.isEmpty() || methodName.equals(method.name)) {
                 // Initial Local Variable Map
                 final HashMap<Integer, String> localVariableMap = new HashMap<>();
-                method.localVariables.stream().filter(node -> node.desc.equals("Ljava/lang/String;")).forEach(node -> localVariableMap.put(node.index, node.name));
+                boolean var = false;
+                if (method.localVariables != null) {
+                    var = true;
+                    method.localVariables.stream().filter(node -> node.desc.equals("Ljava/lang/String;")).forEach(node -> localVariableMap.put(node.index, node.name));
+                }
 
                 for (ListIterator<AbstractInsnNode> it = method.instructions.iterator(); it.hasNext(); ) {
                     AbstractInsnNode instruction = it.next();
@@ -77,34 +83,87 @@ public class VPClassTransformer implements ITransformer<ClassNode> {
                         MethodInsnNode methodInsnNode = (MethodInsnNode) instruction;
                         if (methodInsnNode.desc.endsWith(")Ljava/lang/String;") && !methodInsnNode.name.equals("__replaceMethod")) {
                             // For any method that returns String
-                            if (Utils.matchLocal(info, methodInsnNode.name, true)) {
+                            if (matchLocal(info, methodInsnNode.name, true)) {
                                 InsnList list = new InsnList();
-                                // set param (pairs)
-                                list.add(new LdcInsnNode(info.getPairs()));
+                                // array
+                                list.add(__makeNewArray(info.getPairs().getPairs().entrySet()));
+                                // to pairs
+                                list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "me/fengming/vaultpatcher_asm/ASMUtils", "__pairsByArrays", "([Ljava/lang/String;[Ljava/lang/String;)Lme/fengming/vaultpatcher_asm/config/Pairs;", false));
                                 // call Utils.__replaceMethod(source, key, value);
                                 list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "me/fengming/vaultpatcher_asm/ASMUtils", "__replaceMethod", "(Ljava/lang/String;Lme/fengming/vaultpatcher_asm/config/Pairs;)Ljava/lang/String;", false));
-                                method.instructions.insertBefore(methodInsnNode, list);
-                                Utils.printDebugIndo("Unknown", "ASMTransformMethod-InsertMethodCalled", "Unknown", input.name, debug);
+                                method.instructions.insert(methodInsnNode, list);
+                                Utils.printDebugIndo("Unknown At Runtime", "ASMTransformMethod-InsertMethodCalled", "Unknown At Runtime", input.name, debug);
                             }
                         }
-                    } else if (instruction.getType() == AbstractInsnNode.VAR_INSN) { // Var Insn
+                    } else if (var && instruction.getType() == AbstractInsnNode.VAR_INSN) { // Var Insn
                         // For any local variable with String type
                         VarInsnNode varInsnNode = (VarInsnNode) instruction;
                         if (varInsnNode.getOpcode() == Opcodes.ASTORE) {
-                            if (Utils.matchLocal(info, localVariableMap.getOrDefault(varInsnNode.var, null), false)) {
+                            if (matchLocal(info, localVariableMap.getOrDefault(varInsnNode.var, null), false)) {
                                 InsnList list = new InsnList();
-                                // set param (pairs)
-                                list.add(new LdcInsnNode(info.getPairs()));
+                                // array
+                                list.add(__makeNewArray(info.getPairs().getPairs().entrySet()));
+                                // to pairs
+                                list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "me/fengming/vaultpatcher_asm/ASMUtils", "__pairsByArrays", "([Ljava/lang/String;[Ljava/lang/String;)Lme/fengming/vaultpatcher_asm/config/Pairs;", false));
                                 // call Utils.__replaceMethod(source, key, value);
                                 list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "me/fengming/vaultpatcher_asm/ASMUtils", "__replaceMethod", "(Ljava/lang/String;Lme/fengming/vaultpatcher_asm/config/Pairs;)Ljava/lang/String;", false));
-                                method.instructions.insertBefore(varInsnNode, list);
-                                Utils.printDebugIndo("Unknown", "ASMTransformMethod-InsertLocalVariableStore", "Unknown", input.name, debug);
+                                method.instructions.insert(varInsnNode, list);
+                                Utils.printDebugIndo("Unknown At Runtime", "ASMTransformMethod-InsertLocalVariableStore", "Unknown At Runtime", input.name, debug);
                             }
                         }
                     }
                 }
             }
         }
+    }
+
+    public static InsnList __makeNewArray(Set<Map.Entry<String, String>> set) {
+        VaultPatcher.LOGGER.warn(Arrays.deepToString(set.toArray()));
+        // insert two arrays (keys & values)
+        int size = set.size();
+
+        InsnList list1 = new InsnList();
+        list1.add(__index(size));
+        list1.add(new TypeInsnNode(Opcodes.ANEWARRAY, "java/lang/String"));
+
+        InsnList list2 = new InsnList();
+        list2.add(__index(size));
+        list2.add(new TypeInsnNode(Opcodes.ANEWARRAY, "java/lang/String"));
+
+        int index = 0;
+        for (Map.Entry<String, String> entry : set) {
+            list1.add(new InsnNode(Opcodes.DUP));
+            list1.add(__index(index));
+            list1.add(new LdcInsnNode(entry.getKey()));
+            list1.add(new InsnNode(Opcodes.AASTORE));
+
+            list2.add(new InsnNode(Opcodes.DUP));
+            list2.add(__index(index));
+            list2.add(new LdcInsnNode(entry.getValue()));
+            list2.add(new InsnNode(Opcodes.AASTORE));
+
+            index++;
+        }
+
+        InsnList ret = new InsnList();
+        ret.add(list1);
+        ret.add(list2);
+
+        return ret;
+    }
+
+    private static AbstractInsnNode __index(int i) {
+        return i > 5 ? new IntInsnNode(Opcodes.BIPUSH, i) : new InsnNode(Opcodes.ICONST_0 + i);
+    }
+
+    public static boolean matchLocal(TranslationInfo info, String name, boolean isMethod) {
+        if (name == null) return false;
+        String l = info.getTargetClassInfo().getLocal();
+        if (l.isEmpty()) return false;
+        if ((l.charAt(0) == 'M' && isMethod) || (l.charAt(0) == 'V' && !isMethod)) {
+            return l.substring(1).equals(name);
+        }
+        return false;
     }
 
     private static void fieldReplace(ClassNode input, TranslationInfo info, DebugMode debug) {

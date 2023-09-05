@@ -80,16 +80,6 @@ public class Utils {
         return v == null ? key : v;
     }
 
-    public static boolean matchLocal(TranslationInfo info, String name, boolean isMethod) {
-        if (name == null) return false;
-        String l = info.getTargetClassInfo().getLocal();
-        if (l.isEmpty()) return false;
-        if ((l.charAt(0) == 'M' && isMethod) || (l.charAt(0) == 'V' && !isMethod)) {
-            return l.substring(1).equals(name);
-        }
-        return false;
-    }
-
     public static List<ITransformer> listOf(ITransformer<?>... transformers) {
         return new ArrayList<>(Arrays.asList(transformers));
     }
