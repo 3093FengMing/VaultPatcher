@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "vaultpatcher",
+  "version": "1.3",
+  "name": "VaultPatcher",
+  "description": "",
+  "authors": [],
+  "contact": {
+    "repo": "https://github.com/FengMing/VaultPatcherFabric"
+  },
+  "license": "GPL-3.0",
+  "icon": "",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "me.fengming.vaultpatcher_asm.VaultPatcherInitializer"
+    ],
+    "mm:early_risers": [
+      "me.fengming.vaultpatcher_asm.asm.EarlyRiser"
+    ]
+  },
+  "mixins": [
+    "vaultpatcher.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.0",
+    "minecraft": ">=1.17"
+  }
+}
