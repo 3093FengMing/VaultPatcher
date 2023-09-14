@@ -9,6 +9,6 @@ public class VaultPatcherInitializer implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        LOGGER.info("Done!");
+        LOGGER.info("VP loaded, please check!");
     }
 }
