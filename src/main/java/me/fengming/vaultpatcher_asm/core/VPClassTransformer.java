@@ -5,14 +5,15 @@ import cpw.mods.modlauncher.api.ITransformerVotingContext;
 import cpw.mods.modlauncher.api.TransformerVoteResult;
 import me.fengming.vaultpatcher_asm.Utils;
 import me.fengming.vaultpatcher_asm.VaultPatcher;
-import me.fengming.vaultpatcher_asm.config.*;
+import me.fengming.vaultpatcher_asm.config.DebugMode;
+import me.fengming.vaultpatcher_asm.config.Pairs;
+import me.fengming.vaultpatcher_asm.config.TranslationInfo;
+import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
 import java.util.*;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 
 public class VPClassTransformer implements ITransformer<ClassNode> {
 
@@ -59,7 +60,7 @@ public class VPClassTransformer implements ITransformer<ClassNode> {
                                         parts[j] = Utils.matchPairs(pairs, parts[j]);
                                     }
                                     String v = String.join("\u0001", parts);
-                                    Utils.printDebugIndo(str, "ASMTransformMethod-InvokeDynamic", v, input.name, debug);
+                                    Utils.printDebugIndo(str, "ASMTransformMethod-InvokeDynamic", v.replace("\u0001", "<p>"), input.name, debug);
                                     invokeDynamicInsnNode.bsmArgs[i] = v;
                                 }
                             }
