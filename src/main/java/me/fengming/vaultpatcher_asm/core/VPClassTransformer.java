@@ -16,7 +16,9 @@ import java.util.jar.JarFile;
 
 public class VPClassTransformer implements ITransformer<ClassNode> {
 
-    VPClassTransformer() {
+    private final TranslationInfo translationInfo;
+    public VPClassTransformer(TranslationInfo info) {
+        this.translationInfo = info;
         VaultPatcher.LOGGER.warn("[VaultPatcher] Loading VPTransformer!");
     }
 
@@ -26,9 +28,9 @@ public class VPClassTransformer implements ITransformer<ClassNode> {
             if (methodName.isEmpty() || methodName.equals(method.name)) {
                 // Initial Local Variable Map
                 final HashMap<Integer, String> localVariableMap = new HashMap<>();
-                boolean var = false;
+                boolean localVarEnable = false;
                 if (method.localVariables != null) {
-                    var = true;
+                    localVarEnable = true;
                     method.localVariables.stream().filter(node -> node.desc.equals("Ljava/lang/String;")).forEach(node -> localVariableMap.put(node.index, node.name));
                 }
 
@@ -78,7 +80,7 @@ public class VPClassTransformer implements ITransformer<ClassNode> {
                                 Utils.printDebugIndo("Unknown At Runtime", "ASMTransformMethod-InsertMethodCalled", "Unknown At Runtime", input.name, debug);
                             }
                         }
-                    } else if (var && instruction.getType() == AbstractInsnNode.VAR_INSN) { // Var Insn
+                    } else if (localVarEnable && instruction.getType() == AbstractInsnNode.VAR_INSN) { // Var Insn
                         // For any local variable with String type
                         VarInsnNode varInsnNode = (VarInsnNode) instruction;
                         if (varInsnNode.getOpcode() == Opcodes.ASTORE) {
@@ -162,11 +164,18 @@ public class VPClassTransformer implements ITransformer<ClassNode> {
 
     @Override
     public @NotNull ClassNode transform(ClassNode input, ITransformerVotingContext context) {
-        for (TranslationInfo info : Utils.translationInfos) {
-            DebugMode debug = VaultPatcherConfig.getDebugMode();
-            if (info.getTargetClassInfo().getName().isEmpty() || input.name.equals(info.getTargetClassInfo().getName().replace('.', '/'))) {
-                methodReplace(input, info, debug);
-                fieldReplace(input, info, debug);
+        DebugMode debug = VaultPatcherConfig.getDebugMode();
+        if (translationInfo == null) {
+            for (TranslationInfo info : Utils.translationInfos) {
+                if (info.getTargetClassInfo().getName().isEmpty() || input.name.equals(Utils.rawPackage(info.getTargetClassInfo().getName()))) {
+                    methodReplace(input, info, debug);
+                    fieldReplace(input, info, debug);
+                }
+            }
+        } else {
+            if (this.translationInfo.getTargetClassInfo().getName().isEmpty() || input.name.equals(Utils.rawPackage(this.translationInfo.getTargetClassInfo().getName()))) {
+                methodReplace(input, this.translationInfo, debug);
+                fieldReplace(input, this.translationInfo, debug);
             }
         }
         return input;
@@ -179,46 +188,16 @@ public class VPClassTransformer implements ITransformer<ClassNode> {
 
     @Override
     public @NotNull Set<Target> targets() {
-        Set<Target> targetModClasses = new HashSet<>();
-        List<String> targetMods = VaultPatcherConfig.getApplyMods();
-        for (String targetMod : targetMods) {
-            getClassesNameByJar(Utils.mcPath.resolve("mods").resolve(targetMod + ".jar").toString()).forEach((s) -> targetModClasses.add(Target.targetClass(s)));
+        Set<Target> targets = new HashSet<>();
+        if (translationInfo == null) {
+            targets.addAll(Utils.addConfigApplyMods()); // May cause unnecessary resource waste
+            targets.addAll(Utils.addConfigClasses());
+        } else {
+            Target t = Utils.addTargetClasses(this.translationInfo);
+            if (t != null) targets.add(t);
         }
-        HashSet<Target> targets = new HashSet<>();
-        targets.addAll(addTargetClasses());
-        targets.addAll(targetModClasses); // May cause unnecessary resource waste
+        targets.iterator().forEachRemaining(t -> System.out.println("t = " + t.getClassName()));
         return targets;
     }
 
-    public static List<String> getClassesNameByJar(String jarPath) {
-        List<String> retClassName = new ArrayList<>();
-        try {
-            JarFile jarFile = new JarFile(jarPath);
-            Enumeration<JarEntry> entries = jarFile.entries();
-            while (entries.hasMoreElements()) {
-                JarEntry entry = entries.nextElement();
-                String name = entry.getName();
-                if (name.isEmpty()) continue;
-                if (name.endsWith(".class")) {
-                    retClassName.add(name);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return retClassName;
-    }
-
-    public static List<ITransformer.Target> addTargetClasses() {
-        List<ITransformer.Target> list = new ArrayList<>();
-        VaultPatcherConfig.getClasses().forEach(s -> list.add(ITransformer.Target.targetClass(s.replace(".", "/"))));
-        for (VaultPatcherPatch vpp : Utils.vpps) {
-            for (TranslationInfo translationInfo : vpp.getTranslationInfoList()) {
-                String name = translationInfo.getTargetClassInfo().getName();
-                if (name.isEmpty()) continue;
-                list.add(ITransformer.Target.targetClass(translationInfo.getTargetClassInfo().getName().replace(".", "/")));
-            }
-        }
-        return list;
-    }
 }
