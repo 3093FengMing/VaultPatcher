@@ -1,7 +1,9 @@
 # Vault Patcher
-## 语言：**[简体中文](README.md)丨[English](README_en_us.md)丨[中文教程PLUS](README_PLUS.md)**
+语言：**[简体中文](README.md)丨[English](README_en_us.md)丨[中文教程PLUS](README_PLUS.md)**
 
-## ⚠警告：1.2.10及以下的版本不再受支持！
+⚠警告：1.2.10及以下的版本不再受支持！
+
+Fabric版请见->[这里](https://github.com/3093FengMing/VaultPatcher/fabric)
 
 # 工作原理
 
