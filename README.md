@@ -3,7 +3,7 @@
 
 ⚠警告：1.2.10及以下的版本不再受支持！
 
-Fabric版请见->[这里](https://github.com/3093FengMing/VaultPatcher/fabric)
+Fabric版请见：[这里](https://github.com/3093FengMing/VaultPatcher/tree/fabric)
 
 # 工作原理
 
