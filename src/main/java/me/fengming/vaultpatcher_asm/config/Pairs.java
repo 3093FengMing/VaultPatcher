@@ -82,5 +82,11 @@ public class Pairs {
         return pairs.getOrDefault(key, null);
     }
 
-
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("{");
+        pairs.forEach((key, value) -> sb.append("'").append(key).append("'='").append(value).append("'").append(","));
+        sb.deleteCharAt(sb.length() - 1).append("}");
+        return sb.toString();
+    }
 }

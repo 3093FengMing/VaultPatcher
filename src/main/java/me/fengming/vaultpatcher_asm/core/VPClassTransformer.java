@@ -16,17 +16,19 @@ import org.objectweb.asm.tree.*;
 import java.util.*;
 
 public class VPClassTransformer implements ITransformer<ClassNode> {
-
+    private final DebugMode debug = VaultPatcherConfig.getDebugMode();
     private final TranslationInfo translationInfo;
     public VPClassTransformer(TranslationInfo info) {
         this.translationInfo = info;
-        VaultPatcher.LOGGER.warn("[VaultPatcher] Loading VPTransformer!");
+        if (info != null && debug.isEnable()) {
+            VaultPatcher.LOGGER.debug(String.format("[VaultPatcher Debug] Loading VPTransformer for Class: %s, Method: %s, Local: %s, Pairs: %s", info.getTargetClassInfo().getName(), info.getTargetClassInfo().getMethod(), info.getTargetClassInfo().getLocal(), info.getPairs()));
+        }
     }
 
-    private static void methodReplace(ClassNode input, TranslationInfo info, DebugMode debug) {
+    private static void methodReplace(ClassNode input, TranslationInfo info) {
         for (MethodNode method : input.methods) {
             String methodName = info.getTargetClassInfo().getMethod();
-            if (methodName.isEmpty() || methodName.equals(method.name)) {
+            if (Utils.isBlank(methodName) || methodName.equals(method.name)) {
                 // Initial Local Variable Map
                 final HashMap<Integer, String> localVariableMap = new HashMap<>();
                 boolean localVarEnable = false;
@@ -44,8 +46,8 @@ public class VPClassTransformer implements ITransformer<ClassNode> {
                         // String Constants
                         LdcInsnNode ldcInsnNode = (LdcInsnNode) instruction;
                         if (ldcInsnNode.cst instanceof String) {
-                            String v = Utils.matchPairs(pairs, (String) ldcInsnNode.cst);
-                            Utils.printDebugIndo((String) ldcInsnNode.cst, "ASMTransformMethod-Ldc", v, input.name, debug);
+                            String v = Utils.matchPairs(pairs, (String) ldcInsnNode.cst, false);
+                            Utils.printDebugInfo((String) ldcInsnNode.cst, "ASMTransformMethod-Ldc", v, input.name, info);
                             ldcInsnNode.cst = v;
                         }
                     } else if (instruction.getType() == AbstractInsnNode.INVOKE_DYNAMIC_INSN) {
@@ -57,10 +59,10 @@ public class VPClassTransformer implements ITransformer<ClassNode> {
                                     String str = (String) invokeDynamicInsnNode.bsmArgs[i];
                                     String[] parts = str.split("\u0001", -1);
                                     for (int j = 0; j < parts.length; j++) {
-                                        parts[j] = Utils.matchPairs(pairs, parts[j]);
+                                        parts[j] = Utils.matchPairs(pairs, parts[j], false);
                                     }
                                     String v = String.join("\u0001", parts);
-                                    Utils.printDebugIndo(str, "ASMTransformMethod-InvokeDynamic", v.replace("\u0001", "<p>"), input.name, debug);
+                                    Utils.printDebugInfo(str.replace("\u0001", "<p>"), "ASMTransformMethod-InvokeDynamic", v.replace("\u0001", "<p>"), input.name, info);
                                     invokeDynamicInsnNode.bsmArgs[i] = v;
                                 }
                             }
@@ -78,7 +80,7 @@ public class VPClassTransformer implements ITransformer<ClassNode> {
                                 // call Utils.__replaceMethod(source, key, value);
                                 list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "me/fengming/vaultpatcher_asm/ASMUtils", "__replaceMethod", "(Ljava/lang/String;Lme/fengming/vaultpatcher_asm/config/Pairs;)Ljava/lang/String;", false));
                                 method.instructions.insert(methodInsnNode, list);
-                                Utils.printDebugIndo("Unknown At Runtime", "ASMTransformMethod-InsertMethodCalled", "Unknown At Runtime", input.name, debug);
+                                Utils.printDebugInfo("Runtime Determination", "ASMTransformMethod-InsertMethodCalled", "Runtime Determination", input.name, info);
                             }
                         }
                     } else if (localVarEnable && instruction.getType() == AbstractInsnNode.VAR_INSN) { // Var Insn
@@ -94,7 +96,7 @@ public class VPClassTransformer implements ITransformer<ClassNode> {
                                 // call Utils.__replaceMethod(source, key, value);
                                 list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "me/fengming/vaultpatcher_asm/ASMUtils", "__replaceMethod", "(Ljava/lang/String;Lme/fengming/vaultpatcher_asm/config/Pairs;)Ljava/lang/String;", false));
                                 method.instructions.insert(varInsnNode, list);
-                                Utils.printDebugIndo("Unknown At Runtime", "ASMTransformMethod-InsertLocalVariableStore", "Unknown At Runtime", input.name, debug);
+                                Utils.printDebugInfo("Runtime Determination", "ASMTransformMethod-InsertLocalVariableStore", "Runtime Determination", input.name, info);
                             }
                         }
                     }
@@ -144,20 +146,20 @@ public class VPClassTransformer implements ITransformer<ClassNode> {
     public static boolean matchLocal(TranslationInfo info, String name, boolean isMethod) {
         if (name == null) return false;
         String l = info.getTargetClassInfo().getLocal();
-        if (l.isEmpty()) return false;
+        if (Utils.isBlank(l)) return false;
         if ((l.charAt(0) == 'M' && isMethod) || (l.charAt(0) == 'V' && !isMethod)) {
             return l.substring(1).equals(name);
         }
         return false;
     }
 
-    private static void fieldReplace(ClassNode input, TranslationInfo info, DebugMode debug) {
+    private static void fieldReplace(ClassNode input, TranslationInfo info) {
         Pairs pairs = info.getPairs();
         for (FieldNode field : input.fields) {
             if (field.value instanceof String) {
                 String o = (String) field.value;
-                String v = Utils.matchPairs(pairs, o);
-                Utils.printDebugIndo(o, "ASMTransformField", v, input.name, debug);
+                String v = Utils.matchPairs(pairs, o, false);
+                Utils.printDebugInfo(o, "ASMTransformField", v, input.name, info);
                 field.value = v;
             }
         }
@@ -165,18 +167,17 @@ public class VPClassTransformer implements ITransformer<ClassNode> {
 
     @Override
     public @NotNull ClassNode transform(ClassNode input, ITransformerVotingContext context) {
-        DebugMode debug = VaultPatcherConfig.getDebugMode();
         if (translationInfo == null) {
             for (TranslationInfo info : Utils.translationInfos) {
-                if (info.getTargetClassInfo().getName().isEmpty() || input.name.equals(Utils.rawPackage(info.getTargetClassInfo().getName()))) {
-                    methodReplace(input, info, debug);
-                    fieldReplace(input, info, debug);
+                if (Utils.isBlank(info.getTargetClassInfo().getName()) || input.name.equals(Utils.rawPackage(info.getTargetClassInfo().getName()))) {
+                    methodReplace(input, info);
+                    fieldReplace(input, info);
                 }
             }
         } else {
-            if (this.translationInfo.getTargetClassInfo().getName().isEmpty() || input.name.equals(Utils.rawPackage(this.translationInfo.getTargetClassInfo().getName()))) {
-                methodReplace(input, this.translationInfo, debug);
-                fieldReplace(input, this.translationInfo, debug);
+            if (Utils.isBlank(this.translationInfo.getTargetClassInfo().getName()) || input.name.equals(Utils.rawPackage(this.translationInfo.getTargetClassInfo().getName()))) {
+                methodReplace(input, this.translationInfo);
+                fieldReplace(input, this.translationInfo);
             }
         }
         return input;
@@ -197,7 +198,9 @@ public class VPClassTransformer implements ITransformer<ClassNode> {
             Target t = Utils.addTargetClasses(this.translationInfo);
             if (t != null) targets.add(t);
         }
-        targets.iterator().forEachRemaining(t -> System.out.println("t = " + t.getClassName()));
+        if (debug.isEnable()) {
+            targets.iterator().forEachRemaining(t -> VaultPatcher.LOGGER.debug(String.format("[VaultPatcher Debug] VPClassTransformer Target = %s", t.getClassName())));
+        }
         return targets;
     }
 

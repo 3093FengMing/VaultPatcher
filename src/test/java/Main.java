@@ -7,8 +7,9 @@ import org.objectweb.asm.tree.VarInsnNode;
 public class Main {
     String abcc = "sssh";
 
-    public void main(String[] args) {
-        String sss = A1145142.ffff;
+    public void main(String sss) {
+        String newSss = anotherMethod("text1", "text2");
+        __replaceMethod(newSss);
 //        String c = "222a %s";
 //        String f = StringUtils.capitalize(__replaceMethod(sss.name(), "1", "2a").toLowerCase());
 //        int g = 999;
@@ -19,15 +20,19 @@ public class Main {
 //        String f = c.formatted(new Object[]{testMethod()});
 //        System.out.println(__replaceMethod("1source", "1key", "1value"));
         //System.out.println("f = " + f);
-        String fc = testMethod(aa1().testMethod(enumGetName_1()));
+        //String fc = testMethod(aa1().testMethod(enumGetName_1()));
 
     }
     private static String enumGetName_1() {return "target";}
-    private String testMethod(String a) {
-        return "ssds";
+    private void testMethod(String a) {
+        this.abcc = anotherMethod(__replaceMethod(a), "");
     }
 
-    public static String __replaceMethod(String key, AbstractInsnNode p) {
+    private String anotherMethod(String s, String b) {
+        return s;
+    }
+
+    public static String __replaceMethod(String key) {
         return "";
     }
 

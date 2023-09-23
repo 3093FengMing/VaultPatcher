@@ -19,6 +19,7 @@ public class VaultPatcherPatch {
     private static final Gson GSON = new Gson();
     private final Path patchFile;
     private final List<TranslationInfo> translationInfoList = new ArrayList<>();
+    private boolean dynamic = false;
 
     public VaultPatcherPatch(String patchFile) {
         VaultPatcher.LOGGER.info("[VaultPatcher] Found Module " + patchFile);
@@ -37,10 +38,14 @@ public class VaultPatcherPatch {
 
         PatchInfo patchInfo = new PatchInfo();
         patchInfo.readJson(reader);
-        VaultPatcher.LOGGER.info("[VaultPatcher] Loading {}!", patchInfo.getName());
-        VaultPatcher.LOGGER.info("[VaultPatcher] About Information:\nAuthor(s): {}\nApply to Mod(s): {}\nDescription: {}", patchInfo.getAuthors(), patchInfo.getMods(), patchInfo.getDesc());
+        dynamic = patchInfo.isDynamic();
+        VaultPatcher.LOGGER.info(String.format("[VaultPatcher] Loading %s!", patchInfo.getName()));
+        VaultPatcher.LOGGER.info(/*JustPretty*/"[VaultPatcher] About Information:");
+        VaultPatcher.LOGGER.info(String.format("[VaultPatcher] Author(s): %s", patchInfo.getAuthors()));
+        VaultPatcher.LOGGER.info(String.format("[VaultPatcher] Apply to Mod(s): %s", patchInfo.getMods()));
+        VaultPatcher.LOGGER.info(String.format("[VaultPatcher] Description: %s", patchInfo.getDesc()));
+        VaultPatcher.LOGGER.info(String.format("[VaultPatcher] Dynamic: %s", patchInfo.isDynamic()));
 
-        Map<String, List<TranslationInfo>> m = new HashMap<>();
         while (reader.peek() != JsonToken.END_ARRAY) {
             TranslationInfo translationInfo = new TranslationInfo();
             translationInfo.readJson(reader);
@@ -60,6 +65,10 @@ public class VaultPatcherPatch {
     }
 
     public List<TranslationInfo> getTranslationInfoList() {
-        return translationInfoList;
+        return dynamic ? new ArrayList<>() : translationInfoList;
+    }
+
+    public List<TranslationInfo> getDynTranslationInfoList() {
+        return dynamic ? translationInfoList : new ArrayList<>();
     }
 }

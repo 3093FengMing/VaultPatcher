@@ -11,6 +11,7 @@ public class PatchInfo {
     private String desc;
     private String mods;
     private String authors;
+    private boolean dynamic = false;
 
     public String getName() {
         return name == null || name.isEmpty() ? "Unknown" : name;
@@ -44,6 +45,14 @@ public class PatchInfo {
         this.authors = authors;
     }
 
+    public boolean isDynamic() {
+        return dynamic;
+    }
+
+    public void setDynamic(boolean dynamic) {
+        this.dynamic = dynamic;
+    }
+
 
     public void readJson(JsonReader reader) throws IOException {
         reader.beginObject();
@@ -61,6 +70,10 @@ public class PatchInfo {
                 case "authors":
                     setAuthors(reader.nextString());
                     break;
+                case "dynamic":
+                case "dyn":
+                    setDynamic(reader.nextBoolean());
+                    break;
                 default:
                     reader.skipValue();
                     break;
@@ -76,6 +89,7 @@ public class PatchInfo {
         writer.name("desc").value(getDesc());
         writer.name("mods").value(getMods());
         writer.name("authors").value(getAuthors());
+        writer.name("dynamic").value(isDynamic());
         writer.endObject();
     }
 }

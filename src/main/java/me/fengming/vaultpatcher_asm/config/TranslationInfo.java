@@ -8,8 +8,6 @@ import java.io.IOException;
 public class TranslationInfo {
     private final TargetClassInfo targetClassInfo = new TargetClassInfo();
     private final Pairs pairs = new Pairs();
-    private String key;
-    private String value;
 
     public void readJson(JsonReader reader) throws IOException {
         reader.beginObject();
@@ -50,13 +48,19 @@ public class TranslationInfo {
         return pairs;
     }
 
-
     public void setKey(String key) {
         pairs.setKey(key);
     }
 
-
     public void setValue(String value) {
         pairs.setValue(value);
+    }
+
+    @Override
+    public String toString() {
+        return "TranslationInfo{" +
+                "targetClassInfo=" + targetClassInfo +
+                ", pairs=" + pairs +
+                '}';
     }
 }

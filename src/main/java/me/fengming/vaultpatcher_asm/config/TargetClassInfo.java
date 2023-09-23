@@ -10,6 +10,7 @@ public class TargetClassInfo {
     private String name = "";
     private String method = "";
     private String local = "";
+    private byte matchMode = 0;
 
     public void readJson(JsonReader reader) throws IOException {
         reader.beginObject();
@@ -49,7 +50,17 @@ public class TargetClassInfo {
     }
 
     public void setName(String name) {
-        this.name = name;
+        char f = name.charAt(0);
+        if (f == '@') {
+            matchMode = 1;
+            this.name = name.substring(1);
+        } else if (f == '#') {
+            matchMode = 2;
+            this.name = name.substring(1);
+        } else {
+            matchMode = 0;
+            this.name = name;
+        }
     }
 
     public String getMethod() {
@@ -66,5 +77,18 @@ public class TargetClassInfo {
 
     public void setLocal(String local) {
         this.local = local;
+    }
+
+    public byte getMatchMode() {
+        return matchMode;
+    }
+
+    @Override
+    public String toString() {
+        return "TargetClassInfo{" +
+                "name='" + name + '\'' +
+                ", method='" + method + '\'' +
+                ", local='" + local + '\'' +
+                '}';
     }
 }
