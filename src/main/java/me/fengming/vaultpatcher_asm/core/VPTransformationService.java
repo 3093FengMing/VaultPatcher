@@ -44,6 +44,7 @@ public class VPTransformationService implements ITransformationService {
             VaultPatcher.LOGGER.warn("[VaultPatcher] Disable dynamic mod because you are in old version (" + minecraftVersion + "<=1.16.5)");
             oldVersion = true;
         }
+
         VaultPatcher.init(minecraftPathOptional.get());
     }
 
