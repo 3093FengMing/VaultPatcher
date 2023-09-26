@@ -2,6 +2,7 @@ package me.fengming.vaultpatcher_asm.config;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
+import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -44,12 +45,12 @@ public class Pairs {
         reader.endArray();
     }
 
-//    public void writeJson(JsonWriter writer) throws IOException {
-//        writer.beginObject();
+    public void writeJson(JsonWriter writer) throws IOException {
+        writer.beginObject();
 //        writer.name("key").value(getKey());
 //        writer.name("value").value(getValue());
-//        writer.endObject();
-//    }
+        writer.endObject();
+    }
 
 
     public HashMap<String, String> getPairs() {

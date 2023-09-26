@@ -3,10 +3,8 @@ package me.fengming.vaultpatcher_asm;
 import me.fengming.vaultpatcher_asm.config.Pairs;
 import me.fengming.vaultpatcher_asm.config.TargetClassInfo;
 import me.fengming.vaultpatcher_asm.config.TranslationInfo;
-import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
 
 import java.util.HashMap;
-import java.util.Map;
 
 public class ASMUtils {
 

@@ -1,6 +1,5 @@
 package me.fengming.vaultpatcher_asm;
 
-import me.fengming.vaultpatcher_asm.config.TranslationInfo;
 import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
 import me.fengming.vaultpatcher_asm.config.VaultPatcherPatch;
 import org.apache.logging.log4j.LogManager;

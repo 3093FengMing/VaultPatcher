@@ -52,6 +52,14 @@ public class Utils {
 
     // transformer
 
+    public static boolean isOldVersion(String version) {
+        String _116 = "1.16.5";
+        for (int i = 0; i < 6; i++) {
+            if (version.charAt(i) < _116.charAt(i)) return true;
+        }
+        return false;
+    }
+
     public static List<String> getClassesNameByJar(String jarPath) {
         List<String> retClassName = new ArrayList<>();
         try {

@@ -1,4 +1,4 @@
-package me.fengming.vaultpatcher_asm.core;
+package me.fengming.vaultpatcher_asm.forge;
 
 import cpw.mods.modlauncher.Launcher;
 import cpw.mods.modlauncher.api.IEnvironment;
@@ -6,6 +6,8 @@ import cpw.mods.modlauncher.api.ITransformationService;
 import cpw.mods.modlauncher.api.ITransformer;
 import me.fengming.vaultpatcher_asm.Utils;
 import me.fengming.vaultpatcher_asm.VaultPatcher;
+import me.fengming.vaultpatcher_asm.core.VPClassTransformer;
+import me.fengming.vaultpatcher_asm.core.VPMinecraftTransformer;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
@@ -40,7 +42,7 @@ public class VPTransformationService implements ITransformationService {
         String minecraftVersion = getMinecraftVersion();
         if (Utils.isBlank(minecraftVersion)) VaultPatcher.LOGGER.error("[VaultPatcher] Failed to get minecraft version!");
         // VaultPatcher.LOGGER.info("[VaultPatcher] Get minecraft version: " + minecraftVersion);
-        if (isOldVersion(minecraftVersion)) {
+        if (Utils.isOldVersion(minecraftVersion)) {
             VaultPatcher.LOGGER.warn("[VaultPatcher] Disable dynamic mod because you are in old version (" + minecraftVersion + "<=1.16.5)");
             oldVersion = true;
         }
@@ -48,7 +50,7 @@ public class VPTransformationService implements ITransformationService {
         VaultPatcher.init(minecraftPathOptional.get());
     }
 
-    private String getMinecraftVersion() {
+    private static String getMinecraftVersion() {
         try {
             Object Instance_Launcher = Launcher.INSTANCE;
             Field Field_argumentHandler = Instance_Launcher.getClass().getDeclaredField("argumentHandler");
@@ -67,14 +69,6 @@ public class VPTransformationService implements ITransformationService {
             throw new IllegalStateException("WHY ARE YOU HERE!!??");
         }
         return "";
-    }
-
-    private boolean isOldVersion(String version) {
-        String _116 = "1.16.5";
-        for (int i = 0; i < 6; i++) {
-            if (version.charAt(i) < _116.charAt(i)) return true;
-        }
-        return false;
     }
 
     @Override

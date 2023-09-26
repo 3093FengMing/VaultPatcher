@@ -1,33 +1,33 @@
 package me.fengming.vaultpatcher_asm.core;
 
-import com.google.common.collect.Sets;
-import cpw.mods.modlauncher.Launcher;
-import cpw.mods.modlauncher.api.INameMappingService;
 import cpw.mods.modlauncher.api.ITransformer;
 import cpw.mods.modlauncher.api.ITransformerVotingContext;
 import cpw.mods.modlauncher.api.TransformerVoteResult;
-import me.fengming.vaultpatcher_asm.ASMUtils;
 import me.fengming.vaultpatcher_asm.VaultPatcher;
-import net.minecraftforge.coremod.api.ASMAPI;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
 import java.util.HashSet;
 import java.util.ListIterator;
-import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 
-public class VPMinecraftTransformer implements ITransformer<ClassNode> {
+public class VPMinecraftTransformer implements ITransformer<ClassNode>, Consumer<ClassNode> {
 
-    VPMinecraftTransformer() {
+    public VPMinecraftTransformer() {
         VaultPatcher.LOGGER.info("[VaultPatcher] Loading MinecraftTransformer");
     }
 
-    @NotNull
+    // for Forge
     @Override
     public ClassNode transform(ClassNode input, ITransformerVotingContext context) {
-        if (input.name.equals("net/minecraft/util/text/StringTextComponent") || input.name.equals("net/minecraft/network/chat/TextComponent")) {
+        return classTransform(input);
+    }
+
+    private static ClassNode classTransform(ClassNode input) {
+        if (input.name.equals("net/minecraft/util/text/StringTextComponent") || input.name.equals("net/minecraft/network/chat/TextComponent") /* Forge */
+                || input.name.equals("net/minecraft/class_2585") /* Fabric */) {
             // TextComponent
             for (MethodNode method : input.methods) {
                 if (method.name.equals("<init>")) {
@@ -43,10 +43,11 @@ public class VPMinecraftTransformer implements ITransformer<ClassNode> {
                     }
                 }
             }
-        } else if (input.name.equals("net/minecraft/client/gui/Font") || input.name.equals("net/minecraft/client/gui/FontRenderer")) {
+        } else if (input.name.equals("net/minecraft/client/gui/Font") || input.name.equals("net/minecraft/client/gui/FontRenderer") /* Forge */
+                    || input.name.equals("net/minecraft/class_327") /* Fabric */) {
             // Font
             for (MethodNode method : input.methods) {
-                if (method.name.equals("m_92897_") || method.name.equals("func_228081_c_")) {
+                if (method.name.equals("m_92897_") || method.name.equals("func_228081_c_") /* Forge */ || method.name.equals("method_1724") /* Fabric */) {
                     InsnList insnList = new InsnList();
                     insnList.add(new VarInsnNode(Opcodes.ALOAD, 1));
                     insnList.add(new LdcInsnNode(input.name + "#renderText"));
@@ -57,6 +58,12 @@ public class VPMinecraftTransformer implements ITransformer<ClassNode> {
             }
         }
         return input;
+    }
+
+    // for Fabric
+    @Override
+    public void accept(ClassNode input) {
+        classTransform(input);
     }
 
     @NotNull
@@ -77,5 +84,4 @@ public class VPMinecraftTransformer implements ITransformer<ClassNode> {
         targets.add(Target.targetClass("net.minecraft.client.gui.FontRenderer"));
         return targets;
     }
-
 }
