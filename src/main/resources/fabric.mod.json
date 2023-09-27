@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "vaultpatcher",
-  "version": "1.3.0",
+  "version": "1.3.2",
   "name": "VaultPatcher",
   "description": "",
   "authors": ["FengMing3093"],
@@ -23,9 +23,13 @@
     "vaultpatcher.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.7.0",
-    "mm": ">=2.0"
+    "fabricloader": ">=0.7.0"
   },
+  "jars": [
+    {
+      "file": "META-INF/jars/Fabric-ASM-2.3.jar"
+    }
+  ],
   "custom": {
     "modmenu:api": true
   }

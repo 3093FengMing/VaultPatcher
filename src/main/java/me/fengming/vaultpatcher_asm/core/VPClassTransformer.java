@@ -16,7 +16,7 @@ import org.objectweb.asm.tree.*;
 import java.util.*;
 import java.util.function.Consumer;
 
-public class VPClassTransformer implements ITransformer<ClassNode>, Consumer<ClassNode> {
+public class VPClassTransformer implements Consumer<ClassNode> {
     private final DebugMode debug = VaultPatcherConfig.getDebugMode();
     private final TranslationInfo translationInfo;
     public VPClassTransformer(TranslationInfo info) {
@@ -37,8 +37,6 @@ public class VPClassTransformer implements ITransformer<ClassNode>, Consumer<Cla
                     localVarEnable = true;
                     method.localVariables.stream().filter(node -> node.desc.equals("Ljava/lang/String;")).forEach(node -> localVariableMap.put(node.index, node.name));
                 }
-
-                insnReplce(method.instructions);
 
                 for (ListIterator<AbstractInsnNode> it = method.instructions.iterator(); it.hasNext(); ) {
                     AbstractInsnNode instruction = it.next();
@@ -100,6 +98,18 @@ public class VPClassTransformer implements ITransformer<ClassNode>, Consumer<Cla
         }
     }
 
+    private static void fieldReplace(ClassNode input, TranslationInfo info) {
+        Pairs pairs = info.getPairs();
+        for (FieldNode field : input.fields) {
+            if (field.value instanceof String) {
+                String o = (String) field.value;
+                String v = Utils.matchPairs(pairs, o, false);
+                Utils.printDebugInfo(o, "ASMTransformField", v, input.name, info);
+                field.value = v;
+            }
+        }
+    }
+
     private static void insertPairs(TranslationInfo info, MethodNode method, AbstractInsnNode nodePosition) {
         InsnList list = new InsnList();
         // array
@@ -109,10 +119,6 @@ public class VPClassTransformer implements ITransformer<ClassNode>, Consumer<Cla
         // call Utils.__replaceMethod(source, key, value);
         list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "me/fengming/vaultpatcher_asm/ASMUtils", "__replaceMethod", "(Ljava/lang/String;Lme/fengming/vaultpatcher_asm/config/Pairs;)Ljava/lang/String;", false));
         method.instructions.insert(nodePosition, list);
-    }
-
-    private static void insnReplce(InsnList insnList) {
-
     }
 
     public static InsnList __makeNewArray(Set<Map.Entry<String, String>> set) {
@@ -163,67 +169,19 @@ public class VPClassTransformer implements ITransformer<ClassNode>, Consumer<Cla
         return false;
     }
 
-    private static void fieldReplace(ClassNode input, TranslationInfo info) {
-        Pairs pairs = info.getPairs();
-        for (FieldNode field : input.fields) {
-            if (field.value instanceof String) {
-                String o = (String) field.value;
-                String v = Utils.matchPairs(pairs, o, false);
-                Utils.printDebugInfo(o, "ASMTransformField", v, input.name, info);
-                field.value = v;
-            }
-        }
-    }
-
-    // for Forge
-    @Override
-    public @NotNull ClassNode transform(ClassNode input, ITransformerVotingContext context) {
-        if (translationInfo == null) {
-            for (TranslationInfo info : Utils.translationInfos) {
-                if (Utils.isBlank(info.getTargetClassInfo().getName()) || input.name.equals(Utils.rawPackage(info.getTargetClassInfo().getName()))) {
-                    methodReplace(input, info);
-                    fieldReplace(input, info);
-                }
-            }
-        } else {
-            if (Utils.isBlank(this.translationInfo.getTargetClassInfo().getName()) || input.name.equals(Utils.rawPackage(this.translationInfo.getTargetClassInfo().getName()))) {
-                methodReplace(input, this.translationInfo);
-                fieldReplace(input, this.translationInfo);
-            }
-        }
-        return input;
-    }
-
     // for Fabric
     @Override
     public void accept(ClassNode input) {
-        if (Utils.isBlank(this.translationInfo.getTargetClassInfo().getName()) || input.name.equals(Utils.rawPackage(this.translationInfo.getTargetClassInfo().getName()))) {
+        if (this.translationInfo == null) {
+            for (TranslationInfo info : Utils.translationInfos) {
+                if (Utils.isBlank(this.translationInfo.getTargetClassInfo().getName()) || input.name.equals(Utils.rawPackage(this.translationInfo.getTargetClassInfo().getName()))) {
+                    methodReplace(input, this.translationInfo);
+                    fieldReplace(input, this.translationInfo);
+                }
+            }
+        } else if (Utils.isBlank(this.translationInfo.getTargetClassInfo().getName()) || input.name.equals(Utils.rawPackage(this.translationInfo.getTargetClassInfo().getName()))) {
             methodReplace(input, this.translationInfo);
             fieldReplace(input, this.translationInfo);
         }
-    }
-
-    @Override
-    public @org.jetbrains.annotations.NotNull TransformerVoteResult castVote(ITransformerVotingContext context) {
-        return TransformerVoteResult.YES;
-    }
-
-    @Override
-    public @NotNull Set<Target> targets() {
-        Set<Target> targets = new HashSet<>();
-
-        if (translationInfo == null) {
-            targets.addAll(Utils.addConfigApplyMods()); // May cause unnecessary resource waste
-            targets.addAll(Utils.addConfigClasses());
-        } else {
-            Target t = Utils.addTargetClasses(this.translationInfo);
-            if (t != null) targets.add(t);
-        }
-
-        if (debug.isEnable()) {
-            targets.iterator().forEachRemaining(t -> VaultPatcher.LOGGER.debug(String.format("[VaultPatcher Debug] VPClassTransformer Target = %s", t.getClassName())));
-        }
-
-        return targets;
     }
 }

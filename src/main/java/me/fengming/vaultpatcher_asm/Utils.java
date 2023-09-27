@@ -54,6 +54,7 @@ public class Utils {
 
     public static boolean isOldVersion(String version) {
         String _116 = "1.16.5";
+        if (_116.equals(version)) return true;
         for (int i = 0; i < 6; i++) {
             if (version.charAt(i) < _116.charAt(i)) return true;
         }

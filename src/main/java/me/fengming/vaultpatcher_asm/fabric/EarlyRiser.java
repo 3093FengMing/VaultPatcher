@@ -21,11 +21,6 @@ public class EarlyRiser implements Runnable {
     public void run() {
         VaultPatcher.LOGGER.warn("[VaultPatcher] Loading VPTransformationService!");
 
-        // String minecraftVersion = getMinecraftVersion();
-
-        // if (Utils.isBlank(minecraftVersion)) VaultPatcher.LOGGER.error("[VaultPatcher] Failed to get minecraft version!");
-        // VaultPatcher.LOGGER.info("[VaultPatcher] Get minecraft version: " + minecraftVersion);
-
         VaultPatcher.init(FabricLoader.getInstance().getGameDir());
         // initial transformers
 
@@ -45,10 +40,6 @@ public class EarlyRiser implements Runnable {
         VaultPatcherConfig.getClasses().forEach((s) -> ClassTinkerers.addTransformation(s, new VPClassTransformer(null)));
 
         ClassTinkerers.addTransformation("net.minecraft.class_327", new VPMinecraftTransformer());
-        ClassTinkerers.addReplacement("net.minecraft.class_2585", new VPMinecraftTransformer());
+        ClassTinkerers.addTransformation("net.minecraft.class_2585", new VPMinecraftTransformer());
     }
-
-//    private static String getMinecraftVersion() {
-//        return FabricLoaderImpl.INSTANCE.getGameProvider().getNormalizedGameVersion();
-//    }
 }

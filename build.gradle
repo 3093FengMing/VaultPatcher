@@ -1,10 +1,4 @@
-buildscript {
-    repositories {
-    }
-}
-
 plugins {
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
     id 'maven-publish'
     id 'java'
 }
@@ -41,15 +35,6 @@ tasks.compileJava {
     options.encoding = 'UTF-8'
 }
 
-tasks.shadowJar {
-    classifier = ""
-    minimize()
-    archiveBaseName.set("vaultpatcher")
-    dependencies {
-        include(dependency("com.github.Chocohead:Fabric-ASM:2.3"))
-    }
-}
-
 repositories {
     mavenCentral()
     maven {
@@ -74,7 +59,5 @@ dependencies {
     implementation 'cpw.mods:modlauncher:8.1.3'
 
     implementation 'com.github.Chocohead:Fabric-ASM:2.3'
-
-
 }
 

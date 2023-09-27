@@ -6,7 +6,6 @@ import cpw.mods.modlauncher.api.ITransformationService;
 import cpw.mods.modlauncher.api.ITransformer;
 import me.fengming.vaultpatcher_asm.Utils;
 import me.fengming.vaultpatcher_asm.VaultPatcher;
-import me.fengming.vaultpatcher_asm.core.VPClassTransformer;
 import me.fengming.vaultpatcher_asm.core.VPMinecraftTransformer;
 import org.jetbrains.annotations.NotNull;
 
@@ -43,7 +42,7 @@ public class VPTransformationService implements ITransformationService {
         if (Utils.isBlank(minecraftVersion)) VaultPatcher.LOGGER.error("[VaultPatcher] Failed to get minecraft version!");
         // VaultPatcher.LOGGER.info("[VaultPatcher] Get minecraft version: " + minecraftVersion);
         if (Utils.isOldVersion(minecraftVersion)) {
-            VaultPatcher.LOGGER.warn("[VaultPatcher] Disable dynamic mod because you are in old version (" + minecraftVersion + "<=1.16.5)");
+            VaultPatcher.LOGGER.warn("[VaultPatcher] Disable dynamic replace because you are in old version (" + minecraftVersion + "<=1.16.5)");
             oldVersion = true;
         }
 
@@ -80,8 +79,8 @@ public class VPTransformationService implements ITransformationService {
     @Override
     public @NotNull List<ITransformer> transformers() {
         List<ITransformer> list = new ArrayList<>();
-        list.addAll(Utils.translationInfos.stream().collect(ArrayList::new, (l1, info) -> l1.add(new VPClassTransformer(info)), ArrayList::addAll));
-        if (!oldVersion) list.add(new VPMinecraftTransformer());
+        list.addAll(Utils.translationInfos.stream().collect(ArrayList::new, (l1, info) -> l1.add(new ForgeClassTransformer(info)), ArrayList::addAll));
+        if (!oldVersion) list.add(new ForgeMinecraftTransformer());
         return list;
     }
 }
