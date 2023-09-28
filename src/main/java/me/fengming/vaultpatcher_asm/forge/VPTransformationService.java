@@ -6,7 +6,6 @@ import cpw.mods.modlauncher.api.ITransformationService;
 import cpw.mods.modlauncher.api.ITransformer;
 import me.fengming.vaultpatcher_asm.Utils;
 import me.fengming.vaultpatcher_asm.VaultPatcher;
-import me.fengming.vaultpatcher_asm.core.VPMinecraftTransformer;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
