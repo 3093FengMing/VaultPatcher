@@ -2,10 +2,7 @@ package me.fengming.vaultpatcher_asm.core;
 
 import me.fengming.vaultpatcher_asm.Utils;
 import me.fengming.vaultpatcher_asm.VaultPatcher;
-import me.fengming.vaultpatcher_asm.config.DebugMode;
-import me.fengming.vaultpatcher_asm.config.Pairs;
-import me.fengming.vaultpatcher_asm.config.TranslationInfo;
-import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
+import me.fengming.vaultpatcher_asm.config.*;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
@@ -65,7 +62,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
                                         parts[j] = Utils.matchPairs(pairs, parts[j], false);
                                     }
                                     String v = String.join("\u0001", parts);
-                                    Utils.printDebugInfo(str.replace("\u0001", "<p>"), "ASMTransformMethod-InvokeDynamic", v.replace("\u0001", "<p>"), input.name, info);
+                                    Utils.printDebugInfo(str.replace("\u0001", "<p>"), "ASMTransformMethod-StringConcat", v.replace("\u0001", "<p>"), input.name, info);
                                     invokeDynamicInsnNode.bsmArgs[i] = v;
                                 }
                             }
@@ -78,19 +75,30 @@ public class VPClassTransformer implements Consumer<ClassNode> {
                         if (methodInsnNode.desc.endsWith(")Ljava/lang/String;")
                                 && !methodInsnNode.name.equals("__replaceMethod")
                                 && matchLocal(info, methodInsnNode.name, true)) {
-                            insertPairs(info, method, methodInsnNode);
-                            Utils.printDebugInfo("Runtime Determination", "ASMTransformMethod-InsertMethodCalled", "Runtime Determination", input.name, info);
+                            insertReplace(info, method, methodInsnNode);
+                            Utils.printDebugInfo("Runtime Determination", "ASMTransformMethod-InsertMethodReturn", "Runtime Determination", input.name, info);
                         }
                     }
 
                     // For any local variable of String
                     else if (localVarEnable && instruction.getType() == AbstractInsnNode.VAR_INSN) {
                         VarInsnNode varInsnNode = (VarInsnNode) instruction;
-                        if (varInsnNode.getOpcode() == Opcodes.ASTORE
+
+                        // Local Variable
+                        if ((varInsnNode.getOpcode() == Opcodes.ASTORE || varInsnNode.getOpcode() == Opcodes.ALOAD)
                                 && matchLocal(info, localVariableMap.getOrDefault(varInsnNode.var, null), false)) {
-                            insertPairs(info, method, varInsnNode);
-                            Utils.printDebugInfo("Runtime Determination", "ASMTransformMethod-InsertLocalVariableStore", "Runtime Determination", input.name, info);
+                            insertReplace(info, method, varInsnNode);
+                            Utils.printDebugInfo("Runtime Determination", "ASMTransformMethod-InsertLocalVariableStore/Load", "Runtime Determination", input.name, info);
                         }
+
+//                        // Parameters
+//                        method.parameters.forEach(p -> {
+//                            if (p.name.equals(localVariableMap.getOrDefault(varInsnNode.var, null))) {
+//                                insertReplace(info, method, varInsnNode);
+//                                Utils.printDebugInfo("Runtime Determination", "ASMTransformMethod-InsertLocalVariableLoad", "Runtime Determination", input.name, info);
+//                            }
+//                        });
+//
                     }
                 }
             }
@@ -109,7 +117,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
         }
     }
 
-    private static void insertPairs(TranslationInfo info, MethodNode method, AbstractInsnNode nodePosition) {
+    private static void insertReplace(TranslationInfo info, MethodNode method, AbstractInsnNode nodePosition) {
         InsnList list = new InsnList();
         // array
         list.add(__makeNewArray(info.getPairs().getPairs().entrySet()));
@@ -160,10 +168,10 @@ public class VPClassTransformer implements Consumer<ClassNode> {
 
     public static boolean matchLocal(TranslationInfo info, String name, boolean isMethod) {
         if (name == null) return false;
-        String l = info.getTargetClassInfo().getLocal();
-        if (Utils.isBlank(l)) return false;
-        if ((l.charAt(0) == 'M' && isMethod) || (l.charAt(0) == 'V' && !isMethod)) {
-            return l.substring(1).equals(name);
+        TargetClassInfo i = info.getTargetClassInfo();
+        if (Utils.isBlank(i.getLocal())) return false;
+        if ((!i.isLocal() && isMethod) || (i.isLocal() && !isMethod)) {
+            return i.getLocal().equals(name);
         }
         return false;
     }
@@ -173,9 +181,9 @@ public class VPClassTransformer implements Consumer<ClassNode> {
     public void accept(ClassNode input) {
         if (this.translationInfo == null) {
             for (TranslationInfo info : Utils.translationInfos) {
-                if (Utils.isBlank(this.translationInfo.getTargetClassInfo().getName()) || input.name.equals(Utils.rawPackage(this.translationInfo.getTargetClassInfo().getName()))) {
-                    methodReplace(input, this.translationInfo);
-                    fieldReplace(input, this.translationInfo);
+                if (Utils.isBlank(info.getTargetClassInfo().getName()) || input.name.equals(Utils.rawPackage(info.getTargetClassInfo().getName()))) {
+                    methodReplace(input, info);
+                    fieldReplace(input, info);
                 }
             }
         } else if (Utils.isBlank(this.translationInfo.getTargetClassInfo().getName()) || input.name.equals(Utils.rawPackage(this.translationInfo.getTargetClassInfo().getName()))) {

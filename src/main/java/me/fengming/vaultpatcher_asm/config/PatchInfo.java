@@ -58,20 +58,25 @@ public class PatchInfo {
         reader.beginObject();
         while (reader.peek() != JsonToken.END_OBJECT) {
             switch (reader.nextName()) {
+                case "n":
                 case "name":
                     setName(reader.nextString());
                     break;
+                case "d":
                 case "desc":
                     setDesc(reader.nextString());
                     break;
+                case "m":
                 case "mods":
                     setMods(reader.nextString());
                     break;
+                case "a":
                 case "authors":
                     setAuthors(reader.nextString());
                     break;
-                case "dynamic":
+                case "e":
                 case "dyn":
+                case "dynamic":
                     setDynamic(reader.nextBoolean());
                     break;
                 default:

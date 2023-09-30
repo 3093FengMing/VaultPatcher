@@ -3,6 +3,7 @@ package me.fengming.vaultpatcher_asm.config;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
+import me.fengming.vaultpatcher_asm.Utils;
 
 import java.io.IOException;
 
@@ -11,6 +12,7 @@ public class TargetClassInfo {
     private String method = "";
     private String local = "";
     private byte matchMode = 0;
+    private boolean isLocal = false;
 
     public void readJson(JsonReader reader) throws IOException {
         reader.beginObject();
@@ -76,11 +78,20 @@ public class TargetClassInfo {
     }
 
     public void setLocal(String local) {
-        this.local = local;
+        if (Utils.isBlank(local)) {
+            this.local = local;
+        } else {
+            isLocal = local.charAt(0) == 'V';
+            this.local = local.substring(1);
+        }
     }
 
     public byte getMatchMode() {
         return matchMode;
+    }
+
+    public boolean isLocal() {
+        return isLocal;
     }
 
     @Override

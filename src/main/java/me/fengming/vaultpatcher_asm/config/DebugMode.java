@@ -43,12 +43,15 @@ public class DebugMode {
         reader.beginObject();
         while (reader.peek() != JsonToken.END_OBJECT) {
             switch (reader.nextName()) {
+                case "e":
                 case "is_enable":
                     setEnable(reader.nextBoolean());
                     break;
+                case "f":
                 case "output_format":
                     setOutputFormat(reader.nextString());
                     break;
+                case "m":
                 case "output_mode":
                     setOutputMode(reader.nextInt());
                     break;

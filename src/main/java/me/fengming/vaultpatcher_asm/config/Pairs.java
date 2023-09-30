@@ -26,10 +26,12 @@ public class Pairs {
             reader.beginObject();
             while (reader.peek() != JsonToken.END_OBJECT) {
                 switch (reader.nextName()) {
+                    case "k":
                     case "key": {
                         setKey(reader.nextString());
                         break;
                     }
+                    case "v":
                     case "value": {
                         setValue(reader.nextString());
                         break;

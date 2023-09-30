@@ -13,19 +13,23 @@ public class TranslationInfo {
         reader.beginObject();
         while (reader.peek() != JsonToken.END_OBJECT) {
             switch (reader.nextName()) {
-                case "target_class":
-                case "target": {
+                case "t":
+                case "target":
+                case "target_class": {
                     getTargetClassInfo().readJson(reader);
                     break;
                 }
+                case "k":
                 case "key": {
                     setKey(reader.nextString());
                     break;
                 }
+                case "v":
                 case "value": {
                     setValue(reader.nextString());
                     break;
                 }
+                case "p":
                 case "pairs": {
                     getPairs().readJson(reader);
                     break;
