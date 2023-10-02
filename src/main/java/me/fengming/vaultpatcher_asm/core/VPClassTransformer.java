@@ -24,7 +24,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
     public VPClassTransformer(TranslationInfo info) {
         this.translationInfo = info;
         if (info != null && debug.isEnable()) {
-            VaultPatcher.LOGGER.info(String.format("[VaultPatcher Debug] Loading VPTransformer for Class: %s, Method: %s, Local: %s, Pairs: %s", info.getTargetClassInfo().getName(), info.getTargetClassInfo().getMethod(), info.getTargetClassInfo().getLocal(), info.getPairs()));
+            VaultPatcher.LOGGER.info(String.format("[VaultPatcher] Loading VPTransformer for Class: %s, Method: %s, Local: %s, Pairs: %s", info.getTargetClassInfo().getName(), info.getTargetClassInfo().getMethod(), info.getTargetClassInfo().getLocal(), info.getPairs()));
         }
     }
 
@@ -75,11 +75,13 @@ public class VPClassTransformer implements Consumer<ClassNode> {
                         }
                     }
 
+                    // Local
+
                     // Any method that returns String
                     else if (!disableLocal && instruction.getType() == AbstractInsnNode.METHOD_INSN) {
                         MethodInsnNode methodInsnNode = (MethodInsnNode) instruction;
                         if (methodInsnNode.desc.endsWith(")Ljava/lang/String;")
-                                && !methodInsnNode.name.equals("__replaceMethod")
+                                && !methodInsnNode.name.equals("__vp_replace")
                                 && matchLocal(info, methodInsnNode.name, true)) {
                             insertReplace(input.name, method, methodInsnNode);
                             Utils.printDebugInfo("Runtime Determination", "ASMTransformMethod-InsertMethodReturn", "Runtime Determination", input.name, info);
@@ -108,16 +110,18 @@ public class VPClassTransformer implements Consumer<ClassNode> {
                     }
 
                     // Return String
-                    else if (!disableLocal && method.desc.endsWith("Ljava/lang/String;") && instruction.getType() == AbstractInsnNode.INSN) {
+                    else if (!disableLocal && method.desc.endsWith(")Ljava/lang/String;") && instruction.getType() == AbstractInsnNode.INSN) {
                         InsnNode insnNode = (InsnNode) instruction;
-//                        if (insnNode.getOpcode() == Opcodes.ARETURN)
-                        insertReplace(input.name, method, insnNode);
+                        if (insnNode.getOpcode() == Opcodes.ARETURN && matchLocal(info, method.name, false)) {
+                            insertReplace(input.name, method, insnNode);
+                            Utils.printDebugInfo("Runtime Determination", "ASMTransformMethod-InsertReturn", "Runtime Determination", input.name, info);
+                        }
                     }
                 }
             }
         }
-        // add method
 
+        // add method
         if (!disableLocal) {
             MethodVisitor replaceMethodVisitor = input.visitMethod(Opcodes.ACC_PRIVATE | Opcodes.ACC_STATIC, "__vp_replace", "(Ljava/lang/String;)Ljava/lang/String;", null, null);
             replaceMethod_visit(replaceMethodVisitor, info.getPairs());
@@ -228,9 +232,8 @@ public class VPClassTransformer implements Consumer<ClassNode> {
         if (name == null) return false;
         TargetClassInfo i = info.getTargetClassInfo();
         if (Utils.isBlank(i.getLocal())) return false;
-        if ((i.getLocalMode() == 1 && isMethod) || (i.getLocalMode() == 0 && !isMethod)) {
-            return i.getLocal().equals(name);
-        }
+        if (i.getLocalMode() == 2) return i.getLocal().equals(name);
+        if ((i.getLocalMode() == 0 && isMethod) || (i.getLocalMode() == 1 && !isMethod)) return i.getLocal().equals(name);
         return false;
     }
 
@@ -258,6 +261,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
                 }
             }
         } else if (Utils.isBlank(this.translationInfo.getTargetClassInfo().getName()) || input.name.equals(Utils.rawPackage(this.translationInfo.getTargetClassInfo().getName()))) {
+            disableLocal = Utils.isBlank(this.translationInfo.getTargetClassInfo().getLocal());
             methodReplace(input, this.translationInfo);
             fieldReplace(input, this.translationInfo);
         }
