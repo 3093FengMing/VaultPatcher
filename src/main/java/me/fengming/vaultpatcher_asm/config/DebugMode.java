@@ -13,6 +13,8 @@ public class DebugMode {
 
     private String outputFormat = "<source> -> <target>";
 
+    private boolean exportClass = false;
+
 
     public boolean isEnable() {
         return isEnable;
@@ -38,6 +40,14 @@ public class DebugMode {
         this.outputFormat = outputFormat;
     }
 
+    public boolean isExportClass() {
+        return exportClass;
+    }
+
+    public void setExportClass(boolean exportClass) {
+        this.exportClass = exportClass;
+    }
+
 
     public void readJson(JsonReader reader) throws IOException {
         reader.beginObject();
@@ -55,6 +65,10 @@ public class DebugMode {
                 case "output_mode":
                     setOutputMode(reader.nextInt());
                     break;
+                case "c":
+                case "export_class":
+                    setExportClass(reader.nextBoolean());
+                    break;
                 default:
                     reader.skipValue();
                     break;
@@ -68,6 +82,7 @@ public class DebugMode {
         writer.name("is_enable").value(isEnable());
         writer.name("output_format").value(getOutputFormat());
         writer.name("output_mode").value(getOutputMode());
+        writer.name("export_class").value(isExportClass());
         writer.endObject();
     }
 }

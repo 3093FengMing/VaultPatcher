@@ -55,7 +55,7 @@ public class Pairs {
     }
 
 
-    public HashMap<String, String> getPairs() {
+    public HashMap<String, String> getMap() {
         return pairs;
     }
 

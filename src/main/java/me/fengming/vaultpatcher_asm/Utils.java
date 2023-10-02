@@ -24,42 +24,19 @@ public class Utils {
 
     public static void printDebugInfo(String s, String m, String ret, String c, TranslationInfo info) {
         DebugMode debug = VaultPatcherConfig.getDebugMode();
-        String format = debug.getOutputFormat();
         if (!debug.isEnable()) return;
+        String format = debug.getOutputFormat();
         VaultPatcher.LOGGER.info("[VaultPatcher] Trying replacing!");
-        if (ret != null && !ret.equals(s)) {
-            if (debug.getOutputMode() == 1 || debug.getOutputMode() == 0) {
-                VaultPatcher.LOGGER.info(
-                        format.replace("<source>", s)
-                                .replace("<target>", ret)
-                                .replace("<method>", m)
-                                .replace("<info>", info.toString())
-                                .replace("<class>", c)
-                );
-            }
-        } else {
-            if (debug.getOutputMode() == 1) {
-                VaultPatcher.LOGGER.info(
-                        format.replace("<source>", s)
-                                .replace("<target>", s)
-                                .replace("<method>", m)
-                                .replace("<info>", info.toString())
-                                .replace("<class>", c)
-                );
-            }
-        }
+        VaultPatcher.LOGGER.info(
+                format.replace("<source>", s)
+                        .replace("<target>", s)
+                        .replace("<method>", m)
+                        .replace("<info>", info.toString())
+                        .replace("<class>", c)
+        );
     }
 
     // transformer
-
-    public static boolean isOldVersion(String version) {
-        String _116 = "1.16.5";
-        if (_116.equals(version)) return true;
-        for (int i = 0; i < 6; i++) {
-            if (version.charAt(i) < _116.charAt(i)) return true;
-        }
-        return false;
-    }
 
     public static List<String> getClassesNameByJar(String jarPath) {
         List<String> retClassName = new ArrayList<>();
@@ -112,7 +89,7 @@ public class Utils {
         if (isBlank(key)) return key;
         String v = key;
         if (dyn) {
-            for (Map.Entry<String, String> entry : p.getPairs().entrySet()) {
+            for (Map.Entry<String, String> entry : p.getMap().entrySet()) {
                 String k1 = entry.getKey();
                 String v1 = entry.getValue();
                 if (key.equals(k1) && v1.charAt(0) != '@') {

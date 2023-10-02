@@ -8,8 +8,6 @@ import java.util.HashMap;
 
 public class ASMUtils {
 
-    public static void init() {}
-
     public static Pairs __pairsByArrays(String[] k, String[] v) {
         if (k.length != v.length) return null;
         HashMap<String, String> map = new HashMap<>();

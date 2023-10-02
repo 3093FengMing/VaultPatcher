@@ -40,12 +40,21 @@ public class VPTransformationService implements ITransformationService {
         String minecraftVersion = getMinecraftVersion();
         if (Utils.isBlank(minecraftVersion)) VaultPatcher.LOGGER.error("[VaultPatcher] Failed to get minecraft version!");
         // VaultPatcher.LOGGER.info("[VaultPatcher] Get minecraft version: " + minecraftVersion);
-        if (Utils.isOldVersion(minecraftVersion)) {
+        if (isOldVersion(minecraftVersion)) {
             VaultPatcher.LOGGER.warn("[VaultPatcher] Disable dynamic replace because you are in old version (" + minecraftVersion + "<=1.16.5)");
             oldVersion = true;
         }
 
         VaultPatcher.init(minecraftPathOptional.get());
+    }
+
+    public static boolean isOldVersion(String version) {
+        String _116 = "1.16.5";
+        if (_116.equals(version)) return true;
+        for (int i = 0; i < 6; i++) {
+            if (version.charAt(i) < _116.charAt(i)) return true;
+        }
+        return false;
     }
 
     private static String getMinecraftVersion() {

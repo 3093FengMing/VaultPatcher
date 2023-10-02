@@ -39,4 +39,13 @@ public class Main {
     public Main aa1(){
         return this;
     }
+
+    private static String __vp_replace(String source) {
+        String[] keys = new String[]{"bbb"};
+        String[] values = new String[]{"sss"};
+        for (int i = 0; i < keys.length; i++) {
+            if (keys[i].equals(source)) return values[i];
+        }
+        return source;
+    }
 }

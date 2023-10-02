@@ -12,7 +12,7 @@ public class TargetClassInfo {
     private String method = "";
     private String local = "";
     private byte matchMode = 0;
-    private boolean isLocal = false;
+    private byte localMode = 0;
 
     public void readJson(JsonReader reader) throws IOException {
         reader.beginObject();
@@ -81,7 +81,11 @@ public class TargetClassInfo {
         if (Utils.isBlank(local)) {
             this.local = local;
         } else {
-            isLocal = local.charAt(0) == 'V';
+            if (local.charAt(0) == 'V') {
+                localMode = 1;
+            } else if (local.charAt(0) == 'M') {
+                localMode = 0;
+            } else localMode = 2;
             this.local = local.substring(1);
         }
     }
@@ -90,8 +94,8 @@ public class TargetClassInfo {
         return matchMode;
     }
 
-    public boolean isLocal() {
-        return isLocal;
+    public byte getLocalMode() {
+        return localMode;
     }
 
     @Override
@@ -100,6 +104,8 @@ public class TargetClassInfo {
                 "name='" + name + '\'' +
                 ", method='" + method + '\'' +
                 ", local='" + local + '\'' +
+                ", matchMode=" + matchMode +
+                ", localMode=" + localMode +
                 '}';
     }
 }
