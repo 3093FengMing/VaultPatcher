@@ -13,7 +13,7 @@ public class VPMinecraftTransformer implements Consumer<ClassNode> {
         VaultPatcher.LOGGER.info("[VaultPatcher] Loading MinecraftTransformer");
     }
 
-    private static ClassNode classTransform(ClassNode input) {
+    private static void classTransform(ClassNode input) {
         if (input.name.equals("net/minecraft/util/text/StringTextComponent") || input.name.equals("net/minecraft/network/chat/TextComponent") /* Forge */
                 || input.name.equals("net/minecraft/class_2585") /* Fabric */) {
             // TextComponent
@@ -22,11 +22,10 @@ public class VPMinecraftTransformer implements Consumer<ClassNode> {
                     for (ListIterator<AbstractInsnNode> it = method.instructions.iterator(); it.hasNext(); ) {
                         AbstractInsnNode insn = it.next();
                         if (insn.getType() == AbstractInsnNode.FIELD_INSN) {
-                            FieldInsnNode fieldInsnNode = (FieldInsnNode) insn;
                             InsnList insnList = new InsnList();
                             insnList.add(new LdcInsnNode(input.name + "#<init>"));
                             insnList.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "me/fengming/vaultpatcher_asm/ASMUtils", "__mappingString", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", false));
-                            method.instructions.insertBefore(fieldInsnNode, insnList);
+                            method.instructions.insertBefore(insn, insnList);
                         }
                     }
                 }
@@ -45,7 +44,6 @@ public class VPMinecraftTransformer implements Consumer<ClassNode> {
                 }
             }
         }
-        return input;
     }
 
     // for Fabric

@@ -1,25 +1,9 @@
 package me.fengming.vaultpatcher_asm;
 
-import me.fengming.vaultpatcher_asm.config.Pairs;
 import me.fengming.vaultpatcher_asm.config.TargetClassInfo;
 import me.fengming.vaultpatcher_asm.config.TranslationInfo;
 
-import java.util.HashMap;
-
 public class ASMUtils {
-
-    public static Pairs __pairsByArrays(String[] k, String[] v) {
-        if (k.length != v.length) return null;
-        HashMap<String, String> map = new HashMap<>();
-        for (int i = 0; i < k.length; i++) {
-            map.put(k[i], v[i]);
-        }
-        return new Pairs(map);
-    }
-
-    public static String __replaceMethod(String key, Pairs p) {
-        return Utils.matchPairs(p, key, false);
-    }
 
     public static String __mappingString(String s, String method) {
         if (Utils.isBlank(s)) return s;
@@ -40,13 +24,16 @@ public class ASMUtils {
             for (StackTraceElement stackTrace : stackTraces) {
                 switch (targetClass.getMatchMode()) {
                     case 0: {
-                        if (className.equals(stackTrace.getClassName()) && (ignoredMethod || methodName.equals(stackTrace.getMethodName()))) return v;
+                        if (className.equals(stackTrace.getClassName()) && (ignoredMethod || methodName.equals(stackTrace.getMethodName())))
+                            return v;
                     }
                     case 1: {
-                        if (stackTrace.getClassName().startsWith(className) && (ignoredMethod || methodName.equals(stackTrace.getMethodName()))) return v;
+                        if (stackTrace.getClassName().startsWith(className) && (ignoredMethod || methodName.equals(stackTrace.getMethodName())))
+                            return v;
                     }
                     case 2: {
-                        if (stackTrace.getClassName().endsWith(className) && (ignoredMethod || methodName.equals(stackTrace.getMethodName()))) return v;
+                        if (stackTrace.getClassName().endsWith(className) && (ignoredMethod || methodName.equals(stackTrace.getMethodName())))
+                            return v;
                     }
                 }
             }
@@ -55,7 +42,4 @@ public class ASMUtils {
         return s;
     }
 
-//    public static String __getVariableByNode(VarInsnNode node) {
-//        return "";
-//    }
 }

@@ -12,10 +12,6 @@ public class Pairs {
     private String lastKey = null;
     private String lastValue = null;
 
-    public Pairs(HashMap<String, String> map) {
-        this.pairs = new HashMap<>(map);
-    }
-
     public Pairs() {
         this.pairs = new HashMap<>();
     }

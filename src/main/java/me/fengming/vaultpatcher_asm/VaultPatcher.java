@@ -22,7 +22,6 @@ public class VaultPatcher {
                 VaultPatcherPatch vpp = new VaultPatcherPatch(mod + ".json");
                 try {
                     vpp.read();
-                    Utils.vpps.add(vpp);
                     Utils.translationInfos.addAll(vpp.getTranslationInfoList());
                     Utils.dynTranslationInfos.addAll(vpp.getDynTranslationInfoList());
                 } catch (IOException e) {

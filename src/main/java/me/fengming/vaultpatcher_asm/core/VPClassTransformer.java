@@ -3,10 +3,7 @@ package me.fengming.vaultpatcher_asm.core;
 import me.fengming.vaultpatcher_asm.Utils;
 import me.fengming.vaultpatcher_asm.VaultPatcher;
 import me.fengming.vaultpatcher_asm.config.*;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.*;
 import org.objectweb.asm.tree.*;
 
 import java.io.File;
@@ -24,11 +21,12 @@ public class VPClassTransformer implements Consumer<ClassNode> {
     public VPClassTransformer(TranslationInfo info) {
         this.translationInfo = info;
         if (info != null && debug.isEnable()) {
-            VaultPatcher.LOGGER.info(String.format("[VaultPatcher] Loading VPTransformer for Class: %s, Method: %s, Local: %s, Pairs: %s", info.getTargetClassInfo().getName(), info.getTargetClassInfo().getMethod(), info.getTargetClassInfo().getLocal(), info.getPairs()));
+            VaultPatcher.LOGGER.info(String.format("[VaultPatcher] Loading VPTransformer for translation info: %s", info));
         }
     }
 
     private static void methodReplace(ClassNode input, TranslationInfo info) {
+        boolean hasClinit = false;
         for (MethodNode method : input.methods) {
             String methodName = info.getTargetClassInfo().getMethod();
             if (Utils.isBlank(methodName) || methodName.equals(method.name)) {
@@ -37,7 +35,9 @@ public class VPClassTransformer implements Consumer<ClassNode> {
                 boolean localVarEnable = false;
                 if (!disableLocal && method.localVariables != null) {
                     localVarEnable = true;
-                    method.localVariables.stream().filter(node -> node.desc.equals("Ljava/lang/String;")).forEach(node -> localVariableMap.put(node.index, node.name));
+                    method.localVariables.stream()
+                            .filter(node -> node.desc.equals("Ljava/lang/String;"))
+                            .forEach(node -> localVariableMap.put(node.index, node.name));
                 }
 
                 for (ListIterator<AbstractInsnNode> it = method.instructions.iterator(); it.hasNext(); ) {
@@ -119,113 +119,103 @@ public class VPClassTransformer implements Consumer<ClassNode> {
                     }
                 }
             }
+
+            if (!disableLocal && method.name.equals("<clinit>")) {
+                hasClinit = true;
+                method.instructions.insertBefore(method.instructions.getLast(), new MethodInsnNode(Opcodes.INVOKESTATIC, input.name, "__vp_init", "()V"));
+            }
         }
 
-        // add method
+        // patch it (add replace method)
         if (!disableLocal) {
-            MethodVisitor replaceMethodVisitor = input.visitMethod(Opcodes.ACC_PRIVATE | Opcodes.ACC_STATIC, "__vp_replace", "(Ljava/lang/String;)Ljava/lang/String;", null, null);
-            replaceMethod_visit(replaceMethodVisitor, info.getPairs());
+            patchClass(input, input.name, info.getPairs().getMap().entrySet(), hasClinit);
         }
 
     }
 
-    private static void replaceMethod_visit(MethodVisitor mv, Pairs p) {
-        Set<Map.Entry<String, String>> set = p.getMap().entrySet();
+    private static void patchClass(ClassVisitor cv, String className, Set<Map.Entry<String, String>> set, boolean hasClinit) {
 
-        mv.visitCode();
-
-        // keys
-        Label label0 = new Label();
-        mv.visitLabel(label0);
-        __index(set.size(), mv);
-        mv.visitTypeInsn(Opcodes.ANEWARRAY, "java/lang/String");
-
-        int keysIndex = 0;
-        for (Map.Entry<String, String> entry : set) {
-            mv.visitInsn(Opcodes.DUP);
-            __index(keysIndex, mv);
-            mv.visitLdcInsn(entry.getKey());
-            mv.visitInsn(Opcodes.AASTORE);
-            keysIndex++;
+        // field __vp_map
+        {
+            FieldVisitor fv = cv.visitField(Opcodes.ACC_PRIVATE | Opcodes.ACC_FINAL | Opcodes.ACC_STATIC, "__vp_map", "Ljava/util/HashMap;", "Ljava/util/HashMap<Ljava/lang/String;Ljava/lang/String;>;", null);
+            fv.visitEnd();
         }
-        mv.visitVarInsn(Opcodes.ASTORE, 1);
 
-        // values
-        Label label1 = new Label();
-        mv.visitLabel(label1);
-        __index(set.size(), mv);
-        mv.visitTypeInsn(Opcodes.ANEWARRAY, "java/lang/String");
+        // <clinit>
+        if (!hasClinit) {
+            MethodVisitor mv = cv.visitMethod(Opcodes.ACC_STATIC, "<clinit>", "()V", null, null);
+            mv.visitCode();
 
-        int valuesIndex = 0;
-        for (Map.Entry<String, String> entry : set) {
-            mv.visitInsn(Opcodes.DUP);
-            __index(valuesIndex, mv);
-            mv.visitLdcInsn(entry.getValue());
-            mv.visitInsn(Opcodes.AASTORE);
-            valuesIndex++;
+            Label label0 = new Label();
+            mv.visitLabel(label0);
+            mv.visitMethodInsn(Opcodes.INVOKESTATIC, className, "__vp_init", "()V", false);
+
+            Label label1 = new Label();
+            mv.visitLabel(label1);
+            mv.visitInsn(Opcodes.RETURN);
+            mv.visitMaxs(0, 0);
+            mv.visitEnd();
         }
-        mv.visitVarInsn(Opcodes.ASTORE, 2);
 
+        // __vp_init
+        {
+            MethodVisitor mv = cv.visitMethod(Opcodes.ACC_STATIC, "__vp_init", "()V", null, null);
+            mv.visitCode();
 
-        Label label2 = new Label();
-        mv.visitLabel(label2);
-        mv.visitInsn(Opcodes.ICONST_0);
-        mv.visitVarInsn(Opcodes.ISTORE, 3);
+            Label label0 = new Label();
+            mv.visitLabel(label0);
+            mv.visitTypeInsn(Opcodes.NEW, "java/util/HashMap");
+            mv.visitInsn(Opcodes.DUP);
+            if (set.size() > 5) {
+                mv.visitIntInsn(Opcodes.BIPUSH, set.size());
+            } else {
+                mv.visitInsn(Opcodes.ICONST_0 + set.size());
+            }
+            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/util/HashMap", "<init>", "(I)V", false);
+            mv.visitFieldInsn(Opcodes.PUTSTATIC, className, "__vp_map", "Ljava/util/HashMap;");
 
-        Label label3 = new Label();
-        mv.visitLabel(label3);
-        mv.visitFrame(Opcodes.F_APPEND, 3, new Object[]{"[Ljava/lang/String;", "[Ljava/lang/String;", Opcodes.INTEGER}, 0, null);
-        mv.visitVarInsn(Opcodes.ILOAD, 3);
-        mv.visitVarInsn(Opcodes.ALOAD, 1);
-        mv.visitInsn(Opcodes.ARRAYLENGTH);
+            Label label1 = new Label();
+            mv.visitLabel(label1);
+            for (Map.Entry<String, String> entry : set) {
+                mv.visitFieldInsn(Opcodes.GETSTATIC, className, "__vp_map", "Ljava/util/HashMap;");
+                mv.visitLdcInsn(entry.getKey());
+                mv.visitLdcInsn(entry.getValue());
+                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/HashMap", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false);
+                mv.visitInsn(Opcodes.POP);
+            }
 
-        Label label4 = new Label();
-        mv.visitJumpInsn(Opcodes.IF_ICMPGE, label4);
+            Label label2 = new Label();
+            mv.visitLabel(label2);
+            mv.visitInsn(Opcodes.RETURN);
+            mv.visitMaxs(3, 0);
+            mv.visitEnd();
+        }
 
-        Label label5 = new Label();
-        mv.visitLabel(label5);
-        mv.visitVarInsn(Opcodes.ALOAD, 1);
-        mv.visitVarInsn(Opcodes.ILOAD, 3);
-        mv.visitInsn(Opcodes.AALOAD);
-        mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/String", "equals", "(Ljava/lang/Object;)Z", false);
+        // __vp_replace
+        {
+            MethodVisitor mv = cv.visitMethod(Opcodes.ACC_PRIVATE | Opcodes.ACC_STATIC, "__vp_replace", "(Ljava/lang/String;)Ljava/lang/String;", null, null);
+            mv.visitCode();
 
-        Label label6 = new Label();
-        mv.visitJumpInsn(Opcodes.IFEQ, label6);
-        mv.visitVarInsn(Opcodes.ALOAD, 2);
-        mv.visitVarInsn(Opcodes.ILOAD, 3);
-        mv.visitInsn(Opcodes.AALOAD);
-        mv.visitInsn(Opcodes.ARETURN);
-        mv.visitLabel(label6);
-        mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
-        mv.visitIincInsn(3, 1);
-        mv.visitJumpInsn(Opcodes.GOTO, label3);
-        mv.visitLabel(label4);
-        mv.visitFrame(Opcodes.F_CHOP, 1, null, 0, null);
-        mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitInsn(Opcodes.ARETURN);
+            Label label0 = new Label();
+            mv.visitLabel(label0);
+            mv.visitFieldInsn(Opcodes.GETSTATIC, className, "__vp_map", "Ljava/util/HashMap;");
+            mv.visitVarInsn(Opcodes.ALOAD, 0);
+            mv.visitVarInsn(Opcodes.ALOAD, 0);
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/HashMap", "getOrDefault", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false);
+            mv.visitTypeInsn(Opcodes.CHECKCAST, "java/lang/String");
+            mv.visitInsn(Opcodes.ARETURN);
 
-        Label label7 = new Label();
-        mv.visitLabel(label7);
-        mv.visitLocalVariable("i", "I", null, label3, label4, 3);
-        mv.visitLocalVariable("source", "Ljava/lang/String;", null, label0, label7, 0);
-        mv.visitLocalVariable("keys", "[Ljava/lang/String;", null, label1, label7, 1);
-        mv.visitLocalVariable("values", "[Ljava/lang/String;", null, label2, label7, 2);
-        mv.visitMaxs(4, 4);
-        mv.visitEnd();
+            Label label1 = new Label();
+            mv.visitLabel(label1);
+            mv.visitLocalVariable("source", "Ljava/lang/String;", null, label0, label1, 0);
+            mv.visitMaxs(3, 1);
+            mv.visitEnd();
+        }
 
     }
 
     private static void insertReplace(String className, MethodNode method, AbstractInsnNode nodePosition) {
         method.instructions.insert(nodePosition, new MethodInsnNode(Opcodes.INVOKESTATIC, Utils.rawPackage(className), "__vp_replace", "(Ljava/lang/String;)Ljava/lang/String;", false));
-    }
-
-    private static void __index(int i, MethodVisitor mv) {
-        if (i > 5) {
-            mv.visitIntInsn(Opcodes.BIPUSH, i);
-        } else {
-            mv.visitInsn(Opcodes.ICONST_0 + i);
-        }
     }
 
     public static boolean matchLocal(TranslationInfo info, String name, boolean isMethod) {
@@ -252,6 +242,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
     // for Fabric
     @Override
     public void accept(ClassNode input) {
+
         if (this.translationInfo == null) {
             disableLocal = true;
             for (TranslationInfo info : Utils.translationInfos) {
@@ -266,6 +257,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
             fieldReplace(input, this.translationInfo);
         }
 
+        // Export
         if (debug.isExportClass()) {
             ClassWriter w = new ClassWriter(0);
             input.accept(w);
