@@ -8,7 +8,7 @@ import me.fengming.vaultpatcher_asm.VaultPatcher;
 import me.fengming.vaultpatcher_asm.config.DebugMode;
 import me.fengming.vaultpatcher_asm.config.TranslationInfo;
 import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
-import me.fengming.vaultpatcher_asm.core.VPClassTransformer;
+import me.fengming.vaultpatcher_asm.core.transformers.VPClassTransformer;
 import org.objectweb.asm.tree.ClassNode;
 
 import java.util.HashSet;

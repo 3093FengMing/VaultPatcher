@@ -1,10 +1,9 @@
-package me.fengming.vaultpatcher_asm.core;
+package me.fengming.vaultpatcher_asm.core.transformers;
 
 import me.fengming.vaultpatcher_asm.VaultPatcher;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
-import java.util.ListIterator;
 import java.util.function.Consumer;
 
 public class VPMinecraftTransformer implements Consumer<ClassNode> {
@@ -14,13 +13,13 @@ public class VPMinecraftTransformer implements Consumer<ClassNode> {
     }
 
     private static void classTransform(ClassNode input) {
-        if (input.name.equals("net/minecraft/util/text/StringTextComponent") || input.name.equals("net/minecraft/network/chat/TextComponent") /* Forge */
+        if (input.name.equals("net/minecraft/util/text/StringTextComponent") /* Forge */
+                || input.name.equals("net/minecraft/network/chat/TextComponent") /* Forge */
                 || input.name.equals("net/minecraft/class_2585") /* Fabric */) {
             // TextComponent
             for (MethodNode method : input.methods) {
                 if (method.name.equals("<init>")) {
-                    for (ListIterator<AbstractInsnNode> it = method.instructions.iterator(); it.hasNext(); ) {
-                        AbstractInsnNode insn = it.next();
+                    for (AbstractInsnNode insn : method.instructions) {
                         if (insn.getType() == AbstractInsnNode.FIELD_INSN) {
                             InsnList insnList = new InsnList();
                             insnList.add(new LdcInsnNode(input.name + "#<init>"));
@@ -30,11 +29,14 @@ public class VPMinecraftTransformer implements Consumer<ClassNode> {
                     }
                 }
             }
-        } else if (input.name.equals("net/minecraft/client/gui/Font") || input.name.equals("net/minecraft/client/gui/FontRenderer") /* Forge */
-                    || input.name.equals("net/minecraft/class_327") /* Fabric */) {
+        } else if (input.name.equals("net/minecraft/client/gui/Font") /* Forge */
+                || input.name.equals("net/minecraft/client/gui/FontRenderer") /* Forge */
+                || input.name.equals("net/minecraft/class_327") /* Fabric */) {
             // Font
             for (MethodNode method : input.methods) {
-                if (method.name.equals("m_92897_") || method.name.equals("func_228081_c_") /* Forge */ || method.name.equals("method_1724") /* Fabric */) {
+                if (method.name.equals("m_92897_") /* Forge */
+                        || method.name.equals("func_228081_c_") /* Forge */
+                        || method.name.equals("method_1724") /* Fabric */) {
                     InsnList insnList = new InsnList();
                     insnList.add(new VarInsnNode(Opcodes.ALOAD, 1));
                     insnList.add(new LdcInsnNode(input.name + "#renderText"));

@@ -5,8 +5,8 @@ import me.fengming.vaultpatcher_asm.Utils;
 import me.fengming.vaultpatcher_asm.VaultPatcher;
 import me.fengming.vaultpatcher_asm.config.TranslationInfo;
 import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
-import me.fengming.vaultpatcher_asm.core.VPClassTransformer;
-import me.fengming.vaultpatcher_asm.core.VPMinecraftTransformer;
+import me.fengming.vaultpatcher_asm.core.transformers.VPClassTransformer;
+import me.fengming.vaultpatcher_asm.core.transformers.VPMinecraftTransformer;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.util.List;

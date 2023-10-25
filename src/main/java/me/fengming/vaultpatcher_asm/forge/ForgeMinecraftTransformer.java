@@ -4,7 +4,7 @@ import cpw.mods.modlauncher.api.ITransformer;
 import cpw.mods.modlauncher.api.ITransformerVotingContext;
 import cpw.mods.modlauncher.api.TransformerVoteResult;
 import me.fengming.vaultpatcher_asm.VaultPatcher;
-import me.fengming.vaultpatcher_asm.core.VPMinecraftTransformer;
+import me.fengming.vaultpatcher_asm.core.transformers.VPMinecraftTransformer;
 import org.objectweb.asm.tree.ClassNode;
 
 import java.util.HashSet;
