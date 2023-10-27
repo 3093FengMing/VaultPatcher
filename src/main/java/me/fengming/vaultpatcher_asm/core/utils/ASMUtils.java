@@ -1,11 +1,16 @@
-package me.fengming.vaultpatcher_asm;
+package me.fengming.vaultpatcher_asm.core.utils;
 
 import me.fengming.vaultpatcher_asm.config.TargetClassInfo;
 import me.fengming.vaultpatcher_asm.config.TranslationInfo;
 import me.fengming.vaultpatcher_asm.core.node.NodeHandlerParameters;
 import me.fengming.vaultpatcher_asm.core.node.handlers.*;
+import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.nio.file.Path;
 
 public class ASMUtils {
 
@@ -16,7 +21,7 @@ public class ASMUtils {
             String v = Utils.matchPairs(info.getPairs(), s, true);
             if (Utils.isBlank(v) || v.equals(s)) continue;
 
-            Utils.printDebugInfo(s, method, v, Utils.stackTraces2String(stackTraces), info);
+            Utils.printDebugInfo(s, method, v, stackTraces2String(stackTraces), info);
 
             TargetClassInfo targetClass = info.getTargetClassInfo();
             String className = targetClass.getName();
@@ -37,6 +42,14 @@ public class ASMUtils {
         return s;
     }
 
+    private static String stackTraces2String(StackTraceElement[] stackTraces) {
+        StringBuilder sb = new StringBuilder("[");
+        for (StackTraceElement stackTrace : stackTraces) {
+            sb.append(stackTrace.getClassName()).append("#").append(stackTrace.getMethodName()).append(", ");
+        }
+        return sb.delete(sb.length() - 2, sb.length()).append("]").toString();
+    }
+
     public static NodeHandler<? extends AbstractInsnNode> getHandlerByNode(AbstractInsnNode node, NodeHandlerParameters params) {
         switch (node.getType()) {
             case 9:
@@ -48,8 +61,29 @@ public class ASMUtils {
             case 2:
                 return new VarNodeHandler((VarInsnNode) node, params);
             case 0:
+                return new InsnNodeHandler((InsnNode) node, params);
         }
         return null;
+    }
+
+    public static void exportClass(ClassNode node, Path root) {
+        ClassWriter w = new ClassWriter(0);
+        node.accept(w);
+        byte[] b = w.toByteArray();
+        File file = root.resolve(node.name + ".class").toFile();
+        try {
+            if (!file.exists()) {
+                file.getParentFile().mkdirs();
+                file.createNewFile();
+            }
+            file.setWritable(true);
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(b);
+            fos.flush();
+            fos.close();
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed Exporting Class", e);
+        }
     }
 
     public static boolean matchLocal(TranslationInfo info, String name, boolean isMethod) {

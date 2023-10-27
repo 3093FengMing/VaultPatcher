@@ -1,11 +1,11 @@
-package me.fengming.vaultpatcher_asm.forge;
+package me.fengming.vaultpatcher_asm.loader.forge;
 
 import cpw.mods.modlauncher.Launcher;
 import cpw.mods.modlauncher.api.IEnvironment;
 import cpw.mods.modlauncher.api.ITransformationService;
 import cpw.mods.modlauncher.api.ITransformer;
-import me.fengming.vaultpatcher_asm.Utils;
 import me.fengming.vaultpatcher_asm.VaultPatcher;
+import me.fengming.vaultpatcher_asm.core.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;

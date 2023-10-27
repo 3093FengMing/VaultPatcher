@@ -1,16 +1,17 @@
-package me.fengming.vaultpatcher_asm.forge;
+package me.fengming.vaultpatcher_asm.loader.forge;
 
 import cpw.mods.modlauncher.api.ITransformer;
 import cpw.mods.modlauncher.api.ITransformerVotingContext;
 import cpw.mods.modlauncher.api.TransformerVoteResult;
-import me.fengming.vaultpatcher_asm.Utils;
 import me.fengming.vaultpatcher_asm.VaultPatcher;
 import me.fengming.vaultpatcher_asm.config.DebugMode;
 import me.fengming.vaultpatcher_asm.config.TranslationInfo;
 import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
 import me.fengming.vaultpatcher_asm.core.transformers.VPClassTransformer;
+import me.fengming.vaultpatcher_asm.core.utils.Utils;
 import org.objectweb.asm.tree.ClassNode;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,9 +22,6 @@ public class ForgeClassTransformer implements ITransformer<ClassNode> {
 
     public ForgeClassTransformer(TranslationInfo info) {
         this.translationInfo = info;
-//        if (info != null && debug.isEnable()) {
-//            VaultPatcher.LOGGER.debug(String.format("[VaultPatcher Debug] Loading VPTransformer for Class: %s, Method: %s, Local: %s, Pairs: %s", info.getTargetClassInfo().getName(), info.getTargetClassInfo().getMethod(), info.getTargetClassInfo().getLocal(), info.getPairs()));
-//        }
     }
 
     // for Forge
@@ -43,18 +41,30 @@ public class ForgeClassTransformer implements ITransformer<ClassNode> {
         Set<Target> targets = new HashSet<>();
 
         if (translationInfo == null) {
-            targets.addAll(Utils.addConfigApplyMods()); // May cause unnecessary resource waste
-            targets.addAll(Utils.addConfigClasses());
+            // Apply mods
+            targets.addAll(VaultPatcherConfig.getApplyMods().stream().collect(
+                    ArrayList::new,
+                    (list, s) -> Utils.getClassesNameByJar(Utils.mcPath.resolve("mods").resolve(s + ".jar").toString())
+                            .forEach(s1 -> list.add(ITransformer.Target.targetClass(s1.substring(0, s1.length() - 6)))),
+                    ArrayList::addAll)); // May cause unnecessary resource waste
+
+            // Classes
+            targets.addAll(VaultPatcherConfig.getClasses().stream().collect(
+                    ArrayList::new,
+                    (list, s) -> list.add(ITransformer.Target.targetClass(Utils.rawPackage(s))),
+                    ArrayList::addAll));
         } else {
-            Target t = Utils.addTargetClasses(this.translationInfo);
-            if (t != null) targets.add(t);
+            String name = translationInfo.getTargetClassInfo().getName();
+            if (!Utils.isBlank(name)) {
+                targets.add(ITransformer.Target.targetClass(Utils.rawPackage(name)));
+            }
         }
 
         if (debug.isEnable()) {
-            VaultPatcher.LOGGER.info("loading1:" + translationInfo);
             targets.iterator().forEachRemaining(t -> VaultPatcher.LOGGER.info(String.format("[VaultPatcher] VPClassTransformer Target = %s", t.getClassName())));
         }
 
         return targets;
     }
+
 }

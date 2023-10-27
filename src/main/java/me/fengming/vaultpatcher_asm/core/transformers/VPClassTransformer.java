@@ -1,19 +1,19 @@
 package me.fengming.vaultpatcher_asm.core.transformers;
 
-import me.fengming.vaultpatcher_asm.ASMUtils;
-import me.fengming.vaultpatcher_asm.Utils;
 import me.fengming.vaultpatcher_asm.VaultPatcher;
 import me.fengming.vaultpatcher_asm.config.DebugMode;
 import me.fengming.vaultpatcher_asm.config.Pairs;
 import me.fengming.vaultpatcher_asm.config.TranslationInfo;
 import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
+import me.fengming.vaultpatcher_asm.core.cache.Caches;
+import me.fengming.vaultpatcher_asm.core.cache.ClassCache;
 import me.fengming.vaultpatcher_asm.core.node.NodeHandlerParameters;
 import me.fengming.vaultpatcher_asm.core.node.handlers.NodeHandler;
+import me.fengming.vaultpatcher_asm.core.utils.ASMUtils;
+import me.fengming.vaultpatcher_asm.core.utils.Utils;
 import org.objectweb.asm.*;
 import org.objectweb.asm.tree.*;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -38,15 +38,15 @@ public class VPClassTransformer implements Consumer<ClassNode> {
             if (Utils.isBlank(methodName) || methodName.equals(method.name)) {
                 // Initial Local Variable Map
                 final HashMap<Integer, String> localVariableMap = new HashMap<>();
-                boolean localVarEnable = false;
+                boolean disableLocalVariable = true;
                 if (!disableLocal && method.localVariables != null) {
-                    localVarEnable = true;
+                    disableLocalVariable = false;
                     method.localVariables.stream()
                             .filter(node -> node.desc.equals("Ljava/lang/String;"))
                             .forEach(node -> localVariableMap.put(node.index, node.name));
                 }
 
-                final NodeHandlerParameters params = new NodeHandlerParameters(disableLocal, !localVarEnable, input, method, localVariableMap, info);
+                final NodeHandlerParameters params = new NodeHandlerParameters(disableLocal, disableLocalVariable, input, method, localVariableMap, info);
 
                 for (AbstractInsnNode instruction : method.instructions) {
                     NodeHandler<?> handler = ASMUtils.getHandlerByNode(instruction, params);
@@ -164,7 +164,13 @@ public class VPClassTransformer implements Consumer<ClassNode> {
     // for Fabric
     @Override
     public void accept(ClassNode input) {
+        // check cache
+        ClassCache cache = Caches.getClassCache(input.name);
+        if (cache == null) return;
+        cache.update(input);
+        input = cache.take();
 
+        // generate & export
         if (this.translationInfo == null) {
             disableLocal = true;
             for (TranslationInfo info : Utils.translationInfos) {
@@ -179,26 +185,9 @@ public class VPClassTransformer implements Consumer<ClassNode> {
             fieldReplace(input, this.translationInfo);
         }
 
-        // Export
-        if (debug.isExportClass()) {
-            ClassWriter w = new ClassWriter(0);
-            input.accept(w);
-            byte[] b = w.toByteArray();
-            try {
-                File file = Utils.mcPath.resolve("exported").resolve(input.name + ".class").toFile();
-                if (!file.exists()) {
-                    file.getParentFile().mkdirs();
-                    file.createNewFile();
-                }
-                file.setWritable(true);
-                FileOutputStream fos = new FileOutputStream(file);
-                fos.write(b);
-                fos.flush();
-                fos.close();
-            } catch (Exception e) {
-                throw new IllegalStateException("Failed Exporting Class", e);
-            }
-        }
+        // update cache
+        cache.put(input);
 
+        ASMUtils.exportClass(input, Utils.mcPath.resolve("vaultpatcher").resolve("exported"));
     }
 }

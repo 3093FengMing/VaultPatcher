@@ -1,4 +1,4 @@
-package me.fengming.vaultpatcher_asm.forge;
+package me.fengming.vaultpatcher_asm.loader.forge;
 
 import cpw.mods.modlauncher.api.ITransformer;
 import cpw.mods.modlauncher.api.ITransformerVotingContext;

@@ -1,4 +1,4 @@
-package me.fengming.vaultpatcher_asm.fabric;
+package me.fengming.vaultpatcher_asm.loader.fabric;
 
 import me.fengming.vaultpatcher_asm.VaultPatcher;
 import net.fabricmc.api.ModInitializer;

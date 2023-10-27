@@ -1,7 +1,7 @@
 package me.fengming.vaultpatcher_asm.core.node.handlers;
 
-import me.fengming.vaultpatcher_asm.ASMUtils;
 import me.fengming.vaultpatcher_asm.core.node.NodeHandlerParameters;
+import me.fengming.vaultpatcher_asm.core.utils.ASMUtils;
 import org.objectweb.asm.tree.MethodInsnNode;
 
 public class MethodNodeHandler extends NodeHandler<MethodInsnNode> {

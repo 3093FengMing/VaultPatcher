@@ -13,10 +13,10 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "me.fengming.vaultpatcher_asm.fabric.VaultPatcherInitializer"
+      "me.fengming.vaultpatcher_asm.loader.fabric.VaultPatcherInitializer"
     ],
     "mm:early_risers": [
-      "me.fengming.vaultpatcher_asm.fabric.EarlyRiser"
+      "me.fengming.vaultpatcher_asm.loader.fabric.EarlyRiser"
     ]
   },
   "mixins": [

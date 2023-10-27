@@ -3,7 +3,7 @@ package me.fengming.vaultpatcher_asm.config;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
-import me.fengming.vaultpatcher_asm.Utils;
+import me.fengming.vaultpatcher_asm.core.utils.Utils;
 
 import java.io.IOException;
 

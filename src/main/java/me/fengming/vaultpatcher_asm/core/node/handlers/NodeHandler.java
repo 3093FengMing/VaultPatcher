@@ -1,7 +1,7 @@
 package me.fengming.vaultpatcher_asm.core.node.handlers;
 
-import me.fengming.vaultpatcher_asm.Utils;
 import me.fengming.vaultpatcher_asm.core.node.NodeHandlerParameters;
+import me.fengming.vaultpatcher_asm.core.utils.Utils;
 import org.objectweb.asm.tree.AbstractInsnNode;
 
 public abstract class NodeHandler<E extends AbstractInsnNode> {

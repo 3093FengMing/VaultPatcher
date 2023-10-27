@@ -1,6 +1,6 @@
-package me.fengming.vaultpatcher_asm;
+package me.fengming.vaultpatcher_asm.core.utils;
 
-import cpw.mods.modlauncher.api.ITransformer;
+import me.fengming.vaultpatcher_asm.VaultPatcher;
 import me.fengming.vaultpatcher_asm.config.DebugMode;
 import me.fengming.vaultpatcher_asm.config.Pairs;
 import me.fengming.vaultpatcher_asm.config.TranslationInfo;
@@ -49,26 +49,6 @@ public class Utils {
         }
     }
 
-    public static ITransformer.Target addTargetClasses(TranslationInfo translationInfo) {
-        String name = translationInfo.getTargetClassInfo().getName();
-        if (isBlank(name)) return null;
-        return ITransformer.Target.targetClass(rawPackage(name));
-    }
-
-    public static List<ITransformer.Target> addConfigClasses() {
-        return VaultPatcherConfig.getClasses().stream().collect(
-                ArrayList::new,
-                (list, s) -> list.add(ITransformer.Target.targetClass(rawPackage(s))),
-                ArrayList::addAll);
-    }
-
-    public static List<ITransformer.Target> addConfigApplyMods() {
-        return VaultPatcherConfig.getApplyMods().stream().collect(
-                ArrayList::new,
-                (list, s) -> getClassesNameByJar(Utils.mcPath.resolve("mods").resolve(s + ".jar").toString()).forEach(s1 -> list.add(ITransformer.Target.targetClass(s1.substring(0, s1.length() - 6)))),
-                ArrayList::addAll);
-    }
-
     public static String rawPackage(String s) {
         return s.replace('.', '/');
     }
@@ -99,16 +79,6 @@ public class Utils {
             if (!Character.isWhitespace(s.charAt(i))) return false;
         }
         return true;
-    }
-
-    // for debug
-
-    public static String stackTraces2String(StackTraceElement[] stackTraces) {
-        StringBuilder sb = new StringBuilder("[");
-        for (StackTraceElement stackTrace : stackTraces) {
-            sb.append(stackTrace.getClassName()).append("#").append(stackTrace.getMethodName()).append(", ");
-        }
-        return sb.delete(sb.length() - 2, sb.length()).append("]").toString();
     }
 
 }
