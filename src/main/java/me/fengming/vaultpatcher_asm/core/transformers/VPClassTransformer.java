@@ -56,8 +56,23 @@ public class VPClassTransformer implements Consumer<ClassNode> {
             }
 
             if (!disableLocal && method.name.equals("<clinit>")) {
+                InsnList list = new InsnList();
+
+                list.add(new TypeInsnNode(Opcodes.NEW, "java/util/HashMap"));
+                list.add(new InsnNode(Opcodes.DUP));
+                Set<Map.Entry<String, String>> set = info.getPairs().getMap().entrySet();
+                if (set.size() > 5) {
+                    list.add(new IntInsnNode(Opcodes.BIPUSH, set.size()));
+                } else {
+                    list.add(new InsnNode(Opcodes.ICONST_0 + set.size()));
+                }
+                list.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "java/util/HashMap", "<init>", "(I)V", false));
+                list.add(new FieldInsnNode(Opcodes.PUTSTATIC, input.name, "__vp_map", "Ljava/util/HashMap;"));
+                list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, input.name, "__vp_init", "()V"));
+
+                method.instructions.insertBefore(method.instructions.getLast(), list);
+
                 hasClinit = true;
-                method.instructions.insertBefore(method.instructions.getLast(), new MethodInsnNode(Opcodes.INVOKESTATIC, input.name, "__vp_init", "()V"));
             }
         }
 
@@ -166,11 +181,35 @@ public class VPClassTransformer implements Consumer<ClassNode> {
     public void accept(ClassNode input) {
         // check cache
         ClassCache cache = Caches.getClassCache(input.name);
-        if (cache == null) return;
-        cache.update(input);
-        input = cache.take();
+        byte[] copy = classCopy(input);
 
-        // generate & export
+        if (cache != null) {
+            VaultPatcher.LOGGER.info("Using Cache: " + input.name);
+            if (!cache.update(input)) {
+                VaultPatcher.LOGGER.info("Updating Cache: " + input.name);
+                generate(input);
+                cache.put(input, copy);
+            }
+            ClassNode taken = cache.take();
+            input.methods = taken.methods;
+            input.fields = taken.fields;
+        } else {
+            VaultPatcher.LOGGER.info("Generating Class Cache: " + input.name);
+            generate(input);
+            Caches.addClassCache(input.name, input, copy);
+        }
+
+        if (debug.isExportClass()) ASMUtils.exportClass(input, Utils.mcPath.resolve("vaultpatcher").resolve("exported"));
+
+    }
+
+    private byte[] classCopy(ClassNode node) {
+        ClassWriter wr = new ClassWriter(0);
+        node.accept(wr);
+        return wr.toByteArray();
+    }
+
+    private void generate(ClassNode input) {
         if (this.translationInfo == null) {
             disableLocal = true;
             for (TranslationInfo info : Utils.translationInfos) {
@@ -184,10 +223,5 @@ public class VPClassTransformer implements Consumer<ClassNode> {
             methodReplace(input, this.translationInfo);
             fieldReplace(input, this.translationInfo);
         }
-
-        // update cache
-        cache.put(input);
-
-        ASMUtils.exportClass(input, Utils.mcPath.resolve("vaultpatcher").resolve("exported"));
     }
 }

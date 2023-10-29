@@ -66,7 +66,7 @@ public class ASMUtils {
         return null;
     }
 
-    public static void exportClass(ClassNode node, Path root) {
+    public static File exportClass(ClassNode node, Path root) {
         ClassWriter w = new ClassWriter(0);
         node.accept(w);
         byte[] b = w.toByteArray();
@@ -81,6 +81,7 @@ public class ASMUtils {
             fos.write(b);
             fos.flush();
             fos.close();
+            return file;
         } catch (Exception e) {
             throw new IllegalStateException("Failed Exporting Class", e);
         }

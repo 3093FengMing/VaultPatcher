@@ -6,6 +6,7 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -18,20 +19,11 @@ public class ClassCache {
 
     private final ClassReader cr;
     private ClassNode clazz;
-    private Path hashFile;
-    private Path classFile;
+    private final Path hashFile;
     private boolean updated;
-    private String cacheHash;
 
     public ClassCache(Path hashFile, Path classFile) throws IOException {
         this.hashFile = hashFile;
-        this.classFile = classFile;
-        // get cache hash
-        byte[] cacheHashBytes = new byte[1024];
-        try (InputStream fis = Files.newInputStream(this.hashFile)) {
-            fis.read(cacheHashBytes);
-        }
-        this.cacheHash = bytes2String(cacheHashBytes);
         this.cr = new ClassReader(Files.newInputStream(classFile));
     }
 
@@ -43,13 +35,13 @@ public class ClassCache {
         return sb.toString();
     }
 
-    private static String getSha256(byte[] bytes) {
+    public static String getSha256(byte[] bytes) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             md.update(bytes);
             return bytes2String(md.digest());
         } catch (Exception e) {
-            throw new RuntimeException("Failed to hash");
+            throw new RuntimeException("Failed to hash", e);
         }
     }
 
@@ -57,33 +49,70 @@ public class ClassCache {
         ClassWriter cw1 = new ClassWriter(0);
         clazz.accept(cw1);
         String currentHash = getSha256(cw1.toByteArray());
-        this.updated = currentHash.equals(this.cacheHash);
+
+        byte[] cacheHashBytes = new byte[64];
+        try (InputStream fis = Files.newInputStream(this.hashFile)) {
+            fis.read(cacheHashBytes);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        String cacheHash = new String(cacheHashBytes, StandardCharsets.UTF_8);
+        System.out.println("cacheHash = " + cacheHash);
+        System.out.println("currentHash = " + currentHash);
+
+        this.updated = currentHash.equals(cacheHash);
 
         if (!this.updated) {
-            this.cacheHash = currentHash;
             this.clazz = clazz;
-            try (OutputStream fos = Files.newOutputStream(this.hashFile)) {
-                fos.write(currentHash.getBytes(StandardCharsets.UTF_8));
-                fos.flush();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            writeHash(currentHash, this.hashFile);
         } else {
-            ClassWriter cw2 = new ClassWriter(this.cr, 0);
             this.clazz = new ClassNode();
-            this.clazz.accept(cw2);
+            this.cr.accept(this.clazz, 0);
         }
 
         return this.updated;
+    }
+
+    public void create(ClassNode node, byte[] hashes) throws IOException {
+        this.updated = true;
+        ASMUtils.exportClass(node, Utils.mcPath.resolve("vaultpatcher").resolve("cache"));
+
+        String currentHash = getSha256(hashes);
+        writeHash(currentHash, this.hashFile);
+
+        // update(node);
     }
 
     public ClassNode take() {
         return this.clazz;
     }
 
-    public void put(ClassNode node) {
+    public void put(ClassNode node, byte[] hashes) {
         if (this.updated) return;
         this.clazz = node;
         ASMUtils.exportClass(node, Utils.mcPath.resolve("vaultpatcher").resolve("cache"));
+        String hash = getSha256(hashes);
+        writeHash(hash, this.hashFile);
+    }
+
+    private static void writeHash(String hash, Path hashFile) {
+        try {
+            if (Files.notExists(hashFile)) {
+                Files.createDirectories(hashFile.getParent());
+                Files.createFile(hashFile);
+            }
+            try (OutputStream fos = Files.newOutputStream(hashFile)) {
+                fos.write(hash.getBytes(StandardCharsets.UTF_8));
+                fos.flush();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Failed write hash file", e);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return this.clazz != null ? this.clazz.name : "None";
     }
 }

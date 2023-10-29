@@ -25,8 +25,7 @@ public class VaultPatcherPatch {
         try {
             Files.createDirectories(p.getParent());
         } catch (IOException e) {
-            VaultPatcher.LOGGER.error("[VaultPatcher] Failed to create {}", p.getParent(), e);
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to create", e);
         }
         this.patchFile = p;
     }
