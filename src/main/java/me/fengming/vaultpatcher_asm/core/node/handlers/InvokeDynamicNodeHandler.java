@@ -11,7 +11,7 @@ public class InvokeDynamicNodeHandler extends NodeHandler<InvokeDynamicInsnNode>
     }
 
     @Override
-    public InvokeDynamicInsnNode modifyNode(boolean d) {
+    public InvokeDynamicInsnNode modifyNode() {
         if (this.node.name.equals("makeConcatWithConstants")) {
             Object[] bsmArgs = this.node.bsmArgs;
             for (int i = 0; i < bsmArgs.length; i++) {

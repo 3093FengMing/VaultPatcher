@@ -20,7 +20,7 @@ public class VaultPatcherPatch {
     private boolean dynamic = false;
 
     public VaultPatcherPatch(String patchFile) {
-        VaultPatcher.LOGGER.info("[VaultPatcher] Found Module " + patchFile);
+        VaultPatcher.debugInfo("[VaultPatcher] Found Module " + patchFile);
         Path p = VaultPatcherConfig.config.resolve(patchFile);
         try {
             Files.createDirectories(p.getParent());
@@ -36,12 +36,12 @@ public class VaultPatcherPatch {
         PatchInfo patchInfo = new PatchInfo();
         patchInfo.readJson(reader);
         dynamic = patchInfo.isDynamic();
-        VaultPatcher.LOGGER.info(String.format("[VaultPatcher] Loading %s!", patchInfo.getName()));
-        VaultPatcher.LOGGER.info(/*JustPretty*/"[VaultPatcher] About Information:");
-        VaultPatcher.LOGGER.info(String.format("[VaultPatcher] Author(s): %s", patchInfo.getAuthors()));
-        VaultPatcher.LOGGER.info(String.format("[VaultPatcher] Apply to Mod(s): %s", patchInfo.getMods()));
-        VaultPatcher.LOGGER.info(String.format("[VaultPatcher] Description: %s", patchInfo.getDesc()));
-        VaultPatcher.LOGGER.info(String.format("[VaultPatcher] Dynamic: %s", patchInfo.isDynamic()));
+        VaultPatcher.debugInfo(String.format("[VaultPatcher] Loading %s!", patchInfo.getName()));
+        VaultPatcher.debugInfo(/*JustPretty*/"[VaultPatcher] About Information:");
+        VaultPatcher.debugInfo(String.format("[VaultPatcher] Author(s): %s", patchInfo.getAuthors()));
+        VaultPatcher.debugInfo(String.format("[VaultPatcher] Apply to Mod(s): %s", patchInfo.getMods()));
+        VaultPatcher.debugInfo(String.format("[VaultPatcher] Description: %s", patchInfo.getDesc()));
+        VaultPatcher.debugInfo(String.format("[VaultPatcher] Dynamic: %s", patchInfo.isDynamic()));
 
         while (reader.peek() != JsonToken.END_ARRAY) {
             TranslationInfo translationInfo = new TranslationInfo();

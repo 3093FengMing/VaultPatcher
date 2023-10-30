@@ -12,7 +12,7 @@ public class VarNodeHandler extends NodeHandler<VarInsnNode> {
     }
 
     @Override
-    public VarInsnNode modifyNode(boolean disableLocal) {
+    public VarInsnNode modifyNode() {
         if ((this.node.getOpcode() == Opcodes.ASTORE || this.node.getOpcode() == Opcodes.ALOAD)
                 && ASMUtils.matchLocal(this.params.info, this.params.localVariableMap.getOrDefault(this.node.var, null), false)) {
             ASMUtils.insertReplace(this.params.classNode.name, this.params.methodNode, this.node);

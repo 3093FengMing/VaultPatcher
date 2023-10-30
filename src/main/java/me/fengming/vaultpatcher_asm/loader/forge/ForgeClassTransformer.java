@@ -60,9 +60,7 @@ public class ForgeClassTransformer implements ITransformer<ClassNode> {
             }
         }
 
-        if (debug.isEnable()) {
-            targets.iterator().forEachRemaining(t -> VaultPatcher.LOGGER.info(String.format("[VaultPatcher] VPClassTransformer Target = %s", t.getClassName())));
-        }
+        targets.iterator().forEachRemaining(t -> VaultPatcher.debugInfo(String.format("[VaultPatcher] VPClassTransformer Target = %s", t.getClassName())));
 
         return targets;
     }

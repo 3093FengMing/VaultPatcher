@@ -10,7 +10,7 @@ public class MethodNodeHandler extends NodeHandler<MethodInsnNode> {
     }
 
     @Override
-    public MethodInsnNode modifyNode(boolean disableLocal) {
+    public MethodInsnNode modifyNode() {
         if (this.node.desc.endsWith(")Ljava/lang/String;")
                 && !this.node.name.equals("__vp_replace")
                 && ASMUtils.matchLocal(this.params.info, this.node.name, true)) {

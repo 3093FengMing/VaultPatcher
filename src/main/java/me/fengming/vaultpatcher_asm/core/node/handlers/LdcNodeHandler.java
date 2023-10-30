@@ -10,7 +10,8 @@ public class LdcNodeHandler extends NodeHandler<LdcInsnNode> {
         super(node, params);
     }
 
-    public LdcInsnNode modifyNode(boolean d) {
+    @Override
+    public LdcInsnNode modifyNode() {
         if (this.node.cst instanceof String) {
             String s = (String) this.node.cst;
             String v = Utils.matchPairs(this.params.info.getPairs(), s, false);

@@ -1,6 +1,5 @@
 package me.fengming.vaultpatcher_asm.core.cache;
 
-import me.fengming.vaultpatcher_asm.VaultPatcher;
 import me.fengming.vaultpatcher_asm.core.utils.ASMUtils;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
 import org.objectweb.asm.tree.ClassNode;
@@ -8,7 +7,6 @@ import org.objectweb.asm.tree.ClassNode;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,7 +50,7 @@ public class Caches {
             cache.create(node, hashes);
             cacheMap.putIfAbsent(className, cache);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to add cache", e);
         }
     }
 }

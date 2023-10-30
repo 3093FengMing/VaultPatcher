@@ -21,6 +21,7 @@ public class VaultPatcher {
         } catch (IOException e) {
             throw new RuntimeException("Failed to load cache", e);
         }
+
         VaultPatcher.LOGGER.warn("[VaultPatcher] Loading Configs!");
         Utils.mcPath = mcPath;
         try {
@@ -35,5 +36,9 @@ public class VaultPatcher {
         } catch (IOException e) {
             throw new RuntimeException("Failed to load config", e);
         }
+    }
+
+    public static void debugInfo(String s) {
+        if (VaultPatcherConfig.getDebugMode().isEnable()) VaultPatcher.LOGGER.info(s);
     }
 }

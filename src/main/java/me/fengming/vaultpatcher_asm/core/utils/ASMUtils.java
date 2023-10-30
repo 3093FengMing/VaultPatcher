@@ -2,11 +2,13 @@ package me.fengming.vaultpatcher_asm.core.utils;
 
 import me.fengming.vaultpatcher_asm.config.TargetClassInfo;
 import me.fengming.vaultpatcher_asm.config.TranslationInfo;
-import me.fengming.vaultpatcher_asm.core.node.NodeHandlerParameters;
-import me.fengming.vaultpatcher_asm.core.node.handlers.*;
+import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.*;
+import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.MethodInsnNode;
+import org.objectweb.asm.tree.MethodNode;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -21,7 +23,7 @@ public class ASMUtils {
             String v = Utils.matchPairs(info.getPairs(), s, true);
             if (Utils.isBlank(v) || v.equals(s)) continue;
 
-            Utils.printDebugInfo(s, method, v, stackTraces2String(stackTraces), info);
+            if (VaultPatcherConfig.getDebugMode().isEnable()) Utils.printDebugInfo(s, method, v, stackTraces2String(stackTraces), info);
 
             TargetClassInfo targetClass = info.getTargetClassInfo();
             String className = targetClass.getName();
@@ -50,22 +52,6 @@ public class ASMUtils {
         return sb.delete(sb.length() - 2, sb.length()).append("]").toString();
     }
 
-    public static NodeHandler<? extends AbstractInsnNode> getHandlerByNode(AbstractInsnNode node, NodeHandlerParameters params) {
-        switch (node.getType()) {
-            case 9:
-                return new LdcNodeHandler((LdcInsnNode) node, params);
-            case 6:
-                return new InvokeDynamicNodeHandler((InvokeDynamicInsnNode) node, params);
-            case 5:
-                return new MethodNodeHandler((MethodInsnNode) node, params);
-            case 2:
-                return new VarNodeHandler((VarInsnNode) node, params);
-            case 0:
-                return new InsnNodeHandler((InsnNode) node, params);
-        }
-        return null;
-    }
-
     public static File exportClass(ClassNode node, Path root) {
         ClassWriter w = new ClassWriter(0);
         node.accept(w);
@@ -83,7 +69,7 @@ public class ASMUtils {
             fos.close();
             return file;
         } catch (Exception e) {
-            throw new IllegalStateException("Failed Exporting Class", e);
+            throw new IllegalStateException("Failed to export class", e);
         }
     }
 

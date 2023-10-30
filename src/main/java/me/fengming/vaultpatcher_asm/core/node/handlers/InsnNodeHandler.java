@@ -11,8 +11,8 @@ public class InsnNodeHandler extends NodeHandler<InsnNode> {
     }
 
     @Override
-    public InsnNode modifyNode(boolean disableLocal) {
-        if (!disableLocal && this.params.methodNode.desc.endsWith(")Ljava/lang/String;")
+    public InsnNode modifyNode() {
+        if (!this.params.disableLocal && this.params.methodNode.desc.endsWith(")Ljava/lang/String;")
                 && this.node.getOpcode() == Opcodes.ARETURN
                 && ASMUtils.matchLocal(params.info, params.classNode.name, false)) {
             ASMUtils.insertReplace(this.params.classNode.name, this.params.methodNode, this.node);

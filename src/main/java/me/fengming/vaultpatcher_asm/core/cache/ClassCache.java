@@ -6,7 +6,6 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -54,12 +53,10 @@ public class ClassCache {
         try (InputStream fis = Files.newInputStream(this.hashFile)) {
             fis.read(cacheHashBytes);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to read hash file", e);
         }
 
         String cacheHash = new String(cacheHashBytes, StandardCharsets.UTF_8);
-        System.out.println("cacheHash = " + cacheHash);
-        System.out.println("currentHash = " + currentHash);
 
         this.updated = currentHash.equals(cacheHash);
 
@@ -107,12 +104,8 @@ public class ClassCache {
                 fos.flush();
             }
         } catch (IOException e) {
-            throw new RuntimeException("Failed write hash file", e);
+            throw new RuntimeException("Failed to write hash file", e);
         }
     }
 
-    @Override
-    public String toString() {
-        return this.clazz != null ? this.clazz.name : "None";
-    }
 }

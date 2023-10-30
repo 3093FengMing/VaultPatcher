@@ -26,8 +26,8 @@ public class VPClassTransformer implements Consumer<ClassNode> {
 
     public VPClassTransformer(TranslationInfo info) {
         this.translationInfo = info;
-        if (info != null && debug.isEnable()) {
-            VaultPatcher.LOGGER.info(String.format("[VaultPatcher] Loading VPTransformer for translation info: %s", info));
+        if (info != null) {
+            VaultPatcher.debugInfo(String.format("[VaultPatcher] Loading VPTransformer for translation info: %s", info));
         }
     }
 
@@ -49,9 +49,9 @@ public class VPClassTransformer implements Consumer<ClassNode> {
                 final NodeHandlerParameters params = new NodeHandlerParameters(disableLocal, disableLocalVariable, input, method, localVariableMap, info);
 
                 for (AbstractInsnNode instruction : method.instructions) {
-                    NodeHandler<?> handler = ASMUtils.getHandlerByNode(instruction, params);
+                    NodeHandler<?> handler = NodeHandler.getHandlerByNode(instruction, params);
                     if (handler == null) continue;
-                    instruction = handler.modifyNode(disableLocal);
+                    instruction = handler.modifyNode();
                 }
             }
 
@@ -184,9 +184,9 @@ public class VPClassTransformer implements Consumer<ClassNode> {
         byte[] copy = classCopy(input);
 
         if (cache != null) {
-            VaultPatcher.LOGGER.info("Using Cache: " + input.name);
+            VaultPatcher.debugInfo("Using Cache: " + input.name);
             if (!cache.update(input)) {
-                VaultPatcher.LOGGER.info("Updating Cache: " + input.name);
+                VaultPatcher.debugInfo("Updating Cache: " + input.name);
                 generate(input);
                 cache.put(input, copy);
             }
@@ -194,7 +194,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
             input.methods = taken.methods;
             input.fields = taken.fields;
         } else {
-            VaultPatcher.LOGGER.info("Generating Class Cache: " + input.name);
+            VaultPatcher.debugInfo("Generating Class Cache: " + input.name);
             generate(input);
             Caches.addClassCache(input.name, input, copy);
         }
