@@ -23,7 +23,7 @@ public class VPMinecraftTransformer implements Consumer<ClassNode> {
                         if (insn.getType() == AbstractInsnNode.FIELD_INSN) {
                             InsnList insnList = new InsnList();
                             insnList.add(new LdcInsnNode(input.name + "#<init>"));
-                            insnList.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "me/fengming/vaultpatcher_asm/ASMUtils", "__mappingString", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", false));
+                            insnList.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "me/fengming/vaultpatcher_asm/core/utils/ASMUtils", "__mappingString", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", false));
                             method.instructions.insertBefore(insn, insnList);
                         }
                     }
@@ -40,7 +40,7 @@ public class VPMinecraftTransformer implements Consumer<ClassNode> {
                     InsnList insnList = new InsnList();
                     insnList.add(new VarInsnNode(Opcodes.ALOAD, 1));
                     insnList.add(new LdcInsnNode(input.name + "#renderText"));
-                    insnList.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "me/fengming/vaultpatcher_asm/ASMUtils", "__mappingString", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", false));
+                    insnList.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "me/fengming/vaultpatcher_asm/core/utils/ASMUtils", "__mappingString", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", false));
                     insnList.add(new VarInsnNode(Opcodes.ASTORE, 1));
                     method.instructions.insertBefore(method.instructions.getFirst(), insnList);
                 }
