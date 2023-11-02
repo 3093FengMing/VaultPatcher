@@ -49,12 +49,15 @@ public class VPTransformationService implements ITransformationService {
     }
 
     public static boolean isOldVersion(String version) {
-        String _116 = "1.16.5";
-        if (_116.equals(version)) return true;
-        for (int i = 0; i < 6; i++) {
-            if (version.charAt(i) < _116.charAt(i)) return true;
+        String[] _116 = {"1", "16", "5"};
+        String[] ver = version.split("\\.", 3);
+        for (int i = 0; i < Math.min(_116.length, ver.length); i++) {
+            int comparison = _116[i].compareTo(ver[i]);
+
+            if (comparison < 0) return false;
+            if (comparison > 0) return true;
         }
-        return false;
+        return _116.length > ver.length;
     }
 
     private static String getMinecraftVersion() {
