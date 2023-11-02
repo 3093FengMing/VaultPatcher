@@ -11,8 +11,8 @@ public class TargetClassInfo {
     private String name = "";
     private String method = "";
     private String local = "";
-    private byte matchMode = 0;
-    private byte localMode = 0;
+    private MatchMode matchMode = MatchMode.FULL;
+    private LocalMode localMode = LocalMode.NONE;
 
     public void readJson(JsonReader reader) throws IOException {
         reader.beginObject();
@@ -54,13 +54,13 @@ public class TargetClassInfo {
     public void setName(String name) {
         char f = name.charAt(0);
         if (f == '@') {
-            matchMode = 1;
+            matchMode = MatchMode.STARTS;
             this.name = name.substring(1);
         } else if (f == '#') {
-            matchMode = 2;
+            matchMode = MatchMode.ENDS;
             this.name = name.substring(1);
         } else {
-            matchMode = 0;
+            matchMode = MatchMode.FULL;
             this.name = name;
         }
     }
@@ -82,19 +82,19 @@ public class TargetClassInfo {
             this.local = local;
         } else {
             if (local.charAt(0) == 'V') {
-                localMode = 1;
+                localMode = LocalMode.LOCAL_VARIABLE;
             } else if (local.charAt(0) == 'M') {
-                localMode = 0;
-            } else localMode = 2;
+                localMode = LocalMode.METHOD_RETURN;
+            } else localMode = LocalMode.NONE;
             this.local = local.substring(1);
         }
     }
 
-    public byte getMatchMode() {
+    public MatchMode getMatchMode() {
         return matchMode;
     }
 
-    public byte getLocalMode() {
+    public LocalMode getLocalMode() {
         return localMode;
     }
 
@@ -108,4 +108,8 @@ public class TargetClassInfo {
                 ", localMode=" + localMode +
                 '}';
     }
+
+    public enum LocalMode { METHOD_RETURN, LOCAL_VARIABLE, NONE }
+
+    public enum MatchMode { FULL, STARTS, ENDS }
 }

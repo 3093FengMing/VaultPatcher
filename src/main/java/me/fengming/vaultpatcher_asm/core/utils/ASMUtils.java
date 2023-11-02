@@ -33,10 +33,11 @@ public class ASMUtils {
             boolean ignoredMethod = Utils.isBlank(methodName);
 
             for (StackTraceElement stackTrace : stackTraces) {
+                if (!ignoredMethod && !methodName.equals(stackTrace.getMethodName())) continue;
                 switch (targetClass.getMatchMode()) {
-                    case 0: if (className.equals(stackTrace.getClassName()) && (ignoredMethod || methodName.equals(stackTrace.getMethodName()))) return v;
-                    case 1: if (stackTrace.getClassName().startsWith(className) && (ignoredMethod || methodName.equals(stackTrace.getMethodName()))) return v;
-                    case 2: if (stackTrace.getClassName().endsWith(className) && (ignoredMethod || methodName.equals(stackTrace.getMethodName()))) return v;
+                    case FULL: if (stackTrace.getClassName().equals(className)) return v;
+                    case STARTS: if (stackTrace.getClassName().startsWith(className)) return v;
+                    case ENDS: if (stackTrace.getClassName().endsWith(className)) return v;
                 }
             }
 
@@ -77,8 +78,9 @@ public class ASMUtils {
         if (name == null) return false;
         TargetClassInfo i = info.getTargetClassInfo();
         if (Utils.isBlank(i.getLocal())) return false;
-        if (i.getLocalMode() == 2) return i.getLocal().equals(name);
-        if ((i.getLocalMode() == 0 && isMethod) || (i.getLocalMode() == 1 && !isMethod))
+        if (i.getLocalMode() == TargetClassInfo.LocalMode.NONE) return i.getLocal().equals(name);
+        if ((i.getLocalMode() == TargetClassInfo.LocalMode.METHOD_RETURN && isMethod)
+                || (i.getLocalMode() == TargetClassInfo.LocalMode.LOCAL_VARIABLE && !isMethod))
             return i.getLocal().equals(name);
         return false;
     }
