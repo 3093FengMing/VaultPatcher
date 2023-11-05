@@ -69,7 +69,6 @@ public class VPClassTransformer implements Consumer<ClassNode> {
                 list.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "java/util/HashMap", "<init>", "(I)V", false));
                 list.add(new FieldInsnNode(Opcodes.PUTSTATIC, input.name, "__vp_map", "Ljava/util/HashMap;"));
                 list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, input.name, "__vp_init", "()V"));
-
                 method.instructions.insertBefore(method.instructions.getLast(), list);
 
                 hasClinit = true;
@@ -87,7 +86,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
 
         // field __vp_map
         {
-            FieldVisitor fv = cv.visitField(Opcodes.ACC_PRIVATE | Opcodes.ACC_FINAL | Opcodes.ACC_STATIC, "__vp_map", "Ljava/util/HashMap;", "Ljava/util/HashMap<Ljava/lang/String;Ljava/lang/String;>;", null);
+            FieldVisitor fv = cv.visitField(Opcodes.ACC_PUBLIC | Opcodes.ACC_FINAL | Opcodes.ACC_STATIC, "__vp_map", "Ljava/util/HashMap;", "Ljava/util/HashMap<Ljava/lang/String;Ljava/lang/String;>;", null);
             fv.visitEnd();
         }
 
@@ -143,7 +142,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
 
         // __vp_replace
         {
-            MethodVisitor mv = cv.visitMethod(Opcodes.ACC_PRIVATE | Opcodes.ACC_STATIC, "__vp_replace", "(Ljava/lang/String;)Ljava/lang/String;", null, null);
+            MethodVisitor mv = cv.visitMethod(Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC, "__vp_replace", "(Ljava/lang/String;)Ljava/lang/String;", null, null);
             mv.visitCode();
 
             Label label0 = new Label();
