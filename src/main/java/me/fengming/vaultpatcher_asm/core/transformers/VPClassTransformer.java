@@ -77,19 +77,74 @@ public class VPClassTransformer implements Consumer<ClassNode> {
 
         // patch it (add replace method)
         if (!disableLocal) {
-            patchClass(input, input.name, info.getPairs().getMap().entrySet(), hasClinit);
+            patchClass(input, input.name, info.getPairs().getMap().entrySet(), hasClinit, (input.access & Opcodes.ACC_INTERFACE) != 0);
         }
 
     }
 
-    private static void patchClass(ClassVisitor cv, String className, Set<Map.Entry<String, String>> set, boolean hasClinit) {
+    private static void patchClass(ClassVisitor cv, String className, Set<Map.Entry<String, String>> set, boolean hasClinit, boolean isInterface) {
 
         // field __vp_map
         {
-            FieldVisitor fv = cv.visitField(Opcodes.ACC_PUBLIC | Opcodes.ACC_FINAL | Opcodes.ACC_STATIC, "__vp_map", "Ljava/util/HashMap;", "Ljava/util/HashMap<Ljava/lang/String;Ljava/lang/String;>;", null);
+            FieldVisitor fv = cv.visitField((isInterface ? Opcodes.ACC_PUBLIC : Opcodes.ACC_PRIVATE) | Opcodes.ACC_FINAL | Opcodes.ACC_STATIC, "__vp_map", "Ljava/util/HashMap;", "Ljava/util/HashMap<Ljava/lang/String;Ljava/lang/String;>;", null);
             fv.visitEnd();
         }
 
+        String innerClassName = className + "$vp_1";
+
+        // fix
+        if (isInterface) {
+            // clinit
+            MethodVisitor mv = cv.visitMethod(Opcodes.ACC_STATIC, "<clinit>", "()V", null, null);
+            mv.visitCode();
+            mv.visitTypeInsn(Opcodes.NEW, innerClassName);
+            mv.visitInsn(Opcodes.DUP);
+            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, innerClassName, "<init>", "()V", false);
+            mv.visitFieldInsn(Opcodes.PUTSTATIC, className, "__vp_map", "Ljava/util/HashMap;");
+            mv.visitInsn(Opcodes.RETURN);
+            mv.visitMaxs(2, 0);
+            mv.visitEnd();
+
+            // inner class HashMap
+            cv.visitInnerClass(innerClassName, null, null, Opcodes.ACC_PRIVATE);
+            ClassWriter cw = new ClassWriter(0);
+            cw.visit(Opcodes.V1_8, Opcodes.ACC_PRIVATE | Opcodes.ACC_FINAL | Opcodes.ACC_SUPER, innerClassName, "Ljava/util/HashMap<Ljava/lang/String;Ljava/lang/String;>;", "java/util/HashMap", null);
+            cw.visitOuterClass(className, innerClassName, "");
+
+            // inner <init>
+            MethodVisitor mv1 = cw.visitMethod(0, "<init>", "()V", null, null);
+            mv1.visitCode();
+
+            Label label0 = new Label();
+            mv1.visitLabel(label0);
+            mv1.visitVarInsn(Opcodes.ALOAD, 0);
+            mv1.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/util/HashMap", "<init>", "()V", false);
+
+            Label label1 = new Label();
+            mv1.visitLabel(label1);
+            for (Map.Entry<String, String> entry : set) {
+                mv1.visitVarInsn(Opcodes.ALOAD, 0);
+                mv.visitLdcInsn(entry.getKey());
+                mv.visitLdcInsn(entry.getValue());
+                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/HashMap", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false);
+                mv.visitInsn(Opcodes.POP);
+            }
+
+            Label label2 = new Label();
+            mv.visitLabel(label2);
+            mv.visitInsn(Opcodes.RETURN);
+            mv.visitMaxs(3, 1);
+            mv.visitEnd();
+
+            cw.visitEnd();
+        } else {
+            patchNormal(cv, className, set, hasClinit);
+        }
+
+    }
+
+
+    private static void patchNormal(ClassVisitor cv, String className, Set<Map.Entry<String, String>> set, boolean hasClinit) {
         // <clinit>
         if (!hasClinit) {
             MethodVisitor mv = cv.visitMethod(Opcodes.ACC_STATIC, "<clinit>", "()V", null, null);
@@ -113,6 +168,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
 
             Label label2 = new Label();
             mv.visitLabel(label2);
+
             mv.visitInsn(Opcodes.RETURN);
             mv.visitMaxs(0, 0);
             mv.visitEnd();
@@ -120,7 +176,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
 
         // __vp_init
         {
-            MethodVisitor mv = cv.visitMethod(Opcodes.ACC_STATIC, "__vp_init", "()V", null, null);
+            MethodVisitor mv = cv.visitMethod(Opcodes.ACC_PRIVATE | Opcodes.ACC_STATIC, "__vp_init", "()V", null, null);
             mv.visitCode();
 
             Label label0 = new Label();
@@ -142,7 +198,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
 
         // __vp_replace
         {
-            MethodVisitor mv = cv.visitMethod(Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC, "__vp_replace", "(Ljava/lang/String;)Ljava/lang/String;", null, null);
+            MethodVisitor mv = cv.visitMethod( Opcodes.ACC_PRIVATE | Opcodes.ACC_STATIC, "__vp_replace", "(Ljava/lang/String;)Ljava/lang/String;", null, null);
             mv.visitCode();
 
             Label label0 = new Label();
@@ -160,7 +216,6 @@ public class VPClassTransformer implements Consumer<ClassNode> {
             mv.visitMaxs(3, 1);
             mv.visitEnd();
         }
-
     }
 
     private static void fieldReplace(ClassNode input, TranslationInfo info) {
