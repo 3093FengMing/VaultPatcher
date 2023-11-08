@@ -33,6 +33,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
 
     private static void methodReplace(ClassNode input, TranslationInfo info) {
         boolean hasClinit = false;
+        boolean isInterface = (input.access & Opcodes.ACC_INTERFACE) != 0;
         for (MethodNode method : input.methods) {
             String methodName = info.getTargetClassInfo().getMethod();
             if (Utils.isBlank(methodName) || methodName.equals(method.name)) {
@@ -58,17 +59,27 @@ public class VPClassTransformer implements Consumer<ClassNode> {
             if (!disableLocal && method.name.equals("<clinit>")) {
                 InsnList list = new InsnList();
 
-                list.add(new TypeInsnNode(Opcodes.NEW, "java/util/HashMap"));
-                list.add(new InsnNode(Opcodes.DUP));
-                Set<Map.Entry<String, String>> set = info.getPairs().getMap().entrySet();
-                if (set.size() > 5) {
-                    list.add(new IntInsnNode(Opcodes.BIPUSH, set.size()));
+                if (isInterface) {
+                    String innerClassName = input.name + "$vp_1";
+                    list.add(new TypeInsnNode(Opcodes.NEW, innerClassName));
+                    list.add(new InsnNode(Opcodes.DUP));
+                    list.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, innerClassName, "<init>", "()V", false));
+                    list.add(new FieldInsnNode(Opcodes.PUTSTATIC, input.name, "__vp_map", "Ljava/util/HashMap;"));
+                    list.add(new InsnNode(Opcodes.RETURN));
                 } else {
-                    list.add(new InsnNode(Opcodes.ICONST_0 + set.size()));
+                    list.add(new TypeInsnNode(Opcodes.NEW, "java/util/HashMap"));
+                    list.add(new InsnNode(Opcodes.DUP));
+                    Set<Map.Entry<String, String>> set = info.getPairs().getMap().entrySet();
+                    if (set.size() > 5) {
+                        list.add(new IntInsnNode(Opcodes.BIPUSH, set.size()));
+                    } else {
+                        list.add(new InsnNode(Opcodes.ICONST_0 + set.size()));
+                    }
+                    list.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "java/util/HashMap", "<init>", "(I)V", false));
+                    list.add(new FieldInsnNode(Opcodes.PUTSTATIC, input.name, "__vp_map", "Ljava/util/HashMap;"));
+                    list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, input.name, "__vp_init", "()V"));
                 }
-                list.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "java/util/HashMap", "<init>", "(I)V", false));
-                list.add(new FieldInsnNode(Opcodes.PUTSTATIC, input.name, "__vp_map", "Ljava/util/HashMap;"));
-                list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, input.name, "__vp_init", "()V"));
+
                 method.instructions.insertBefore(method.instructions.getLast(), list);
 
                 hasClinit = true;
@@ -77,7 +88,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
 
         // patch it (add replace method)
         if (!disableLocal) {
-            patchClass(input, input.name, info.getPairs().getMap().entrySet(), hasClinit, (input.access & Opcodes.ACC_INTERFACE) != 0);
+            patchClass(input, input.name, info.getPairs().getMap().entrySet(), hasClinit, isInterface);
         }
 
     }
@@ -94,36 +105,39 @@ public class VPClassTransformer implements Consumer<ClassNode> {
 
         // fix
         if (isInterface) {
-            // clinit
-            MethodVisitor mv = cv.visitMethod(Opcodes.ACC_STATIC, "<clinit>", "()V", null, null);
-            mv.visitCode();
-            mv.visitTypeInsn(Opcodes.NEW, innerClassName);
-            mv.visitInsn(Opcodes.DUP);
-            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, innerClassName, "<init>", "()V", false);
-            mv.visitFieldInsn(Opcodes.PUTSTATIC, className, "__vp_map", "Ljava/util/HashMap;");
-            mv.visitInsn(Opcodes.RETURN);
-            mv.visitMaxs(2, 0);
-            mv.visitEnd();
+            if (!hasClinit) {
+                // clinit
+                MethodVisitor mv = cv.visitMethod(Opcodes.ACC_STATIC, "<clinit>", "()V", null, null);
+                mv.visitCode();
+                mv.visitTypeInsn(Opcodes.NEW, innerClassName);
+                mv.visitInsn(Opcodes.DUP);
+                mv.visitMethodInsn(Opcodes.INVOKESPECIAL, innerClassName, "<init>", "()V", false);
+                mv.visitFieldInsn(Opcodes.PUTSTATIC, className, "__vp_map", "Ljava/util/HashMap;");
+                mv.visitInsn(Opcodes.RETURN);
+                mv.visitMaxs(2, 0);
+                mv.visitEnd();
+            }
 
             // inner class HashMap
             cv.visitInnerClass(innerClassName, null, null, Opcodes.ACC_PRIVATE);
+
             ClassWriter cw = new ClassWriter(0);
             cw.visit(Opcodes.V1_8, Opcodes.ACC_PRIVATE | Opcodes.ACC_FINAL | Opcodes.ACC_SUPER, innerClassName, "Ljava/util/HashMap<Ljava/lang/String;Ljava/lang/String;>;", "java/util/HashMap", null);
-            cw.visitOuterClass(className, innerClassName, "");
+            cw.visitOuterClass(className, null, null);
 
             // inner <init>
-            MethodVisitor mv1 = cw.visitMethod(0, "<init>", "()V", null, null);
-            mv1.visitCode();
+            MethodVisitor mv = cw.visitMethod(0, "<init>", "()V", null, null);
+            mv.visitCode();
 
             Label label0 = new Label();
-            mv1.visitLabel(label0);
-            mv1.visitVarInsn(Opcodes.ALOAD, 0);
-            mv1.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/util/HashMap", "<init>", "()V", false);
+            mv.visitLabel(label0);
+            mv.visitVarInsn(Opcodes.ALOAD, 0);
+            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/util/HashMap", "<init>", "()V", false);
 
             Label label1 = new Label();
-            mv1.visitLabel(label1);
+            mv.visitLabel(label1);
             for (Map.Entry<String, String> entry : set) {
-                mv1.visitVarInsn(Opcodes.ALOAD, 0);
+                mv.visitVarInsn(Opcodes.ALOAD, 0);
                 mv.visitLdcInsn(entry.getKey());
                 mv.visitLdcInsn(entry.getValue());
                 mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/HashMap", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false);
