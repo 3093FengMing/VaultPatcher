@@ -74,6 +74,7 @@ public class Utils {
     }
 
     public static boolean isBlank(String s) {
+        if (s == null) return false;
         if (s.isEmpty()) return true;
         for (int i = 0; i < s.getBytes(StandardCharsets.UTF_8).length; i++) {
             if (!Character.isWhitespace(s.charAt(i))) return false;
