@@ -17,6 +17,7 @@ import java.nio.file.Path;
 public class ASMUtils {
 
     public static String __mappingString(String s, String method) {
+        if (s == null) return null;
         if (Utils.isBlank(s)) return s;
         StackTraceElement[] stackTraces = Thread.currentThread().getStackTrace();
         for (TranslationInfo info : Utils.dynTranslationInfos) {
@@ -74,12 +75,13 @@ public class ASMUtils {
         }
     }
 
-    public static boolean matchLocal(TranslationInfo info, String name, boolean isMethod) {
+    public static boolean matchLocal(TranslationInfo info, String name, boolean isMethod, boolean callReturn) {
         if (name == null) return false;
         TargetClassInfo i = info.getTargetClassInfo();
         if (Utils.isBlank(i.getLocal())) return false;
         if (i.getLocalMode() == TargetClassInfo.LocalMode.NONE) return i.getLocal().equals(name);
-        if ((i.getLocalMode() == TargetClassInfo.LocalMode.METHOD_RETURN && isMethod)
+        if ((i.getLocalMode() == TargetClassInfo.LocalMode.CALL_RETURN && isMethod)
+                || (i.getLocalMode() == TargetClassInfo.LocalMode.METHOD_RETURN && isMethod)
                 || (i.getLocalMode() == TargetClassInfo.LocalMode.LOCAL_VARIABLE && !isMethod))
             return i.getLocal().equals(name);
         return false;

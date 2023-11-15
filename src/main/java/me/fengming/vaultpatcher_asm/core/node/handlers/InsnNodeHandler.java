@@ -14,9 +14,9 @@ public class InsnNodeHandler extends NodeHandler<InsnNode> {
     public InsnNode modifyNode() {
         if (!this.params.disableLocal && this.params.methodNode.desc.endsWith(")Ljava/lang/String;")
                 && this.node.getOpcode() == Opcodes.ARETURN
-                && ASMUtils.matchLocal(params.info, params.classNode.name, false)) {
+                && ASMUtils.matchLocal(params.info, params.classNode.name, true, false)) {
             ASMUtils.insertReplace(this.params.classNode.name, this.params.methodNode, this.node);
-            debugInfo("ASMTransformMethod-InsertReturn", "Runtime Determination", "Runtime Determination");
+            debugInfo("ASMTransformMethod-InsertMethodReturn", "Runtime Determination", "Runtime Determination");
         }
         return this.node;
     }
