@@ -1,6 +1,6 @@
 package me.fengming.vaultpatcher_asm.core.node.handlers;
 
-import jdk.internal.org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Opcodes;
 import me.fengming.vaultpatcher_asm.core.node.NodeHandlerParameters;
 import me.fengming.vaultpatcher_asm.core.utils.ASMUtils;
 import org.objectweb.asm.tree.FieldInsnNode;
