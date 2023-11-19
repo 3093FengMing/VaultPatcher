@@ -15,7 +15,7 @@ public class DebugMode {
 
     private boolean exportClass = false;
 
-    private boolean updateCache = true;
+    private boolean useCache = true;
 
 
     public boolean isEnable() {
@@ -50,12 +50,12 @@ public class DebugMode {
         this.exportClass = exportClass;
     }
 
-    public boolean isUpdateCache() {
-        return updateCache;
+    public boolean isUseCache() {
+        return useCache;
     }
 
-    public void setUpdateCache(boolean updateCache) {
-        this.updateCache = updateCache;
+    public void setUseCache(boolean updateCache) {
+        this.useCache = updateCache;
     }
 
     public void readJson(JsonReader reader) throws IOException {
@@ -79,8 +79,8 @@ public class DebugMode {
                     setExportClass(reader.nextBoolean());
                     break;
                 case "u":
-                case "update_cache":
-                    setUpdateCache(reader.nextBoolean());
+                case "use_cache":
+                    setUseCache(reader.nextBoolean());
                     break;
                 default:
                     reader.skipValue();
@@ -96,7 +96,7 @@ public class DebugMode {
         writer.name("output_format").value(getOutputFormat());
         writer.name("output_mode").value(getOutputMode());
         writer.name("export_class").value(isExportClass());
-        writer.name("update_cache").value(isUpdateCache());
+        writer.name("update_cache").value(isUseCache());
         writer.endObject();
     }
 }

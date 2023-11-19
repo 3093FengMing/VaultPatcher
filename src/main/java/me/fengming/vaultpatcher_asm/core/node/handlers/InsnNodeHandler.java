@@ -15,7 +15,7 @@ public class InsnNodeHandler extends NodeHandler<InsnNode> {
         if (!this.params.disableLocal
                 && this.node.getOpcode() == Opcodes.ARETURN
                 && this.params.ordinal == this.params.info.getTargetClassInfo().getOrdinal()
-                && ASMUtils.matchLocal(this.params.info, this.params.methodNode.name, true, false)) {
+                && ASMUtils.matchLocal(this.params.info, this.params.methodNode.name, true)) {
             ASMUtils.insertReplace(this.params.classNode.name, this.params.methodNode, this.node);
             debugInfo(this.params.ordinal, "ASMTransformMethod-InsertMethodReturn", "Runtime Determination", "Runtime Determination");
         }

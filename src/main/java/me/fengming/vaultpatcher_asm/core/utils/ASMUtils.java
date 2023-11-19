@@ -75,7 +75,7 @@ public class ASMUtils {
         }
     }
 
-    public static boolean matchLocal(TranslationInfo info, String name, boolean isMethod, boolean callReturn) {
+    public static boolean matchLocal(TranslationInfo info, String name, boolean isMethod) {
         if (name == null) return false;
         TargetClassInfo i = info.getTargetClassInfo();
         if (Utils.isBlank(i.getLocal())) return false;

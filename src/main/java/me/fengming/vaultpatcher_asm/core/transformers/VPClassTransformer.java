@@ -184,24 +184,28 @@ public class VPClassTransformer implements Consumer<ClassNode> {
     // for Fabric
     @Override
     public void accept(ClassNode input) {
-        // check cache
-        ClassCache cache = Caches.getClassCache(input.name);
-        byte[] copy = classCopy(input);
+        if (VaultPatcherConfig.getDebugMode().isUseCache()) {
+            // check cache
+            ClassCache cache = Caches.getClassCache(input.name);
+            byte[] copy = classCopy(input);
 
-        if (cache != null) {
-            VaultPatcher.debugInfo("Using Cache: " + input.name);
-            if (!cache.update(input)) {
-                VaultPatcher.debugInfo("Updating Cache: " + input.name);
+            if (cache != null) {
+                VaultPatcher.debugInfo("Using Cache: " + input.name);
+                if (!cache.update(input)) {
+                    VaultPatcher.debugInfo("Updating Cache: " + input.name);
+                    generate(input);
+                    cache.put(input, copy);
+                }
+                ClassNode taken = cache.take();
+                input.methods = taken.methods;
+                input.fields = taken.fields;
+            } else {
+                VaultPatcher.debugInfo("Generating Class Cache: " + input.name);
                 generate(input);
-                cache.put(input, copy);
+                Caches.addClassCache(input.name, input, copy);
             }
-            ClassNode taken = cache.take();
-            input.methods = taken.methods;
-            input.fields = taken.fields;
         } else {
-            VaultPatcher.debugInfo("Generating Class Cache: " + input.name);
             generate(input);
-            Caches.addClassCache(input.name, input, copy);
         }
 
         if (debug.isExportClass()) ASMUtils.exportClass(input, Utils.mcPath.resolve("vaultpatcher").resolve("exported"));

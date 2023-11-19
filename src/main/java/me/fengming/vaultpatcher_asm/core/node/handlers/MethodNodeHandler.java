@@ -13,7 +13,7 @@ public class MethodNodeHandler extends NodeHandler<MethodInsnNode> {
     public MethodInsnNode modifyNode() {
         if (!this.params.disableLocal
                 && this.params.ordinal == this.params.info.getTargetClassInfo().getOrdinal()
-                && ASMUtils.matchLocal(this.params.info, this.node.name, true, true)) {
+                && ASMUtils.matchLocal(this.params.info, this.node.name, true)) {
             ASMUtils.insertReplace(this.params.classNode.name, this.params.methodNode, this.node);
             debugInfo(this.params.ordinal, "ASMTransformMethod-InsertCalledMethodReturn", "Runtime Determination", "Runtime Determination");
         }

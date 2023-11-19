@@ -1,5 +1,6 @@
 package me.fengming.vaultpatcher_asm.core.cache;
 
+import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
 import me.fengming.vaultpatcher_asm.core.utils.ASMUtils;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
 import org.objectweb.asm.tree.ClassNode;
@@ -13,6 +14,7 @@ import java.util.Map;
 public class Caches {
     private static final Map<String, ClassCache> cacheMap = new HashMap<>();
     public static void initCache(Path path) throws IOException {
+        if (!VaultPatcherConfig.getDebugMode().isUseCache()) return;
         File file = path.toFile();
         if (!file.exists()) {
             file.mkdirs();
