@@ -6,18 +6,17 @@ import java.util.stream.IntStream;
 
 public class Main {
     String abcc = "sssh";
+    String abcdc = "ss2sh";
 
     private static final HashMap<String, String> __vp_map = new HashMap<String, String>(2222) {
         {
             put("aa", "bb");
         }
     };
-
-    static {
-        aaa();
-    }
-    private static void aaa() {
-        System.out.println(__vp_replace(new StringBuilder().append(A1145142.String).append("::").toString()));
+    private void aaa(String abc) {
+        System.out.println(abc);
+        System.out.println(this.abcc);
+        System.out.println(this.abcdc);
     }
 
 //    public void main(String sss) {

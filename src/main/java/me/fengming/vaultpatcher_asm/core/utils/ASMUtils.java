@@ -79,10 +79,11 @@ public class ASMUtils {
         if (name == null) return false;
         TargetClassInfo i = info.getTargetClassInfo();
         if (Utils.isBlank(i.getLocal())) return false;
-        if (i.getLocalMode() == TargetClassInfo.LocalMode.NONE) return i.getLocal().equals(name);
-        if ((i.getLocalMode() == TargetClassInfo.LocalMode.CALL_RETURN && isMethod)
+        if (i.getLocalMode() == TargetClassInfo.LocalMode.NONE
+                || (i.getLocalMode() == TargetClassInfo.LocalMode.CALL_RETURN && isMethod)
                 || (i.getLocalMode() == TargetClassInfo.LocalMode.METHOD_RETURN && isMethod)
-                || (i.getLocalMode() == TargetClassInfo.LocalMode.LOCAL_VARIABLE && !isMethod))
+                || (i.getLocalMode() == TargetClassInfo.LocalMode.LOCAL_VARIABLE && !isMethod)
+                || (i.getLocalMode() == TargetClassInfo.LocalMode.GLOBAL_VARIABLE && !isMethod))
             return i.getLocal().equals(name);
         return false;
     }

@@ -25,16 +25,18 @@ public abstract class NodeHandler<E extends AbstractInsnNode> {
 
     public static NodeHandler<? extends AbstractInsnNode> getHandlerByNode(AbstractInsnNode node, NodeHandlerParameters params) {
         switch (node.getType()) {
-            case 9:
+            case AbstractInsnNode.LDC_INSN:
                 return new LdcNodeHandler((LdcInsnNode) node, params);
-            case 6:
+            case AbstractInsnNode.INVOKE_DYNAMIC_INSN:
                 return new InvokeDynamicNodeHandler((InvokeDynamicInsnNode) node, params);
-            case 5:
+            case AbstractInsnNode.METHOD_INSN:
                 return new MethodNodeHandler((MethodInsnNode) node, params);
-            case 2:
+            case AbstractInsnNode.VAR_INSN:
                 return new VarNodeHandler((VarInsnNode) node, params);
-            case 0:
+            case AbstractInsnNode.INSN:
                 return new InsnNodeHandler((InsnNode) node, params);
+            case AbstractInsnNode.FIELD_INSN:
+                return new FieldNodeHandler((FieldInsnNode) node, params);
         }
         return null;
     }

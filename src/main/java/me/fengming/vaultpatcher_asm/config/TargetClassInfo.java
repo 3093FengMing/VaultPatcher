@@ -90,9 +90,11 @@ public class TargetClassInfo {
             if (local.charAt(0) == 'V') {
                 localMode = LocalMode.LOCAL_VARIABLE;
             } else if (local.charAt(0) == 'M') {
-                localMode = LocalMode.CALL_RETURN;
+                localMode = LocalMode.METHOD_RETURN;
             } else if (local.charAt(0) == 'R') {
                 localMode = LocalMode.CALL_RETURN;
+            } else if (local.charAt(0) == 'G') {
+                localMode = LocalMode.GLOBAL_VARIABLE;
             } else {
                 localMode = LocalMode.NONE;
             }
@@ -127,7 +129,7 @@ public class TargetClassInfo {
                 '}';
     }
 
-    public enum LocalMode { CALL_RETURN, LOCAL_VARIABLE, METHOD_RETURN, NONE }
+    public enum LocalMode { CALL_RETURN, LOCAL_VARIABLE, METHOD_RETURN, GLOBAL_VARIABLE, NONE }
 
     public enum MatchMode { FULL, STARTS, ENDS }
 }

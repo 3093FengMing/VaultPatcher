@@ -4,8 +4,8 @@ plugins {
 }
 
 apply plugin: 'maven-publish'
-
-version = 'all-1.3.5'
++1
+version = 'all-1.3.5+1'
 group = 'me.fengming.vaultpatcher' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
