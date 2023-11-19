@@ -7,15 +7,17 @@ import java.util.stream.IntStream;
 public class Main {
     String abcc = "sssh";
 
-    private static final HashMap<String, String> __vp_map = new HashMap<>(2222);
+    private static final HashMap<String, String> __vp_map = new HashMap<String, String>(2222) {
+        {
+            put("aa", "bb");
+        }
+    };
 
     static {
         aaa();
     }
     private static void aaa() {
-        __vp_map.put("aa", "vbb");
-        __vp_map.put("a1a", "vb3b");
-        __vp_map.put("a2a", "vb31b");
+        System.out.println(__vp_replace(new StringBuilder().append(A1145142.String).append("::").toString()));
     }
 
 //    public void main(String sss) {

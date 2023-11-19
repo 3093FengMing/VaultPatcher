@@ -19,6 +19,10 @@ public abstract class NodeHandler<E extends AbstractInsnNode> {
         Utils.printDebugInfo(source, method, ret, this.params.classNode.name, this.params.info);
     }
 
+    public void debugInfo(int ordinal, String method, String source, String ret) {
+        Utils.printDebugInfo(ordinal, source, method, ret, this.params.classNode.name, this.params.info);
+    }
+
     public static NodeHandler<? extends AbstractInsnNode> getHandlerByNode(AbstractInsnNode node, NodeHandlerParameters params) {
         switch (node.getType()) {
             case 9:

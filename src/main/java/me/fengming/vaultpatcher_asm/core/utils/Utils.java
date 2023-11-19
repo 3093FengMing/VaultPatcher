@@ -22,6 +22,21 @@ public class Utils {
 
     // debug
 
+    public static void printDebugInfo(int o, String s, String m, String ret, String c, TranslationInfo info) {
+        DebugMode debug = VaultPatcherConfig.getDebugMode();
+        if (!debug.isEnable()) return;
+        String format = debug.getOutputFormat();
+        VaultPatcher.LOGGER.info("[VaultPatcher] Trying replacing!");
+        VaultPatcher.LOGGER.info(
+                format.replace("<source>", s)
+                        .replace("<target>", ret)
+                        .replace("<method>", m)
+                        .replace("<info>", info.toString())
+                        .replace("<class>", c)
+                        .replace("<ordinal>", String.valueOf(o))
+        );
+    }
+
     public static void printDebugInfo(String s, String m, String ret, String c, TranslationInfo info) {
         DebugMode debug = VaultPatcherConfig.getDebugMode();
         if (!debug.isEnable()) return;
@@ -33,6 +48,7 @@ public class Utils {
                         .replace("<method>", m)
                         .replace("<info>", info.toString())
                         .replace("<class>", c)
+                        .replace("<ordinal>", "Unknown")
         );
     }
 

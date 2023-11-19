@@ -15,6 +15,7 @@ public class NodeHandlerParameters {
 
     public HashMap<Integer, String> localVariableMap;
     public TranslationInfo info;
+    public int ordinal = 0;
 
     public NodeHandlerParameters(boolean disableLocal, boolean disableVariable, ClassNode classNode, MethodNode methodNode, HashMap<Integer, String> localVariableMap, TranslationInfo info) {
         this.disableLocal = disableLocal;
@@ -23,5 +24,9 @@ public class NodeHandlerParameters {
         this.methodNode = methodNode;
         this.localVariableMap = localVariableMap;
         this.info = info;
+    }
+
+    public void addOrdinal() {
+        this.ordinal++;
     }
 }

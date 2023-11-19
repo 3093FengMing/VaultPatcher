@@ -15,6 +15,8 @@ public class DebugMode {
 
     private boolean exportClass = false;
 
+    private boolean updateCache = true;
+
 
     public boolean isEnable() {
         return isEnable;
@@ -48,6 +50,13 @@ public class DebugMode {
         this.exportClass = exportClass;
     }
 
+    public boolean isUpdateCache() {
+        return updateCache;
+    }
+
+    public void setUpdateCache(boolean updateCache) {
+        this.updateCache = updateCache;
+    }
 
     public void readJson(JsonReader reader) throws IOException {
         reader.beginObject();
@@ -69,6 +78,10 @@ public class DebugMode {
                 case "export_class":
                     setExportClass(reader.nextBoolean());
                     break;
+                case "u":
+                case "update_cache":
+                    setUpdateCache(reader.nextBoolean());
+                    break;
                 default:
                     reader.skipValue();
                     break;
@@ -83,6 +96,7 @@ public class DebugMode {
         writer.name("output_format").value(getOutputFormat());
         writer.name("output_mode").value(getOutputMode());
         writer.name("export_class").value(isExportClass());
+        writer.name("update_cache").value(isUpdateCache());
         writer.endObject();
     }
 }

@@ -12,11 +12,12 @@ public class InsnNodeHandler extends NodeHandler<InsnNode> {
 
     @Override
     public InsnNode modifyNode() {
-        if (!this.params.disableLocal && this.params.methodNode.desc.endsWith(")Ljava/lang/String;")
+        if (!this.params.disableLocal
                 && this.node.getOpcode() == Opcodes.ARETURN
-                && ASMUtils.matchLocal(params.info, params.classNode.name, true, false)) {
+                && this.params.ordinal == this.params.info.getTargetClassInfo().getOrdinal()
+                && ASMUtils.matchLocal(this.params.info, this.params.methodNode.name, true, false)) {
             ASMUtils.insertReplace(this.params.classNode.name, this.params.methodNode, this.node);
-            debugInfo("ASMTransformMethod-InsertMethodReturn", "Runtime Determination", "Runtime Determination");
+            debugInfo(this.params.ordinal, "ASMTransformMethod-InsertMethodReturn", "Runtime Determination", "Runtime Determination");
         }
         return this.node;
     }

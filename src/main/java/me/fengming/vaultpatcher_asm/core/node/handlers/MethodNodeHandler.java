@@ -11,10 +11,11 @@ public class MethodNodeHandler extends NodeHandler<MethodInsnNode> {
 
     @Override
     public MethodInsnNode modifyNode() {
-        if (this.node.desc.endsWith(")Ljava/lang/String;") && !this.node.name.equals("__vp_replace")
+        if (!this.params.disableLocal
+                && this.params.ordinal == this.params.info.getTargetClassInfo().getOrdinal()
                 && ASMUtils.matchLocal(this.params.info, this.node.name, true, true)) {
             ASMUtils.insertReplace(this.params.classNode.name, this.params.methodNode, this.node);
-            debugInfo("ASMTransformMethod-InsertCalledMethodReturn", "Runtime Determination", "Runtime Determination");
+            debugInfo(this.params.ordinal, "ASMTransformMethod-InsertCalledMethodReturn", "Runtime Determination", "Runtime Determination");
         }
         return this.node;
     }

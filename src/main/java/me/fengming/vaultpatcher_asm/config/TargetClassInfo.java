@@ -11,6 +11,7 @@ public class TargetClassInfo {
     private String name = "";
     private String method = "";
     private String local = "";
+    private int ordinal = -1;
     private MatchMode matchMode = MatchMode.FULL;
     private LocalMode localMode = LocalMode.NONE;
 
@@ -30,6 +31,10 @@ public class TargetClassInfo {
                     setLocal(reader.nextString());
                     break;
                 }
+                case "ordinal": {
+                    setOrdinal(reader.nextInt());
+                    break;
+                }
                 default: {
                     reader.skipValue();
                     break;
@@ -44,6 +49,7 @@ public class TargetClassInfo {
         writer.name("name").value(getName());
         writer.name("method").value(getMethod());
         writer.name("local").value(getLocal());
+        writer.name("ordinal").value(getOrdinal());
         writer.endObject();
     }
 
@@ -100,6 +106,14 @@ public class TargetClassInfo {
 
     public LocalMode getLocalMode() {
         return localMode;
+    }
+
+    public void setOrdinal(int ordinal) {
+        this.ordinal = ordinal;
+    }
+
+    public int getOrdinal() {
+        return ordinal;
     }
 
     @Override
