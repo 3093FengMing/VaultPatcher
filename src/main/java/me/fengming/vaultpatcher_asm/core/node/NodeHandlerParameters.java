@@ -29,4 +29,17 @@ public class NodeHandlerParameters {
     public void addOrdinal() {
         this.ordinal++;
     }
+
+    @Override
+    public String toString() {
+        return "NodeHandlerParameters{" +
+                "disableLocal=" + disableLocal +
+                ", disableVariable=" + disableVariable +
+                ", classNode=" + classNode.name +
+                ", methodNode=" + methodNode.name +
+                ", localVariableMap=" + localVariableMap +
+                ", info=" + info +
+                ", ordinal=" + ordinal +
+                '}';
+    }
 }

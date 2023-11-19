@@ -1,8 +1,11 @@
 package me.fengming.vaultpatcher_asm.core.node.handlers;
 
+import me.fengming.vaultpatcher_asm.VaultPatcher;
 import me.fengming.vaultpatcher_asm.core.node.NodeHandlerParameters;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
 import org.objectweb.asm.tree.InvokeDynamicInsnNode;
+
+import java.util.Arrays;
 
 // jdk8+
 public class InvokeDynamicNodeHandler extends NodeHandler<InvokeDynamicInsnNode> {
@@ -12,6 +15,10 @@ public class InvokeDynamicNodeHandler extends NodeHandler<InvokeDynamicInsnNode>
 
     @Override
     public InvokeDynamicInsnNode modifyNode() {
+        VaultPatcher.debugInfo("[VaultPatcher] InvokeDynamicNodeHandler");
+        VaultPatcher.debugInfo("[VaultPatcher] Params: " + this.params.toString());
+        VaultPatcher.debugInfo("[VaultPatcher] Node Name: " + this.node.name);
+        VaultPatcher.debugInfo("[VaultPatcher] Node BsmArgs: " + Arrays.toString(this.node.bsmArgs));
         if (this.node.name.equals("makeConcatWithConstants")) {
             Object[] bsmArgs = this.node.bsmArgs;
             for (int i = 0; i < bsmArgs.length; i++) {
