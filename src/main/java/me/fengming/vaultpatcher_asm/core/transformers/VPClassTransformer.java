@@ -36,7 +36,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
         boolean isInterface = (input.access & Opcodes.ACC_INTERFACE) != 0;
         for (MethodNode method : input.methods) {
             String methodName = info.getTargetClassInfo().getMethod();
-            if ((Utils.isBlank(methodName) || methodName.equals(method.name)) && (method.name.equals("__vp_init") || method.name.equals("__vp_replace"))) {
+            if ((Utils.isBlank(methodName) || methodName.equals(method.name)) && !method.name.equals("__vp_init") && !method.name.equals("__vp_replace")) {
                 // Initial Local Variable Map
                 final HashMap<Integer, String> localVariableMap = new HashMap<>();
                 boolean disableLocalVariable = true;

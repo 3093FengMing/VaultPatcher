@@ -1,5 +1,6 @@
 package me.fengming.vaultpatcher_asm.core.node.handlers;
 
+import me.fengming.vaultpatcher_asm.VaultPatcher;
 import me.fengming.vaultpatcher_asm.core.node.NodeHandlerParameters;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
 import org.objectweb.asm.tree.*;

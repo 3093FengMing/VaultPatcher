@@ -124,6 +124,7 @@ public class TargetClassInfo {
                 "name='" + name + '\'' +
                 ", method='" + method + '\'' +
                 ", local='" + local + '\'' +
+                ", ordinal=" + ordinal +
                 ", matchMode=" + matchMode +
                 ", localMode=" + localMode +
                 '}';
