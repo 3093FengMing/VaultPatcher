@@ -23,7 +23,7 @@ public class VarNodeHandler extends NodeHandler<VarInsnNode> {
                 && (this.node.getOpcode() == Opcodes.ASTORE || this.node.getOpcode() == Opcodes.ALOAD)
                 && (this.params.ordinal == this.params.info.getTargetClassInfo().getOrdinal() || this.params.info.getTargetClassInfo().getOrdinal() == -1)
                 && ASMUtils.matchLocal(this.params.info, this.params.localVariableMap.getOrDefault(this.node.var, null), false)) {
-            ASMUtils.insertReplace(this.params.classNode.name, this.params.methodNode, this.node);
+            ASMUtils.insertReplace(this.params.classNode.name, this.params.methodNode, this.node, false);
             debugInfo(this.params.ordinal, "ASMTransformMethod-InsertLocalVariableStore/Load", "Runtime Determination", "Runtime Determination");
         }
 //        // Parameters

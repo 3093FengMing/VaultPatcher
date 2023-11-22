@@ -20,10 +20,9 @@ public class FieldNodeHandler extends NodeHandler<FieldInsnNode> {
         VaultPatcher.debugInfo("[VaultPatcher] Node Opcode: " + this.node.getOpcode());
         if (!this.params.disableLocal
                 && (this.node.getOpcode() == Opcodes.GETFIELD || this.node.getOpcode() == Opcodes.PUTFIELD)
-                && this.node.desc.equals("Ljava/lang/String;")
                 && (this.params.ordinal == this.params.info.getTargetClassInfo().getOrdinal() || this.params.info.getTargetClassInfo().getOrdinal() == -1)
                 && ASMUtils.matchLocal(this.params.info, this.node.name, false)) {
-            ASMUtils.insertReplace(this.params.classNode.name, this.params.methodNode, this.node);
+            ASMUtils.insertReplace(this.params.classNode.name, this.params.methodNode, this.node, this.node.desc.equals("Ljava/lang/String;"));
             debugInfo(this.params.ordinal, "ASMTransformMethod-InsertGlobalVariablePut/Get", "Runtime Determination", "Runtime Determination");
         }
         return this.node;

@@ -58,4 +58,8 @@ public class Main {
     private static String __vp_replace(String source) {
         return __vp_map.getOrDefault(source, source);
     }
+
+    private static String __vp_replace(Object source) {
+        return __vp_map.getOrDefault(String.valueOf(source), String.valueOf(source));
+    }
 }

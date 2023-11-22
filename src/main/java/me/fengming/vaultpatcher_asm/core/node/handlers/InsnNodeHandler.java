@@ -20,7 +20,7 @@ public class InsnNodeHandler extends NodeHandler<InsnNode> {
                 && this.node.getOpcode() == Opcodes.ARETURN
                 && (this.params.ordinal == this.params.info.getTargetClassInfo().getOrdinal() || this.params.info.getTargetClassInfo().getOrdinal() == -1)
                 && ASMUtils.matchLocal(this.params.info, this.params.methodNode.name, true)) {
-            ASMUtils.insertReplace(this.params.classNode.name, this.params.methodNode, this.node);
+            ASMUtils.insertReplace(this.params.classNode.name, this.params.methodNode, this.node, false);
             debugInfo(this.params.ordinal, "ASMTransformMethod-InsertMethodReturn", "Runtime Determination", "Runtime Determination");
         }
         return this.node;

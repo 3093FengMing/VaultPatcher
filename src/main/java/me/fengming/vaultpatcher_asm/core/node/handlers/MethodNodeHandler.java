@@ -19,7 +19,7 @@ public class MethodNodeHandler extends NodeHandler<MethodInsnNode> {
         if (!this.params.disableLocal
                 && (this.params.ordinal == this.params.info.getTargetClassInfo().getOrdinal() || this.params.info.getTargetClassInfo().getOrdinal() == -1)
                 && ASMUtils.matchLocal(this.params.info, this.node.name, true)) {
-            ASMUtils.insertReplace(this.params.classNode.name, this.params.methodNode, this.node);
+            ASMUtils.insertReplace(this.params.classNode.name, this.params.methodNode, this.node, this.node.desc.endsWith(")Ljava/lang/String"));
             debugInfo(this.params.ordinal, "ASMTransformMethod-InsertCalledMethodReturn", "Runtime Determination", "Runtime Determination");
         }
         return this.node;
