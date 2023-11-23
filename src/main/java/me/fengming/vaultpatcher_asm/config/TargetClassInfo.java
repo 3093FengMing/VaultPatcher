@@ -58,11 +58,11 @@ public class TargetClassInfo {
     }
 
     public void setName(String name) {
-        char f = name.charAt(0);
-        if (f == '@') {
+        char first = name.charAt(0);
+        if (first == '@') {
             matchMode = MatchMode.STARTS;
             this.name = name.substring(1);
-        } else if (f == '#') {
+        } else if (first == '#') {
             matchMode = MatchMode.ENDS;
             this.name = name.substring(1);
         } else {
@@ -87,13 +87,14 @@ public class TargetClassInfo {
         if (Utils.isBlank(local)) {
             this.local = local;
         } else {
-            if (local.charAt(0) == 'V') {
+            char first = local.charAt(0);
+            if (first == 'V') {
                 localMode = LocalMode.LOCAL_VARIABLE;
-            } else if (local.charAt(0) == 'M') {
+            } else if (first == 'M') {
                 localMode = LocalMode.METHOD_RETURN;
-            } else if (local.charAt(0) == 'R') {
+            } else if (first == 'R') {
                 localMode = LocalMode.CALL_RETURN;
-            } else if (local.charAt(0) == 'G') {
+            } else if (first == 'G' || first == 'F') {
                 localMode = LocalMode.GLOBAL_VARIABLE;
             } else {
                 localMode = LocalMode.NONE;
