@@ -4,6 +4,8 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.function.Supplier;
 
 public class TranslationInfo {
     private final TargetClassInfo targetClassInfo = new TargetClassInfo();
@@ -14,7 +16,6 @@ public class TranslationInfo {
         while (reader.peek() != JsonToken.END_OBJECT) {
             switch (reader.nextName()) {
                 case "t":
-                case "target":
                 case "target_class": {
                     getTargetClassInfo().readJson(reader);
                     break;

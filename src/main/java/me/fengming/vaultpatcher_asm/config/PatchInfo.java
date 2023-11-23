@@ -59,29 +59,35 @@ public class PatchInfo {
         while (reader.peek() != JsonToken.END_OBJECT) {
             switch (reader.nextName()) {
                 case "n":
-                case "name":
+                case "name": {
                     setName(reader.nextString());
                     break;
+                }
                 case "d":
-                case "desc":
+                case "desc": {
                     setDesc(reader.nextString());
                     break;
+                }
                 case "m":
-                case "mods":
+                case "mods": {
                     setMods(reader.nextString());
                     break;
+                }
                 case "a":
-                case "authors":
+                case "authors": {
                     setAuthors(reader.nextString());
                     break;
+                }
                 case "e":
                 case "dyn":
-                case "dynamic":
+                case "dynamic": {
                     setDynamic(reader.nextBoolean());
                     break;
-                default:
+                }
+                default: {
                     reader.skipValue();
                     break;
+                }
             }
         }
         reader.endObject();
