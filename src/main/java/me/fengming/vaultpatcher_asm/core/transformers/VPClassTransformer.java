@@ -255,7 +255,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
 
             Label label0 = new Label();
             mv.visitLabel(label0);
-            mv.visitFieldInsn(Opcodes.GETSTATIC, "Main", "__vp_map", "Ljava/util/HashMap;");
+            mv.visitFieldInsn(Opcodes.GETSTATIC, className, "__vp_map", "Ljava/util/HashMap;");
             mv.visitVarInsn(Opcodes.ALOAD, 0);
             mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/String", "valueOf", "(Ljava/lang/Object;)Ljava/lang/String;", false);
             mv.visitVarInsn(Opcodes.ALOAD, 0);
