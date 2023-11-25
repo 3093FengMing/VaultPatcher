@@ -255,6 +255,14 @@ public class VPClassTransformer implements Consumer<ClassNode> {
 
             Label label0 = new Label();
             mv.visitLabel(label0);
+            mv.visitVarInsn(Opcodes.ALOAD, 0);
+
+            Label label1 = new Label();
+            mv.visitJumpInsn(Opcodes.IFNONNULL, label1);
+            mv.visitInsn(Opcodes.ACONST_NULL);
+            mv.visitInsn(Opcodes.ARETURN);
+            mv.visitLabel(label1);
+            mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
             mv.visitFieldInsn(Opcodes.GETSTATIC, className, "__vp_map", "Ljava/util/HashMap;");
             mv.visitVarInsn(Opcodes.ALOAD, 0);
             mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/Object", "toString", "()Ljava/lang/String;", false);
@@ -264,9 +272,9 @@ public class VPClassTransformer implements Consumer<ClassNode> {
             mv.visitTypeInsn(Opcodes.CHECKCAST, "java/lang/String");
             mv.visitInsn(Opcodes.ARETURN);
 
-            Label label1 = new Label();
-            mv.visitLabel(label1);
-            mv.visitLocalVariable("source", "Ljava/lang/Object;", null, label0, label1, 0);
+            Label label2 = new Label();
+            mv.visitLabel(label2);
+            mv.visitLocalVariable("source", "Ljava/lang/Object;", null, label0, label2, 0);
             mv.visitMaxs(3, 1);
 
             mv.visitEnd();

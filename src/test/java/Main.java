@@ -61,6 +61,7 @@ public class Main {
 //    }
 
     private static String __vp_replace(Object source) {
+        if (source == null) return null;
         return __vp_map.getOrDefault(source.toString(), source.toString());
     }
 }
