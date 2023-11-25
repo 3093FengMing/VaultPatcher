@@ -61,6 +61,6 @@ public class Main {
 //    }
 
     private static String __vp_replace(Object source) {
-        return __vp_map.getOrDefault(String.valueOf(source), String.valueOf(source));
+        return __vp_map.getOrDefault(source.toString(), source.toString());
     }
 }
