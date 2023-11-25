@@ -16,7 +16,8 @@ public class Main {
     private void aaa(String abc) {
         System.out.println(abc);
         System.out.println(this.abcc);
-        System.out.println(this.abcdc);
+        __vp_replace(this.abcc);
+        __vp_replace("nams");
     }
 
 //    public void main(String sss) {
@@ -55,9 +56,9 @@ public class Main {
 //        return this;
 //    }
 //
-    private static String __vp_replace(String source) {
-        return __vp_map.getOrDefault(source, source);
-    }
+//    //private static String __vp_replace(String source) {
+//        return __vp_map.getOrDefault(source, source);
+//    }
 
     private static String __vp_replace(Object source) {
         return __vp_map.getOrDefault(String.valueOf(source), String.valueOf(source));

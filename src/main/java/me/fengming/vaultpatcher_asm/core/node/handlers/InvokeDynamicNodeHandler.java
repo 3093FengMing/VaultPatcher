@@ -18,7 +18,7 @@ public class InvokeDynamicNodeHandler extends NodeHandler<InvokeDynamicInsnNode>
         VaultPatcher.debugInfo("[VaultPatcher] InvokeDynamicNodeHandler");
         VaultPatcher.debugInfo("[VaultPatcher] Params: " + this.params.toString());
         VaultPatcher.debugInfo("[VaultPatcher] Node Name: " + this.node.name);
-        VaultPatcher.debugInfo("[VaultPatcher] Node BsmArgs: " + Arrays.toString(this.node.bsmArgs));
+        VaultPatcher.debugInfo("[VaultPatcher] Node BsmArgs: " + Arrays.deepToString(this.node.bsmArgs));
         if (this.node.name.equals("makeConcatWithConstants")) {
             Object[] bsmArgs = this.node.bsmArgs;
             for (int i = 0; i < bsmArgs.length; i++) {

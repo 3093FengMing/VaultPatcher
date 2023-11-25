@@ -249,7 +249,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
 
         // __vp_replace(Object)
         {
-            MethodVisitor mv = cv.visitMethod((isInterface ? Opcodes.ACC_PUBLIC : Opcodes.ACC_PRIVATE), "__vp_replace", "(Ljava/lang/Object;)Ljava/lang/String;", null, null);
+            MethodVisitor mv = cv.visitMethod((isInterface ? Opcodes.ACC_PUBLIC : Opcodes.ACC_PRIVATE) | Opcodes.ACC_STATIC, "__vp_replace", "(Ljava/lang/Object;)Ljava/lang/String;", null, null);
 
             mv.visitCode();
 

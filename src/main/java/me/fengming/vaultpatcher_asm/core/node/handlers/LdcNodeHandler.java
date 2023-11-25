@@ -5,8 +5,6 @@ import me.fengming.vaultpatcher_asm.core.node.NodeHandlerParameters;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
 import org.objectweb.asm.tree.LdcInsnNode;
 
-import java.util.Arrays;
-
 public class LdcNodeHandler extends NodeHandler<LdcInsnNode> {
 
     public LdcNodeHandler(LdcInsnNode node, NodeHandlerParameters params) {
