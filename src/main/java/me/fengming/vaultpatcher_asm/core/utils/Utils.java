@@ -70,7 +70,7 @@ public class Utils {
     }
 
     public static String matchPairs(Pairs p, String key, boolean dyn) {
-        if (key.isEmpty()) return key; // FIX replace whitespace with none
+        if (key.isEmpty()) return key; // FIX replace whitespace with "" -> original
         String v = key;
         if (dyn) {
             for (Map.Entry<String, String> entry : p.getMap().entrySet()) {
