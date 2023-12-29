@@ -56,7 +56,7 @@ public class Utils {
     // transformer
 
     public static byte[] nodeToBytes(ClassNode node) {
-        ClassWriter wr = new ClassWriter(0);
+        ClassWriter wr = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         node.accept(wr);
         return wr.toByteArray();
     }
