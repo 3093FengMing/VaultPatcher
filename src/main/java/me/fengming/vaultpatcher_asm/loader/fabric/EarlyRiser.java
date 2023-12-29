@@ -40,5 +40,7 @@ public class EarlyRiser implements Runnable {
         // minecraft transformers
         ClassTinkerers.addTransformation("net.minecraft.class_327", new VPMinecraftTransformer());
         ClassTinkerers.addTransformation("net.minecraft.class_2585", new VPMinecraftTransformer());
+
+        VaultPatcher.LOGGER.warn("[VaultPatcher] ER DONE!");
     }
 }

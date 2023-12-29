@@ -6,6 +6,6 @@ import net.fabricmc.api.ModInitializer;
 public class VaultPatcherInitializer implements ModInitializer {
     @Override
     public void onInitialize() {
-        VaultPatcher.LOGGER.info("Fabric Done!");
+        VaultPatcher.LOGGER.warn("[VaultPatcher] FB DONE!");
     }
 }

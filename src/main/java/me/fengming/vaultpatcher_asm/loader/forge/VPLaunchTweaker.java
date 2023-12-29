@@ -17,11 +17,14 @@ public class VPLaunchTweaker implements ITweaker {
         VaultPatcher.init(gameDir.toPath());
 
         Utils.translationInfos.forEach(info -> classFinding.putIfAbsent(info.getTargetClassInfo().getName(), info));
+
+        VaultPatcher.LOGGER.warn("[VaultPatcher] LT DONE!");
     }
 
     @Override
     public void injectIntoClassLoader(LaunchClassLoader classLoader) {
         classLoader.registerTransformer("me.fengming.vaultpatcher_asm.loader.forge.LinkClassTransformer");
+        VaultPatcher.LOGGER.warn("[VaultPatcher] CL DONE!");
     }
 
     @Override

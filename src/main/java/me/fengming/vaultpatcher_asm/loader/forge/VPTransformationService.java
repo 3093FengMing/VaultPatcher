@@ -46,6 +46,8 @@ public class VPTransformationService implements ITransformationService {
         }
 
         VaultPatcher.init(minecraftPathOptional.get());
+
+        VaultPatcher.LOGGER.warn("[VaultPatcher] TS DONE!");
     }
 
     public static boolean isOldVersion(String version) {
