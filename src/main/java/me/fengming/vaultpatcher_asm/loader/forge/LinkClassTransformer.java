@@ -15,7 +15,7 @@ public class LinkClassTransformer implements IClassTransformer {
 
         ClassNode o = new ClassNode();
         ClassReader cr = new ClassReader(basicClass);
-        cr.accept(o, 0);
+        cr.accept(o, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
 
         new VPClassTransformer(VPLaunchTweaker.classFinding.getOrDefault(name, null)).accept(o);
         return Utils.nodeToBytes(o);
