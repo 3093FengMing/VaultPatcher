@@ -1,16 +1,17 @@
 package me.fengming.vaultpatcher_asm.core.utils;
 
+import cpw.mods.modlauncher.api.ITransformer;
 import me.fengming.vaultpatcher_asm.VaultPatcher;
 import me.fengming.vaultpatcher_asm.config.DebugMode;
 import me.fengming.vaultpatcher_asm.config.Pairs;
 import me.fengming.vaultpatcher_asm.config.TranslationInfo;
 import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.tree.ClassNode;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
@@ -53,6 +54,47 @@ public class Utils {
     }
 
     // transformer
+
+    public static byte[] nodeToBytes(ClassNode node) {
+        ClassWriter wr = new ClassWriter(0);
+        node.accept(wr);
+        return wr.toByteArray();
+    }
+
+    public static Set<ITransformer.Target> getTarget(TranslationInfo info) {
+        Set<ITransformer.Target> targets = new HashSet<>();
+
+        if (info == null) {
+            targets.addAll(getExpandTargets());
+        } else {
+            String name = info.getTargetClassInfo().getName();
+            if (!Utils.isBlank(name)) {
+                targets.add(ITransformer.Target.targetClass(Utils.rawPackage(name)));
+            }
+        }
+
+        targets.iterator().forEachRemaining(t -> VaultPatcher.debugInfo(String.format("[VaultPatcher] VPClassTransformer Target = %s", t.getClassName())));
+
+        return targets;
+    }
+
+    public static Set<ITransformer.Target> getExpandTargets() {
+        Set<ITransformer.Target> targets = new HashSet<>();
+        // Apply mods
+        targets.addAll(VaultPatcherConfig.getApplyMods().stream().collect(
+                ArrayList::new,
+                (list, s) -> Utils.getClassesNameByJar(Utils.mcPath.resolve("mods").resolve(s + ".jar").toString())
+                        .forEach(s1 -> list.add(ITransformer.Target.targetClass(s1.substring(0, s1.length() - 6)))),
+                ArrayList::addAll)); // May cause unnecessary resource waste
+
+        // Classes
+        targets.addAll(VaultPatcherConfig.getClasses().stream().collect(
+                ArrayList::new,
+                (list, s) -> list.add(ITransformer.Target.targetClass(Utils.rawPackage(s))),
+                ArrayList::addAll));
+
+        return targets;
+    }
 
     public static List<String> getClassesNameByJar(String jarPath) {
         try (JarFile jarFile = new JarFile(jarPath)) {

@@ -300,7 +300,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
         if (VaultPatcherConfig.getDebugMode().isUseCache()) {
             // check cache
             ClassCache cache = Caches.getClassCache(input.name);
-            byte[] copy = classCopy(input);
+            byte[] copy = Utils.nodeToBytes(input);
 
             if (cache != null) {
                 VaultPatcher.debugInfo("Using Cache: " + input.name);
@@ -323,12 +323,6 @@ public class VPClassTransformer implements Consumer<ClassNode> {
 
         if (debug.isExportClass()) ASMUtils.exportClass(input, Utils.mcPath.resolve("vaultpatcher").resolve("exported"));
 
-    }
-
-    private byte[] classCopy(ClassNode node) {
-        ClassWriter wr = new ClassWriter(0);
-        node.accept(wr);
-        return wr.toByteArray();
     }
 
     private void generate(ClassNode input) {

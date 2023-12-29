@@ -5,12 +5,19 @@ plugins {
 
 apply plugin: 'maven-publish'
 +1
-version = 'all-1.3.5+6'
+version = 'all-1.3.6+1'
 group = 'me.fengming.vaultpatcher' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
 
 jar {
+    manifest {
+        attributes([
+                "FMLCorePlugin": "me.fengming.vaultpatcher_asm.loader.forge.VPCoreModPlugin",
+                "FMLCorePluginContainsFMLMod": false
+        ])
+    }
+
     from(configurations.runtimeClasspath.filter {
         (it.name == 'Fabric-ASM-2.3.jar')
     }) {
@@ -44,19 +51,21 @@ repositories {
         url "https://maven.minecraftforge.net/"
     }
     maven {
+        url "https://libraries.minecraft.net/"
+    }
+    maven {
         url 'https://jitpack.io/'
     }
 }
 
 dependencies {
-    implementation 'org.jetbrains:annotations:23.0.0'
-    implementation 'com.google.code.gson:gson:2.10.1'
-    implementation 'org.ow2.asm:asm:6.2'
-    implementation 'org.apache.logging.log4j:log4j-api:2.15.0'
+    compileOnly 'org.jetbrains:annotations:23.0.0'
+
     implementation 'com.google.code.gson:gson:2.10.1'
 
     implementation 'net.fabricmc:fabric-loader:0.14.12'
     implementation 'cpw.mods:modlauncher:8.1.3'
+    implementation 'net.minecraft:launchwrapper:1.12'
 
     implementation 'com.github.Chocohead:Fabric-ASM:2.3'
 }

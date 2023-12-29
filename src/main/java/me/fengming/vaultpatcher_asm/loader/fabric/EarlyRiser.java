@@ -14,7 +14,7 @@ import java.util.List;
 public class EarlyRiser implements Runnable {
     @Override
     public void run() {
-        VaultPatcher.LOGGER.warn("[VaultPatcher] Loading VPTransformationService!");
+        VaultPatcher.LOGGER.warn("[VaultPatcher] Loading VPEarlyRiser");
 
         VaultPatcher.init(FabricLoader.getInstance().getGameDir());
         // initial transformers
