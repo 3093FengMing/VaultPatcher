@@ -13,7 +13,8 @@ println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty '
 jar {
     manifest {
         attributes([
-                "Tweaker": "me.fengming.vaultpatcher_asm.loader.forge.VPLaunchTweaker"
+                "TweakClass": "me.fengming.vaultpatcher_asm.loader.forge.VPLaunchTweaker",
+                "TweakOrder": 209
         ])
     }
 
