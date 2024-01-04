@@ -2,6 +2,7 @@ package me.fengming.vaultpatcher_asm.config;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
+import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
 import java.util.List;
@@ -44,6 +45,13 @@ public class TranslationInfo {
         reader.endObject();
     }
 
+    public void write(JsonWriter writer) throws IOException {
+        writer.beginObject();
+        writer.name("target_class");
+        getTargetClassInfo().writeJson(writer);
+        writer.name("pairs").beginArray().endArray();
+        writer.endObject();
+    }
 
     public TargetClassInfo getTargetClassInfo() {
         return targetClassInfo;

@@ -95,12 +95,11 @@ public class PatchInfo {
 
     public void writeJson(JsonWriter writer) throws IOException {
         writer.beginObject();
-        writer.name("patch_info");
-        writer.name("name").value(getName());
-        writer.name("desc").value(getDesc());
-        writer.name("mods").value(getMods());
-        writer.name("authors").value(getAuthors());
-        writer.name("dynamic").value(isDynamic());
+        writer.name("name").value("Here is name of your module");
+        writer.name("desc").value("You can describe the module here.");
+        writer.name("mods").value("And this is the applied mod of your module");
+        writer.name("authors").value("You can write down your name here");
+        writer.name("dynamic").value(false);
         writer.endObject();
     }
 }

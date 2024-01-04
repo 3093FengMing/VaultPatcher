@@ -41,7 +41,7 @@ public class VPTransformationService implements ITransformationService {
         if (Utils.isBlank(minecraftVersion)) VaultPatcher.LOGGER.error("[VaultPatcher] Failed to get minecraft version!");
         // VaultPatcher.LOGGER.info("[VaultPatcher] Get minecraft version: " + minecraftVersion);
         if (isOldVersion(minecraftVersion)) {
-            VaultPatcher.LOGGER.warn("[VaultPatcher] Disable dynamic replace because you are in old version (" + minecraftVersion + "<=1.16.5)");
+            VaultPatcher.LOGGER.warn("[VaultPatcher] Disable dynamic replace because the game version is 1.16.5 and below (your version: " + minecraftVersion + ")");
             oldVersion = true;
         }
 
@@ -59,7 +59,7 @@ public class VPTransformationService implements ITransformationService {
             if (comparison < 0) return false;
             if (comparison > 0) return true;
         }
-        return _116.length > ver.length;
+        return _116.length >= ver.length;
     }
 
     private static String getMinecraftVersion() {

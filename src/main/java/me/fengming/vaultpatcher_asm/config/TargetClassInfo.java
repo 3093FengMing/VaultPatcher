@@ -46,10 +46,10 @@ public class TargetClassInfo {
 
     public void writeJson(JsonWriter writer) throws IOException {
         writer.beginObject();
-        writer.name("name").value(getName());
-        writer.name("method").value(getMethod());
-        writer.name("local").value(getLocal());
-        writer.name("ordinal").value(getOrdinal());
+        writer.name("name").value("com.example.mod.SomethingClass");
+        writer.name("method").value("doSomething");
+        writer.name("local").value("Lsomething");
+        writer.name("ordinal").value(209);
         writer.endObject();
     }
 

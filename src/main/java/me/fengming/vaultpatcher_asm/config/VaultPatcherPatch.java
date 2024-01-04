@@ -3,6 +3,7 @@ package me.fengming.vaultpatcher_asm.config;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
+import com.google.gson.stream.JsonWriter;
 import me.fengming.vaultpatcher_asm.VaultPatcher;
 
 import java.io.IOException;
@@ -52,12 +53,30 @@ public class VaultPatcherPatch {
         reader.endArray();
     }
 
+    public void write(JsonWriter writer) throws IOException {
+        writer.setIndent("  ");
+        writer.beginArray();
+
+        PatchInfo patchInfo = new PatchInfo();
+        patchInfo.writeJson(writer);
+
+        TranslationInfo translationInfo = new TranslationInfo();
+        translationInfo.write(writer);
+
+        writer.endArray();
+        writer.close();
+    }
+
     public void read() throws IOException {
         if (Files.notExists(patchFile)) {
             Files.createFile(patchFile);
-        }
-        try (JsonReader jsonReader = GSON.newJsonReader(new InputStreamReader(Files.newInputStream(patchFile), StandardCharsets.UTF_8))) {
-            read(jsonReader);
+            try (JsonWriter jsonWriter = GSON.newJsonWriter(Files.newBufferedWriter(patchFile, StandardCharsets.UTF_8));) {
+                write(jsonWriter);
+            }
+        } else {
+            try (JsonReader jsonReader = GSON.newJsonReader(new InputStreamReader(Files.newInputStream(patchFile), StandardCharsets.UTF_8))) {
+                read(jsonReader);
+            }
         }
     }
 
