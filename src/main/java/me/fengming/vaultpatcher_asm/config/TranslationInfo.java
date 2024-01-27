@@ -9,8 +9,18 @@ import java.util.List;
 import java.util.function.Supplier;
 
 public class TranslationInfo {
-    private final TargetClassInfo targetClassInfo = new TargetClassInfo();
-    private final Pairs pairs = new Pairs();
+    private final TargetClassInfo targetClassInfo;
+    private final Pairs pairs;
+
+    public TranslationInfo(TargetClassInfo targetClassInfo, Pairs pairs) {
+        this.targetClassInfo = targetClassInfo;
+        this.pairs = pairs;
+    }
+
+    public TranslationInfo() {
+        this.targetClassInfo = new TargetClassInfo();
+        this.pairs = new Pairs();
+    }
 
     public void readJson(JsonReader reader) throws IOException {
         reader.beginObject();
@@ -75,5 +85,34 @@ public class TranslationInfo {
                 "targetClassInfo=" + targetClassInfo +
                 ", pairs=" + pairs +
                 '}';
+    }
+
+    public static class Mutable extends TranslationInfo {
+        private TargetClassInfo targetClassInfo;
+        private Pairs pairs;
+
+        @Override
+        public Pairs getPairs() {
+            return this.pairs;
+        }
+
+        @Override
+        public TargetClassInfo getTargetClassInfo() {
+            return this.targetClassInfo;
+        }
+
+        public TranslationInfo setPairs(Pairs pairs) {
+            this.pairs = pairs;
+            return this.toImmutable();
+        }
+
+        public TranslationInfo setTargetClassInfo(TargetClassInfo targetClassInfo) {
+            this.targetClassInfo = targetClassInfo;
+            return this.toImmutable();
+        }
+
+        public TranslationInfo toImmutable() {
+            return new TranslationInfo(this.targetClassInfo, this.pairs);
+        }
     }
 }

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "vaultpatcher",
-  "version": "1.3.6+6",
+  "version": "1.3.7+1",
   "name": "VaultPatcher",
   "description": "",
   "authors": ["FengMing3093"],
@@ -19,9 +19,7 @@
       "me.fengming.vaultpatcher_asm.loader.fabric.EarlyRiser"
     ]
   },
-  "mixins": [
-    "vaultpatcher.mixins.json"
-  ],
+  "mixins": [],
   "depends": {
     "fabricloader": ">=0.7.0"
   },

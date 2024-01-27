@@ -5,54 +5,55 @@ import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PatchInfo {
-    private String name;
-    private String desc;
-    private String mods;
-    private String authors;
-    private boolean dynamic = false;
+    private String infoName = "Unknown";
+    private String infoDesc = "No description";
+    private String infoMods = "Unknown";
+    private String infoAuthors = "Unknown";
+    private boolean dataDynamic = false;
 
-    public String getName() {
-        return name == null || name.isEmpty() ? "Unknown" : name;
+    public String getInfoName() {
+        return infoName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setInfoName(String infoName) {
+        this.infoName = infoName;
     }
 
-    public String getDesc() {
-        return desc == null || desc.isEmpty() ? "No description" : desc;
+    public String getInfoDesc() {
+        return infoDesc;
     }
 
-    public void setDesc(String desc) {
-        this.desc = desc;
+    public void setInfoDesc(String infoDesc) {
+        this.infoDesc = infoDesc;
     }
 
-    public String getMods() {
-        return mods == null || mods.isEmpty() ? "Unknown" : mods;
+    public String getInfoMods() {
+        return infoMods;
     }
 
-    public void setMods(String mods) {
-        this.mods = mods;
+    public void setInfoMods(String infoMods) {
+        this.infoMods = infoMods;
     }
 
-    public String getAuthors() {
-        return authors == null || authors.isEmpty() ? "Unknown" : authors;
+    public String getInfoAuthors() {
+        return infoAuthors;
     }
 
-    public void setAuthors(String authors) {
-        this.authors = authors;
+    public void setInfoAuthors(String infoAuthors) {
+        this.infoAuthors = infoAuthors;
     }
 
-    public boolean isDynamic() {
-        return dynamic;
+    public boolean isDataDynamic() {
+        return dataDynamic;
     }
 
-    public void setDynamic(boolean dynamic) {
-        this.dynamic = dynamic;
+    public void setDataDynamic(boolean dataDynamic) {
+        this.dataDynamic = dataDynamic;
     }
-
 
     public void readJson(JsonReader reader) throws IOException {
         reader.beginObject();
@@ -60,28 +61,28 @@ public class PatchInfo {
             switch (reader.nextName()) {
                 case "n":
                 case "name": {
-                    setName(reader.nextString());
+                    setInfoName(reader.nextString());
                     break;
                 }
                 case "d":
                 case "desc": {
-                    setDesc(reader.nextString());
+                    setInfoDesc(reader.nextString());
                     break;
                 }
                 case "m":
                 case "mods": {
-                    setMods(reader.nextString());
+                    setInfoMods(reader.nextString());
                     break;
                 }
                 case "a":
                 case "authors": {
-                    setAuthors(reader.nextString());
+                    setInfoAuthors(reader.nextString());
                     break;
                 }
-                case "e":
+                case "y":
                 case "dyn":
                 case "dynamic": {
-                    setDynamic(reader.nextBoolean());
+                    setDataDynamic(reader.nextBoolean());
                     break;
                 }
                 default: {
@@ -100,6 +101,7 @@ public class PatchInfo {
         writer.name("mods").value("And this is the applied mod of your module");
         writer.name("authors").value("You can write down your name here");
         writer.name("dynamic").value(false);
+        writer.name("apply_mods").beginArray().endArray();
         writer.endObject();
     }
 }

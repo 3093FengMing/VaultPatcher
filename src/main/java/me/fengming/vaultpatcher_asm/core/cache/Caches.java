@@ -45,11 +45,11 @@ public class Caches {
         return cacheMap.getOrDefault(className, null);
     }
 
-    public static void addClassCache(String className, ClassNode node, byte[] hashes) {
+    public static void addClassCache(String className, ClassNode node, byte[] bytes) {
         File classFile = ASMUtils.exportClass(node, Utils.mcPath.resolve("vaultpatcher").resolve("cache"));
         try {
             ClassCache cache = new ClassCache(classFile.getParentFile().toPath().resolve(classFile.getName() + ".sha256"), classFile.toPath());
-            cache.create(node, hashes);
+            cache.create(node, bytes);
             cacheMap.putIfAbsent(className, cache);
         } catch (IOException e) {
             throw new RuntimeException("Failed to add cache", e);

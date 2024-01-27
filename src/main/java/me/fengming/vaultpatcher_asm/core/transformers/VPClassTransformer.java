@@ -312,6 +312,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
                 ClassNode taken = cache.take();
                 input.methods = taken.methods;
                 input.fields = taken.fields;
+                input.innerClasses = taken.innerClasses;
             } else {
                 VaultPatcher.debugInfo("Generating Class Cache: " + input.name);
                 generate(input);

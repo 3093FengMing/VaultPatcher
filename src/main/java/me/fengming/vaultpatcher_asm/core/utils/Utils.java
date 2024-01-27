@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 
 public class Utils {
+    public static List<TranslationInfo> emptyList = new ArrayList<>();
     public static List<TranslationInfo> translationInfos = new ArrayList<>();
     public static List<TranslationInfo> dynTranslationInfos = new ArrayList<>();
     public static Path mcPath = null;
@@ -112,7 +113,7 @@ public class Utils {
     }
 
     public static String matchPairs(Pairs p, String key, boolean dyn) {
-        if (key.isEmpty()) return key; // FIX replace whitespace with "" -> original
+        if (Utils.isBlank(key)) return key; // FIX replace whitespace with "" -> original
         String v = key;
         if (dyn) {
             for (Map.Entry<String, String> entry : p.getMap().entrySet()) {
