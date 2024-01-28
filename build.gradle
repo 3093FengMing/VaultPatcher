@@ -4,12 +4,14 @@ plugins {
 }
 
 apply plugin: 'maven-publish'
-version = 'all-1.3.7+1'
+version = "all-${mod_version}"
 group = 'me.fengming.vaultpatcher' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
 
 jar {
+    baseName 'vaultpatcher'
+
     manifest {
         attributes([
                 "TweakClass": "me.fengming.vaultpatcher_asm.loader.forge.VPLaunchTweaker",
@@ -22,6 +24,11 @@ jar {
     }) {
         into 'META-INF/jars'
     }
+
+    filesMatching("fabric.mod.json") {
+        expand "version": mod_version
+    }
+
 }
 
 java {
@@ -31,9 +38,6 @@ java {
     disableAutoTargetJvm()
 }
 
-jar {
-    baseName 'vaultpatcher'
-}
 
 tasks.compileJava {
     sourceCompatibility = "1.8"
