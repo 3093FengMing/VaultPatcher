@@ -96,7 +96,7 @@ public class DebugMode {
         writer.name("output_format").value(getOutputFormat());
         writer.name("output_mode").value(getOutputMode());
         writer.name("export_class").value(isExportClass());
-        writer.name("update_cache").value(isUseCache());
+        writer.name("use_cache").value(isUseCache());
         writer.endObject();
     }
 }
