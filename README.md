@@ -1,18 +1,16 @@
 # Vault Patcher
 语言：**[简体中文](README.md)丨[English](README_en_us.md)丨[中文教程PLUS](README_PLUS.md)**
 
-**Mod主下载地址：[Modrith](https://modrinth.com/mod/vault-patcher)**
-
-**Fabric: [Github](https://github.com/3093FengMing/VaultPatcher/tree/fabric)**
+**模组发布页: [Modrinth](https://modrinth.com/mod/vault-patcher) [CurseForge](https://curseforge.com/minecraft/mc-mods/vault-patcher) [mcmod](https://www.mcmod.cn/class/8765.html)**
 
 **Wiki使用教程: [Github](https://github.com/3093FengMing/VaultPatcher/wiki)**
 
 ## 贡献
 
-#### 主作者：FengMing([github](https://github.com/3093FengMing), [爱发电](https://afdian.net/a/fengming3093))
+#### 主作者: FengMing([github](https://github.com/3093FengMing), [爱发电](https://afdian.net/a/fengming3093))
 
-#### 配置部分：teddyxlandlee([github](https://github.com/teddyxlandlee))
+#### 配置部分: teddyxlandlee([github](https://github.com/teddyxlandlee))
 
-#### 想法：yiqv([github](https://github.com/yiqv))
+#### 想法: yiqv([github](https://github.com/yiqv))
 
-#### [Github](https://github.com/3093FengMing/VaultPatcher)，[mcmod](https://www.mcmod.cn/class/8765.html)，[bilibili](https://img.shields.io/badge/bilibili-%E7%AD%89-blue)
+#### 链接: [Github](https://github.com/3093FengMing/VaultPatcher) [bilibili](.)
