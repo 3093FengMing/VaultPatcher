@@ -44,7 +44,7 @@ public class ClassCache {
         }
     }
 
-    public boolean update(ClassNode clazz) {
+    public boolean updated(ClassNode clazz) {
         ClassWriter cw1 = new ClassWriter(0);
         clazz.accept(cw1);
         String currentHash = getSha256(cw1.toByteArray());

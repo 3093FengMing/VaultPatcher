@@ -93,15 +93,14 @@ public class VaultPatcherPatch {
                         break;
                     }
                 }
-                mutable.setPairs(pairs);
-                for (TargetClassInfo targetClassInfo : targetClassInfos) {
-                    translationInfoList.add(mutable.setTargetClassInfo(targetClassInfo));
-                }
+            }
+            mutable.setPairs(pairs);
+            for (TargetClassInfo targetClassInfo : targetClassInfos) {
+                translationInfoList.add(mutable.setTargetClassInfo(targetClassInfo));
             }
             reader.endObject();
         }
         reader.endArray();
-
     }
 
     public void write(JsonWriter writer) throws IOException {

@@ -92,8 +92,7 @@ public class VPTransformationService implements ITransformationService {
 
     @Override
     public @NotNull List<ITransformer> transformers() {
-        List<ITransformer> list = new ArrayList<>();
-        list.addAll(Utils.translationInfos.stream().collect(ArrayList::new, (l1, info) -> l1.add(new ForgeClassTransformer(info)), ArrayList::addAll));
+        List<ITransformer> list = Utils.translationInfos.stream().map(ForgeClassTransformer::new).collect(Collectors.toList());
         list.add(new ForgeClassTransformer(null));
         if (!oldVersion) list.add(new ForgeMinecraftTransformer());
         return list;
