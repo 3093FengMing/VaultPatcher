@@ -15,7 +15,6 @@ import java.util.Set;
 public class ForgeClassTransformer implements ITransformer<ClassNode> {
 
     private final TranslationInfo translationInfo;
-    private final DebugMode debug = VaultPatcherConfig.getDebugMode();
 
     public ForgeClassTransformer(TranslationInfo info) {
         this.translationInfo = info;

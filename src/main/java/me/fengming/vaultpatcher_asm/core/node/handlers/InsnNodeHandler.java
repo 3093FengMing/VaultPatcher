@@ -18,7 +18,7 @@ public class InsnNodeHandler extends NodeHandler<InsnNode> {
         VaultPatcher.debugInfo("[VaultPatcher] Node Opcode: " + this.node.getOpcode());
         if (!this.params.disableLocal
                 && this.node.getOpcode() == Opcodes.ARETURN
-                && (this.params.ordinal == this.params.info.getTargetClassInfo().getOrdinal() || this.params.info.getTargetClassInfo().getOrdinal() == -1)
+                && ASMUtils.matchOrdinal(this.params.info, this.params.ordinal)
                 && ASMUtils.matchLocal(this.params.info, this.params.methodNode.name, true)) {
             ASMUtils.insertReplace(this.params.classNode.name, this.params.methodNode, this.node, false);
             debugInfo(this.params.ordinal, "ASMTransformMethod-InsertMethodReturn", "Runtime Determination", "Runtime Determination");

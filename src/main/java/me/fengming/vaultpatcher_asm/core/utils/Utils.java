@@ -69,9 +69,7 @@ public class Utils {
             targets.addAll(getExpandTargets());
         } else {
             String name = info.getTargetClassInfo().getName();
-            if (!Utils.isBlank(name)) {
-                targets.add(ITransformer.Target.targetClass(Utils.rawPackage(name)));
-            }
+            if (!Utils.isBlank(name)) targets.add(ITransformer.Target.targetClass(Utils.rawPackage(name)));
         }
 
         targets.iterator().forEachRemaining(t -> VaultPatcher.debugInfo(String.format("[VaultPatcher] VPClassTransformer Target = %s", t.getClassName())));
@@ -113,7 +111,7 @@ public class Utils {
     }
 
     public static String matchPairs(Pairs p, String key, boolean dyn) {
-        if (Utils.isBlank(key)) return key; // FIX replace whitespace with "" -> original
+        if (key.isEmpty()) return key; // FIX replace whitespace with "" -> original
         String v = key;
         if (dyn) {
             for (Map.Entry<String, String> entry : p.getMap().entrySet()) {

@@ -2,6 +2,7 @@ package me.fengming.vaultpatcher_asm.core.node.handlers;
 
 import me.fengming.vaultpatcher_asm.VaultPatcher;
 import me.fengming.vaultpatcher_asm.core.node.NodeHandlerParameters;
+import me.fengming.vaultpatcher_asm.core.utils.ASMUtils;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
 import org.objectweb.asm.tree.InvokeDynamicInsnNode;
 
@@ -19,7 +20,7 @@ public class InvokeDynamicNodeHandler extends NodeHandler<InvokeDynamicInsnNode>
         VaultPatcher.debugInfo("[VaultPatcher] Params: " + this.params.toString());
         VaultPatcher.debugInfo("[VaultPatcher] Node Name: " + this.node.name);
         VaultPatcher.debugInfo("[VaultPatcher] Node BsmArgs: " + Arrays.deepToString(this.node.bsmArgs));
-        if (this.node.name.equals("makeConcatWithConstants")) {
+        if (this.node.name.equals("makeConcatWithConstants") && ASMUtils.matchOrdinal(this.params.info, this.params.ordinal) ) {
             Object[] bsmArgs = this.node.bsmArgs;
             for (int i = 0; i < bsmArgs.length; i++) {
                 if (bsmArgs[i] instanceof String) {

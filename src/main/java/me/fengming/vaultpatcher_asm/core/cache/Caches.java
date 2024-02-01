@@ -50,7 +50,7 @@ public class Caches {
         try {
             ClassCache cache = new ClassCache(classFile.getParentFile().toPath().resolve(classFile.getName() + ".sha256"), classFile.toPath());
             cache.create(node, bytes);
-            cacheMap.putIfAbsent(className, cache);
+            cacheMap.put(className, cache);
         } catch (IOException e) {
             throw new RuntimeException("Failed to add cache", e);
         }

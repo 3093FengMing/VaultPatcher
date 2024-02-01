@@ -19,18 +19,22 @@ public class TargetClassInfo {
         reader.beginObject();
         while (reader.peek() != JsonToken.END_OBJECT) {
             switch (reader.nextName()) {
+                case "n":
                 case "name": {
                     setName(reader.nextString());
                     break;
                 }
+                case "m":
                 case "method": {
                     setMethod(reader.nextString());
                     break;
                 }
+                case "l":
                 case "local": {
                     setLocal(reader.nextString());
                     break;
                 }
+                case "o":
                 case "ordinal": {
                     setOrdinal(reader.nextInt());
                     break;
@@ -58,6 +62,7 @@ public class TargetClassInfo {
     }
 
     public void setName(String name) {
+        if (Utils.isBlank(name)) return;
         char first = name.charAt(0);
         if (first == '@') {
             matchMode = MatchMode.STARTS;
@@ -88,6 +93,7 @@ public class TargetClassInfo {
             this.local = local;
         } else {
             char first = local.charAt(0);
+            this.local = local.substring(1);
             if (first == 'V') {
                 localMode = LocalMode.LOCAL_VARIABLE;
             } else if (first == 'M') {
@@ -99,7 +105,6 @@ public class TargetClassInfo {
             } else {
                 localMode = LocalMode.NONE;
             }
-            this.local = local.substring(1);
         }
     }
 

@@ -21,7 +21,7 @@ public class VarNodeHandler extends NodeHandler<VarInsnNode> {
         VaultPatcher.debugInfo("[VaultPatcher] Node Opcode: " + this.node.getOpcode());
         if (!this.params.disableLocal
                 && (this.node.getOpcode() == Opcodes.ASTORE || this.node.getOpcode() == Opcodes.ALOAD)
-                && (this.params.ordinal == this.params.info.getTargetClassInfo().getOrdinal() || this.params.info.getTargetClassInfo().getOrdinal() == -1)
+                && ASMUtils.matchOrdinal(this.params.info, this.params.ordinal)
                 && ASMUtils.matchLocal(this.params.info, this.params.localVariableMap.getOrDefault(this.node.var, null), false)) {
             ASMUtils.insertReplace(this.params.classNode.name, this.params.methodNode, this.node, false);
             debugInfo(this.params.ordinal, "ASMTransformMethod-InsertLocalVariableStore/Load", "Runtime Determination", "Runtime Determination");

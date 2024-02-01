@@ -303,13 +303,13 @@ public class VPClassTransformer implements Consumer<ClassNode> {
             byte[] copy = Utils.nodeToBytes(input);
 
             if (cache != null) {
-                ClassNode taken = cache.take();
                 VaultPatcher.debugInfo("Using Cache: " + input.name);
                 if (!cache.updated(input)) {
                     VaultPatcher.debugInfo("Updating Cache: " + input.name);
-                    generate(taken);
-                    cache.put(taken, copy);
+                    generate(input);
+                    cache.put(input, copy);
                 }
+                ClassNode taken = cache.take();
                 input.methods = taken.methods;
                 input.fields = taken.fields;
                 input.innerClasses = taken.innerClasses;
