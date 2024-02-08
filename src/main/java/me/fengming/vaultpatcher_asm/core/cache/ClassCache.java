@@ -71,7 +71,7 @@ public class ClassCache {
         return this.updated;
     }
 
-    public void create(ClassNode node, byte[] bytesToHash) throws IOException {
+    public void create(byte[] bytesToHash) throws IOException {
         this.updated = true;
         // ASMUtils.exportClass(node, Utils.mcPath.resolve("vaultpatcher").resolve("cache"));
 

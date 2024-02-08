@@ -17,11 +17,12 @@ import java.util.List;
 
 public class VaultPatcherConfig {
     private static final Gson GSON = new Gson();
-    private static final DebugMode debug = new DebugMode();
+    public static final DebugMode debug = new DebugMode();
     public static Path config = null;
-    private static List<String> mods = new ArrayList<>();
-    private static List<String> classes = new ArrayList<>();
-    private static List<String> applyMods = new ArrayList<>();
+    public static File configFile = null;
+    public static List<String> mods = new ArrayList<>();
+    public static List<String> classes = new ArrayList<>();
+    public static List<String> applyMods = new ArrayList<>();
 
     public static List<String> getMods() {
         return mods;
@@ -39,22 +40,41 @@ public class VaultPatcherConfig {
         return debug;
     }
 
-
     private static void writeConfig(JsonWriter jw) throws IOException {
         jw.setIndent("  ");
         jw.beginObject();
 
         jw.name("mods");
         jw.beginArray();
-        jw.value("example");
+        mods.forEach(e -> {
+            try {
+                jw.value(e);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
         jw.endArray();
 
         jw.name("classes");
         jw.beginArray();
+        classes.forEach(e -> {
+            try {
+                jw.value(e);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
         jw.endArray();
 
         jw.name("apply_mods");
         jw.beginArray();
+        applyMods.forEach(e -> {
+            try {
+                jw.value(e);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
         jw.endArray();
 
         jw.name("debug_mode");
@@ -64,20 +84,24 @@ public class VaultPatcherConfig {
         jw.close();
     }
 
+    public static void save() throws IOException {
+        JsonWriter jw = GSON.newJsonWriter(Files.newBufferedWriter(configFile.toPath(), StandardCharsets.UTF_8));
+        writeConfig(jw);
+    }
+
     public static void readConfig(Path path) throws IOException {
         config = path;
-        Path configFile = config.resolve("config.json");
-        File f = configFile.toFile();
-        if (Files.notExists(configFile)) {
-            if (!f.getParentFile().exists()) {
-                f.getParentFile().mkdirs();
+        configFile = config.resolve("config.json").toFile();
+        if (!configFile.exists()) {
+            if (!configFile.getParentFile().exists()) {
+                configFile.getParentFile().mkdirs();
             }
-            Files.createFile(configFile);
-            JsonWriter jw = GSON.newJsonWriter(Files.newBufferedWriter(configFile, StandardCharsets.UTF_8));
+            configFile.createNewFile();
+            JsonWriter jw = GSON.newJsonWriter(Files.newBufferedWriter(configFile.toPath(), StandardCharsets.UTF_8));
             writeConfig(jw);
         }
 
-        JsonReader jr = GSON.newJsonReader(new InputStreamReader(Files.newInputStream(f.toPath()), StandardCharsets.UTF_8));
+        JsonReader jr = GSON.newJsonReader(new InputStreamReader(Files.newInputStream(configFile.toPath()), StandardCharsets.UTF_8));
 
         jr.beginObject();
         while (jr.peek() != JsonToken.END_OBJECT) {

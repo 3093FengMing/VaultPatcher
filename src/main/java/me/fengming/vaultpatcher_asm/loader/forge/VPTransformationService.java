@@ -10,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -46,7 +45,9 @@ public class VPTransformationService implements ITransformationService {
             oldVersion = true;
         }
 
-        VaultPatcher.init(minecraftPathOptional.get());
+        Path mcPath = minecraftPathOptional.get();
+
+        VaultPatcher.init(mcPath);
 
         VaultPatcher.LOGGER.warn("[VaultPatcher] TS DONE!");
     }

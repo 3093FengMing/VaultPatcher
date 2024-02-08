@@ -3,9 +3,9 @@ package me.fengming.vaultpatcher_asm.loader.forge;
 import me.fengming.vaultpatcher_asm.config.TranslationInfo;
 import me.fengming.vaultpatcher_asm.core.transformers.VPClassTransformer;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
-import org.objectweb.asm.tree.ClassNode;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.tree.ClassNode;
 
 public class LinkClassTransformer implements IClassTransformer {
     @Override

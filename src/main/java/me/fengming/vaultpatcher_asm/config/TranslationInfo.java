@@ -5,8 +5,6 @@ import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.function.Supplier;
 
 public class TranslationInfo {
     private final TargetClassInfo targetClassInfo;

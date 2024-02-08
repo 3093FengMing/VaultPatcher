@@ -9,14 +9,18 @@ import me.fengming.vaultpatcher_asm.core.transformers.VPMinecraftTransformer;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
 import net.fabricmc.loader.api.FabricLoader;
 
+import java.nio.file.Path;
 import java.util.List;
 
 public class EarlyRiser implements Runnable {
+
+    private static final String ID_PLUGIN = "vaultpatcher:plugin";
     @Override
     public void run() {
         VaultPatcher.LOGGER.warn("[VaultPatcher] Loading VPEarlyRiser");
 
-        VaultPatcher.init(FabricLoader.getInstance().getGameDir());
+        Path mcPath = FabricLoader.getInstance().getGameDir();
+        VaultPatcher.init(mcPath);
         // initial transformers
 
         // Patch
