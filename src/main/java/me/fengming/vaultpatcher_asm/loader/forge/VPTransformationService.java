@@ -38,6 +38,7 @@ public class VPTransformationService implements ITransformationService {
         }
 
         String minecraftVersion = getMinecraftVersion();
+        Utils.mcVersion = minecraftVersion;
         if (Utils.isBlank(minecraftVersion)) VaultPatcher.LOGGER.error("[VaultPatcher] Failed to get minecraft version!");
         // VaultPatcher.LOGGER.info("[VaultPatcher] Get minecraft version: " + minecraftVersion);
         if (isOldVersion(minecraftVersion)) {

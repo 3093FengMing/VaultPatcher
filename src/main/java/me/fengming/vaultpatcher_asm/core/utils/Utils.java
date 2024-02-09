@@ -6,6 +6,7 @@ import me.fengming.vaultpatcher_asm.config.DebugMode;
 import me.fengming.vaultpatcher_asm.config.Pairs;
 import me.fengming.vaultpatcher_asm.config.TranslationInfo;
 import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
+import me.fengming.vaultpatcher_asm.plugin.VaultPatcherPlugin;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
 
@@ -17,10 +18,22 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 
 public class Utils {
-    public static List<TranslationInfo> emptyList = new ArrayList<>();
+    public static final List<TranslationInfo> EMPTY_LIST = new ArrayList<>();
     public static List<TranslationInfo> translationInfos = new ArrayList<>();
     public static List<TranslationInfo> dynTranslationInfos = new ArrayList<>();
     public static Path mcPath = null;
+
+    public static String mcVersion = null;
+
+    // plugins
+
+    public static String getGameVersion() {
+        return mcVersion;
+    }
+
+    public static Path getPluginConfigPath(VaultPatcherPlugin plugin) {
+        return mcPath.resolve("config").resolve("vaultpatcher_asm").resolve("plugins").resolve(plugin.getName());
+    }
 
     // debug
 

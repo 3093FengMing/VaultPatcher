@@ -11,6 +11,7 @@ import me.fengming.vaultpatcher_asm.core.node.NodeHandlerParameters;
 import me.fengming.vaultpatcher_asm.core.node.handlers.NodeHandler;
 import me.fengming.vaultpatcher_asm.core.utils.ASMUtils;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
+import me.fengming.vaultpatcher_asm.plugin.VaultPatcherPlugin;
 import org.objectweb.asm.*;
 import org.objectweb.asm.tree.*;
 
@@ -297,6 +298,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
     // for Fabric
     @Override
     public void accept(ClassNode input) {
+        VaultPatcher.plugins.forEach(e -> e.onTransformClass(input, VaultPatcherPlugin.Phase.BEFORE));
         if (VaultPatcherConfig.getDebugMode().isUseCache()) {
             // check cache
             ClassCache cache = Caches.getClassCache(input.name);
@@ -321,6 +323,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
         } else {
             generate(input);
         }
+        VaultPatcher.plugins.forEach(e -> e.onTransformClass(input, VaultPatcherPlugin.Phase.AFTER));
 
         if (debug.isExportClass()) ASMUtils.exportClass(input, Utils.mcPath.resolve("vaultpatcher").resolve("exported"));
 

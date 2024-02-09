@@ -129,10 +129,10 @@ public class VaultPatcherPatch {
     }
 
     public List<TranslationInfo> getTranslationInfoList() {
-        return dynamic ? Utils.emptyList : translationInfoList;
+        return dynamic ? Utils.EMPTY_LIST : translationInfoList;
     }
 
     public List<TranslationInfo> getDynTranslationInfoList() {
-        return dynamic ? translationInfoList : Utils.emptyList;
+        return dynamic ? translationInfoList : Utils.EMPTY_LIST;
     }
 }

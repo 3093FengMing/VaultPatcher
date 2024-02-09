@@ -15,11 +15,10 @@ import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 import java.util.jar.JarFile;
 
 public class VaultPatcher {
-    public static Logger LOGGER = LogManager.getLogger();
+    public static Logger LOGGER = LogManager.getLogger("VaultPatcher");
 
     public static List<VaultPatcherPlugin> plugins = new ArrayList<>();
 
@@ -31,21 +30,9 @@ public class VaultPatcher {
                 try (JarFile jarFile = new JarFile(file)) {
                     String entryPoint = jarFile.getManifest().getMainAttributes().getValue("VaultPatcherPlugin");
                     if (entryPoint == null) throw new RuntimeException("Failed loading plugin: Couldn't find the entry point");
-                    ClassLoader cl1 = Thread.currentThread().getContextClassLoader();
-                    URLClassLoader classLoader = new URLClassLoader(new URL[]{file.toURI().toURL()}, cl1);
-                    VaultPatcherPlugin plugin = new VaultPatcherPlugin() {
-                        private Runnable runnable = null;
-                        private final Function instance = classLoader.loadClass(entryPoint).asSubclass(Function.class).newInstance();
-                        @Override
-                        public void start(Path mcPath) {
-                            runnable = (Runnable) this.instance.apply(mcPath);
-                        }
-
-                        @Override
-                        public void end() {
-                            runnable.run();
-                        }
-                    };
+                    ClassLoader parentClassLoader = VaultPatcher.class.getClassLoader();
+                    URLClassLoader classLoader = new URLClassLoader(new URL[]{file.toURI().toURL()}, parentClassLoader);
+                    VaultPatcherPlugin plugin = classLoader.loadClass(entryPoint).asSubclass(VaultPatcherPlugin.class).newInstance();
                     VaultPatcher.plugins.add(plugin);
                 } catch (Exception e) {
                     throw new RuntimeException("Failed loading plugin: " + file, e);
@@ -63,20 +50,26 @@ public class VaultPatcher {
 
         try {
             VaultPatcher.LOGGER.warn("[VaultPatcher] Loading Caches!");
+            plugins.forEach(e -> e.onLoadCaches(VaultPatcherPlugin.Phase.BEFORE));
             Caches.initCache(mcPath.resolve("vaultpatcher").resolve("cache"));
+            plugins.forEach(e -> e.onLoadCaches(VaultPatcherPlugin.Phase.AFTER));
         } catch (IOException e) {
             throw new RuntimeException("Failed to load cache", e);
         }
 
         VaultPatcher.LOGGER.warn("[VaultPatcher] Loading Configs!");
         try {
+            plugins.forEach(e -> e.onLoadConfig(VaultPatcherPlugin.Phase.BEFORE));
             VaultPatcherConfig.readConfig(mcPath.resolve("config").resolve("vaultpatcher_asm"));
+            plugins.forEach(e -> e.onLoadConfig(VaultPatcherPlugin.Phase.AFTER));
             List<String> mods = VaultPatcherConfig.getMods();
             for (String mod : mods) {
                 VaultPatcherPatch vpp = new VaultPatcherPatch(mod + ".json");
+                plugins.forEach(e -> e.onLoadPatch(vpp, VaultPatcherPlugin.Phase.BEFORE));
                 vpp.read();
                 Utils.translationInfos.addAll(vpp.getTranslationInfoList());
                 Utils.dynTranslationInfos.addAll(vpp.getDynTranslationInfoList());
+                plugins.forEach(e -> e.onLoadPatch(vpp, VaultPatcherPlugin.Phase.AFTER));
             }
         } catch (IOException e) {
             throw new RuntimeException("Failed to load config", e);

@@ -13,8 +13,6 @@ import java.nio.file.Path;
 import java.util.List;
 
 public class EarlyRiser implements Runnable {
-
-    private static final String ID_PLUGIN = "vaultpatcher:plugin";
     @Override
     public void run() {
         VaultPatcher.LOGGER.warn("[VaultPatcher] Loading VPEarlyRiser");
