@@ -19,7 +19,9 @@ public class ASMUtils {
     public static String __mappingString(String s, String method) {
         if (s == null) return null;
         if (Utils.isBlank(s)) return s;
-        StackTraceElement[] stackTraces = Thread.currentThread().getStackTrace();
+        // There will be no need to get the stack traces if classname is not needed
+        StackTraceElement[] stackTraces = new StackTraceElement[0];
+        if (Utils.needStacktrace) stackTraces = Thread.currentThread().getStackTrace();
         for (TranslationInfo info : Utils.dynTranslationInfos) {
             String v = Utils.matchPairs(info.getPairs(), s, true);
             if (Utils.isBlank(v) || v.equals(s)) continue;
@@ -41,7 +43,6 @@ public class ASMUtils {
                     case ENDS: if (stackTrace.getClassName().endsWith(className)) return v;
                 }
             }
-
         }
         return s;
     }

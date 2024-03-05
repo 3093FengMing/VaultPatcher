@@ -2,17 +2,17 @@ package me.fengming.vaultpatcher_asm.core.utils;
 
 import cpw.mods.modlauncher.api.ITransformer;
 import me.fengming.vaultpatcher_asm.VaultPatcher;
-import me.fengming.vaultpatcher_asm.config.DebugMode;
-import me.fengming.vaultpatcher_asm.config.Pairs;
-import me.fengming.vaultpatcher_asm.config.TranslationInfo;
-import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
+import me.fengming.vaultpatcher_asm.config.*;
 import me.fengming.vaultpatcher_asm.plugin.VaultPatcherPlugin;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
@@ -22,8 +22,9 @@ public class Utils {
     public static List<TranslationInfo> translationInfos = new ArrayList<>();
     public static List<TranslationInfo> dynTranslationInfos = new ArrayList<>();
     public static Path mcPath = null;
-
     public static String mcVersion = null;
+
+    public static boolean needStacktrace = false;
 
     // plugins
 
@@ -123,29 +124,22 @@ public class Utils {
         return s.replace('.', '/');
     }
 
-    public static String matchPairs(Pairs p, String key, boolean dyn) {
-        if (key.isEmpty()) return key; // FIX replace whitespace with "" -> original
-        String v = key;
-        if (dyn) {
-            for (Map.Entry<String, String> entry : p.getMap().entrySet()) {
-                String k1 = entry.getKey();
-                String v1 = entry.getValue();
-                if (key.equals(k1) && v1.charAt(0) != '@') {
-                    v = v1;
-                }
-                if (v1.charAt(0) == '@' && key.contains(k1)) { // non-full match
-                    v = v.replace(k1, v1.substring(1));
+    public static String matchPairs(Pairs p, String source, boolean dyn) {
+        if (source.isEmpty()) return source; // FIX replace whitespace with "" -> source
+        String v = p.getValue(source); // Go to return if its full match
+        if (dyn && p.isNonFullMatch()) { // non-full match
+            for (Pair<String, String> pair : p.getList()) {
+                if (pair.second.charAt(0) == '@' && source.contains(pair.first)) {
+                    v = source.replace(pair.first, pair.second.substring(1));
                 }
             }
-        } else {
-            v = p.getValue(key);
         }
-        return v == null ? key : v;
+        return v == null ? source : v;
     }
 
     public static boolean isBlank(String s) {
         if (s == null) return false;
-        if (s.isEmpty()) return true;
+        if (s.isEmpty()) return true; // there is a short in most cases
         for (int i = 0; i < s.getBytes(StandardCharsets.UTF_8).length; i++) {
             if (!Character.isWhitespace(s.charAt(i))) return false;
         }

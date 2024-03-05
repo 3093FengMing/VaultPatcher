@@ -13,8 +13,9 @@ public class VPMinecraftTransformer implements Consumer<ClassNode> {
     }
 
     private static void classTransform(ClassNode input) {
-        if (input.name.equals("net/minecraft/util/text/StringTextComponent") /* Forge */
-                || input.name.equals("net/minecraft/network/chat/TextComponent") /* Forge */
+        if (input.name.equals("net/minecraft/util/text/StringTextComponent") /* Forge 1.16.5- */
+                || input.name.equals("net/minecraft/network/chat/TextComponent") /* Forge 1.16.5-1.18.2 */
+                || input.name.equals("net/minecraft/network/chat/contents/LiteralContents") /* Forge 1.18.2+ */
                 || input.name.equals("net/minecraft/class_2585") /* Fabric */) {
             // TextComponent
             for (MethodNode method : input.methods) {
@@ -29,13 +30,15 @@ public class VPMinecraftTransformer implements Consumer<ClassNode> {
                     }
                 }
             }
-        } else if (input.name.equals("net/minecraft/client/gui/Font") /* Forge */
-                || input.name.equals("net/minecraft/client/gui/FontRenderer") /* Forge */
+        } else if (input.name.equals("net/minecraft/client/gui/FontRenderer") /* Forge 1.16.5- */
+                || input.name.equals("net/minecraft/client/gui/Font") /* Forge 1.16.5+ */
                 || input.name.equals("net/minecraft/class_327") /* Fabric */) {
             // Font
             for (MethodNode method : input.methods) {
-                if (method.name.equals("m_92897_") /* Forge */
-                        || method.name.equals("func_228081_c_") /* Forge */
+                if (method.name.equals("func_228081_c_") /* Forge 1.16.5- */
+                        || method.name.equals("m_92897_") /* Forge 1.16.5-1.19.2 */
+                        || method.name.equals("m_253026_") /* Forge 1.19.3 */
+                        || method.name.equals("m_271978_") /* Forge 1.19.3+ */
                         || method.name.equals("method_1724") /* Fabric */) {
                     InsnList insnList = new InsnList();
                     insnList.add(new VarInsnNode(Opcodes.ALOAD, 1));

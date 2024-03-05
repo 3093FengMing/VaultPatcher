@@ -75,6 +75,9 @@ public class VaultPatcher {
             throw new RuntimeException("Failed to load config", e);
         }
 
+        // optimization
+        Utils.needStacktrace = Utils.dynTranslationInfos.stream().anyMatch(e -> e.getTargetClassInfo().getName().isEmpty());
+
         plugins.forEach(VaultPatcherPlugin::end);
     }
 

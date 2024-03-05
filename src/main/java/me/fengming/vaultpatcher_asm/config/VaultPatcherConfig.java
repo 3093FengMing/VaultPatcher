@@ -1,6 +1,7 @@
 package me.fengming.vaultpatcher_asm.config;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class VaultPatcherConfig {
-    private static final Gson GSON = new Gson();
+    private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
     public static final DebugMode debug = new DebugMode();
     public static Path config = null;
     public static File configFile = null;

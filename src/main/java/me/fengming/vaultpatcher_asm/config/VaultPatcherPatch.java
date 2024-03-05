@@ -50,7 +50,7 @@ public class VaultPatcherPatch {
 
             List<TargetClassInfo> targetClassInfos = new ArrayList<>();
             TranslationInfo.Mutable mutable = new TranslationInfo.Mutable();
-            Pairs pairs = new Pairs();
+            Pairs pairs = new Pairs(dynamic);
 
             while (reader.peek() != JsonToken.END_OBJECT) {
                 switch (reader.nextName()) {

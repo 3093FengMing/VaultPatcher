@@ -7,6 +7,7 @@ import me.fengming.vaultpatcher_asm.config.TranslationInfo;
 import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
 import me.fengming.vaultpatcher_asm.core.cache.Caches;
 import me.fengming.vaultpatcher_asm.core.cache.ClassCache;
+import me.fengming.vaultpatcher_asm.core.hack.VPClassLoader;
 import me.fengming.vaultpatcher_asm.core.node.NodeHandlerParameters;
 import me.fengming.vaultpatcher_asm.core.node.handlers.NodeHandler;
 import me.fengming.vaultpatcher_asm.core.utils.ASMUtils;
@@ -171,7 +172,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
                 cw.visitEnd();
 
                 byte[] bytes = cw.toByteArray();
-                VPClassLoader.newClass(innerClassName, bytes);
+                VPClassLoader.newClass(Thread.currentThread().getContextClassLoader(), innerClassName, bytes);
 
             }
         } else {

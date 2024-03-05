@@ -34,6 +34,7 @@ public class ForgeMinecraftTransformer implements ITransformer<ClassNode> {
         // TextComponent
         targets.add(Target.targetClass("net.minecraft.util.text.StringTextComponent"));
         targets.add(Target.targetClass("net.minecraft.network.chat.TextComponent"));
+        targets.add(Target.targetClass("net.minecraft.network.chat.contents.LiteralContents"));
         // Font
         targets.add(Target.targetClass("net.minecraft.client.gui.Font"));
         targets.add(Target.targetClass("net.minecraft.client.gui.FontRenderer"));
