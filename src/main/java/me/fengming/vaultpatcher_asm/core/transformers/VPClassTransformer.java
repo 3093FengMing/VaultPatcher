@@ -56,7 +56,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
                     params.addOrdinal();
                     NodeHandler<?> handler = NodeHandler.getHandlerByNode(instruction, params);
                     if (handler == null) continue;
-                    instruction = handler.modifyNode();
+                    instruction = handler._modifyNode();
                 }
             }
 
@@ -69,7 +69,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
                 if (set.size() > 5) {
                     list.add(new IntInsnNode(Opcodes.BIPUSH, set.size()));
                 } else {
-                    list.add(new InsnNode(Opcodes.ICONST_0 + set.size()));
+                    list.add(new InsnNode(Opcodes.ICONST_0 + set.size())); // max to 255
                 }
                 list.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "java/util/HashMap", "<init>", "(I)V", false));
                 list.add(new FieldInsnNode(Opcodes.PUTSTATIC, input.name, "__vp_map", "Ljava/util/HashMap;"));
@@ -111,7 +111,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
                 if (set.size() > 5) {
                     mv.visitIntInsn(Opcodes.BIPUSH, set.size());
                 } else {
-                    mv.visitInsn(Opcodes.ICONST_0 + set.size());
+                    mv.visitInsn(Opcodes.ICONST_0 + set.size()); // max to 255
                 }
                 mv.visitMethodInsn(Opcodes.INVOKESPECIAL, innerClassName, "<init>", "(I)V", false);
                 mv.visitFieldInsn(Opcodes.PUTSTATIC, className, "__vp_map", "Ljava/util/HashMap;");
@@ -173,7 +173,6 @@ public class VPClassTransformer implements Consumer<ClassNode> {
 
                 byte[] bytes = cw.toByteArray();
                 VPClassLoader.newClass(Thread.currentThread().getContextClassLoader(), innerClassName, bytes);
-
             }
         } else {
             // <clinit>

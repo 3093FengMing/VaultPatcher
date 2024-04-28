@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 public class NodeHandlerParameters {
     public boolean disableLocal;
-    public boolean disableVariable;
+    public boolean disableLocalVariable;
 
     public ClassNode classNode;
     public MethodNode methodNode;
@@ -17,9 +17,9 @@ public class NodeHandlerParameters {
     public TranslationInfo info;
     public int ordinal = 0;
 
-    public NodeHandlerParameters(boolean disableLocal, boolean disableVariable, ClassNode classNode, MethodNode methodNode, HashMap<Integer, String> localVariableMap, TranslationInfo info) {
+    public NodeHandlerParameters(boolean disableLocal, boolean disableLocalVariable, ClassNode classNode, MethodNode methodNode, HashMap<Integer, String> localVariableMap, TranslationInfo info) {
         this.disableLocal = disableLocal;
-        this.disableVariable = disableVariable;
+        this.disableLocalVariable = disableLocalVariable;
         this.classNode = classNode;
         this.methodNode = methodNode;
         this.localVariableMap = localVariableMap;
@@ -34,7 +34,7 @@ public class NodeHandlerParameters {
     public String toString() {
         return "NodeHandlerParameters{" +
                 "disableLocal=" + disableLocal +
-                ", disableVariable=" + disableVariable +
+                ", disableLocalVariable=" + disableLocalVariable +
                 ", classNode=" + classNode.name +
                 ", methodNode=" + methodNode.name +
                 ", localVariableMap=" + localVariableMap +

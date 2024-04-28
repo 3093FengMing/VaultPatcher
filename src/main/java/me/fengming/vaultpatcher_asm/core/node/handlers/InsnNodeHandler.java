@@ -1,6 +1,6 @@
 package me.fengming.vaultpatcher_asm.core.node.handlers;
 
-import me.fengming.vaultpatcher_asm.VaultPatcher;
+import me.fengming.vaultpatcher_asm.core.node.HandlerDebugInfo;
 import me.fengming.vaultpatcher_asm.core.node.NodeHandlerParameters;
 import me.fengming.vaultpatcher_asm.core.utils.ASMUtils;
 import org.objectweb.asm.Opcodes;
@@ -13,9 +13,6 @@ public class InsnNodeHandler extends NodeHandler<InsnNode> {
 
     @Override
     public InsnNode modifyNode() {
-        VaultPatcher.debugInfo("[VaultPatcher] InsnNodeHandler");
-        VaultPatcher.debugInfo("[VaultPatcher] Params: " + this.params.toString());
-        VaultPatcher.debugInfo("[VaultPatcher] Node Opcode: " + this.node.getOpcode());
         if (!this.params.disableLocal
                 && this.node.getOpcode() == Opcodes.ARETURN
                 && ASMUtils.matchOrdinal(this.params.info, this.params.ordinal)
@@ -25,4 +22,7 @@ public class InsnNodeHandler extends NodeHandler<InsnNode> {
         }
         return this.node;
     }
+
+    @Override
+    public void addDebugInfo(HandlerDebugInfo info) {}
 }

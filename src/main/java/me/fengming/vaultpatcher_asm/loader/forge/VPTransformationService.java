@@ -47,7 +47,6 @@ public class VPTransformationService implements ITransformationService {
         }
 
         Path mcPath = minecraftPathOptional.get();
-
         VaultPatcher.init(mcPath);
 
         VaultPatcher.LOGGER.warn("[VaultPatcher] TS DONE!");

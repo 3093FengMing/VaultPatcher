@@ -1,5 +1,7 @@
 package me.fengming.vaultpatcher_asm.core.node.handlers;
 
+import me.fengming.vaultpatcher_asm.VaultPatcher;
+import me.fengming.vaultpatcher_asm.core.node.HandlerDebugInfo;
 import me.fengming.vaultpatcher_asm.core.node.NodeHandlerParameters;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
 import org.objectweb.asm.tree.*;
@@ -13,7 +15,16 @@ public abstract class NodeHandler<E extends AbstractInsnNode> {
         this.params = params;
     }
 
+    public E _modifyNode() {
+        HandlerDebugInfo debugInfo = new HandlerDebugInfo(this, params, node.getOpcode());
+        addDebugInfo(debugInfo);
+        VaultPatcher.debugInfo(debugInfo.toString());
+        return this.modifyNode();
+    }
+
     public abstract E modifyNode();
+
+    public abstract void addDebugInfo(HandlerDebugInfo info);
 
     public void debugInfo(String method, String source, String ret) {
         Utils.printDebugInfo(source, method, ret, this.params.classNode.name, this.params.info);

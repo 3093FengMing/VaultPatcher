@@ -1,12 +1,10 @@
 package me.fengming.vaultpatcher_asm.core.node.handlers;
 
-import me.fengming.vaultpatcher_asm.VaultPatcher;
+import me.fengming.vaultpatcher_asm.core.node.HandlerDebugInfo;
 import me.fengming.vaultpatcher_asm.core.node.NodeHandlerParameters;
 import me.fengming.vaultpatcher_asm.core.utils.ASMUtils;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
 import org.objectweb.asm.tree.InvokeDynamicInsnNode;
-
-import java.util.Arrays;
 
 // jdk8+
 public class InvokeDynamicNodeHandler extends NodeHandler<InvokeDynamicInsnNode> {
@@ -16,10 +14,6 @@ public class InvokeDynamicNodeHandler extends NodeHandler<InvokeDynamicInsnNode>
 
     @Override
     public InvokeDynamicInsnNode modifyNode() {
-        VaultPatcher.debugInfo("[VaultPatcher] InvokeDynamicNodeHandler");
-        VaultPatcher.debugInfo("[VaultPatcher] Params: " + this.params.toString());
-        VaultPatcher.debugInfo("[VaultPatcher] Node Name: " + this.node.name);
-        VaultPatcher.debugInfo("[VaultPatcher] Node BsmArgs: " + Arrays.deepToString(this.node.bsmArgs));
         if (this.node.name.equals("makeConcatWithConstants") && ASMUtils.matchOrdinal(this.params.info, this.params.ordinal) ) {
             Object[] bsmArgs = this.node.bsmArgs;
             for (int i = 0; i < bsmArgs.length; i++) {
@@ -37,5 +31,11 @@ public class InvokeDynamicNodeHandler extends NodeHandler<InvokeDynamicInsnNode>
             this.node.bsmArgs = bsmArgs;
         }
         return this.node;
+    }
+
+    @Override
+    public void addDebugInfo(HandlerDebugInfo info) {
+        info.name = node.name;
+        info.bsmArgs = node.bsmArgs;
     }
 }

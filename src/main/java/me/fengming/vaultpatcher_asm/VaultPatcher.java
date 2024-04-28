@@ -29,11 +29,12 @@ public class VaultPatcher {
             for (File file : plugins) {
                 try (JarFile jarFile = new JarFile(file)) {
                     String entryPoint = jarFile.getManifest().getMainAttributes().getValue("VaultPatcherPlugin");
-                    if (entryPoint == null) throw new RuntimeException("Failed loading plugin: Couldn't find the entry point");
+                    if (entryPoint == null) throw new RuntimeException("Failed loading plugin " + file.getName() + ": Couldn't find the entry point");
                     ClassLoader parentClassLoader = VaultPatcher.class.getClassLoader();
-                    URLClassLoader classLoader = new URLClassLoader(new URL[]{file.toURI().toURL()}, parentClassLoader);
-                    VaultPatcherPlugin plugin = classLoader.loadClass(entryPoint).asSubclass(VaultPatcherPlugin.class).newInstance();
-                    VaultPatcher.plugins.add(plugin);
+                    try (URLClassLoader classLoader = new URLClassLoader(new URL[]{file.toURI().toURL()}, parentClassLoader)) {
+                        VaultPatcherPlugin plugin = classLoader.loadClass(entryPoint).asSubclass(VaultPatcherPlugin.class).newInstance();
+                        VaultPatcher.plugins.add(plugin);
+                    }
                 } catch (Exception e) {
                     throw new RuntimeException("Failed loading plugin: " + file, e);
                 }
@@ -76,7 +77,7 @@ public class VaultPatcher {
         }
 
         // optimization
-        Utils.needStacktrace = Utils.dynTranslationInfos.stream().anyMatch(e -> e.getTargetClassInfo().getName().isEmpty());
+        Utils.needStacktrace = Utils.dynTranslationInfos.stream().anyMatch(e -> !e.getTargetClassInfo().getName().isEmpty());
 
         plugins.forEach(VaultPatcherPlugin::end);
     }

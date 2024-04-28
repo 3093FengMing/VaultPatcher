@@ -1,6 +1,7 @@
 package me.fengming.vaultpatcher_asm.core.node.handlers;
 
 import me.fengming.vaultpatcher_asm.VaultPatcher;
+import me.fengming.vaultpatcher_asm.core.node.HandlerDebugInfo;
 import me.fengming.vaultpatcher_asm.core.node.NodeHandlerParameters;
 import me.fengming.vaultpatcher_asm.core.utils.ASMUtils;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
@@ -24,5 +25,10 @@ public class LdcNodeHandler extends NodeHandler<LdcInsnNode> {
             this.node.cst = v;
         }
         return this.node;
+    }
+
+    @Override
+    public void addDebugInfo(HandlerDebugInfo info) {
+        info.cst = node.cst;
     }
 }

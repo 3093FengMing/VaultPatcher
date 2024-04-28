@@ -62,7 +62,7 @@ public class Pairs {
     public HashMap<String, String> getMap() {
         return pairsMap;
     }
-    public List<Pair<String, String>> getList() {
+    public List<Pair<String, String>> getList() { // Will not verify if it is in dynamic mode
         return pairsList;
     }
 
@@ -104,11 +104,24 @@ public class Pairs {
             Pair<String, String> pair = pairsList.stream()
                     .filter(e -> e.first.equals(key))
                     .findFirst()
-                    .orElse(null); // Perhaps for is faster than StreamAPI?
+                    .orElse(null); // Perhaps For Loop is faster than StreamAPI?
             return pair == null ? key : pair.second;
         } else {
             return pairsMap.getOrDefault(key, key);
         }
+    }
+
+    public Pairs merge(Pairs other) {
+        if (this.dyn != other.dyn) {
+            throw new RuntimeException("Dynamic Mode of the source pairs is different from that of the other pairs");
+        }
+        // Will not check duplicate
+        if (this.dyn) {
+            this.pairsList.addAll(other.pairsList);
+        } else {
+            this.pairsMap.putAll(other.pairsMap);
+        }
+        return this;
     }
 
     public boolean isNonFullMatch() {
