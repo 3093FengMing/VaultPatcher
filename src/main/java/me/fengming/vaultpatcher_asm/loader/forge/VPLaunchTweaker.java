@@ -23,7 +23,7 @@ public class VPLaunchTweaker implements ITweaker {
 
     @Override
     public void injectIntoClassLoader(LaunchClassLoader classLoader) {
-        classLoader.registerTransformer("me.fengming.vaultpatcher_asm.loader.forge.LinkClassTransformer");
+        classLoader.registerTransformer("me.fengming.vaultpatcher_asm.loader.forge.LinkedClassTransformer");
         VaultPatcher.LOGGER.warn("[VaultPatcher] CL DONE!");
     }
 

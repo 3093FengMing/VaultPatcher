@@ -16,15 +16,14 @@ import me.fengming.vaultpatcher_asm.plugin.VaultPatcherPlugin;
 import org.objectweb.asm.*;
 import org.objectweb.asm.tree.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class VPClassTransformer implements Consumer<ClassNode> {
     private final DebugMode debug = VaultPatcherConfig.getDebugMode();
     private final TranslationInfo translationInfo;
     private static boolean disableLocal = false;
+    private static List<String> I18nFields = new ArrayList<>();
 
     public VPClassTransformer(TranslationInfo info) {
         this.translationInfo = info;
@@ -127,7 +126,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
                 mv.visitEnd();
             }
 
-            // __vp_init
+            // init (inner class)
             {
                 // inner class
                 ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);

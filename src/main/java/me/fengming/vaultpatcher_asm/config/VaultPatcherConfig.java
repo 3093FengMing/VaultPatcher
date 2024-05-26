@@ -86,7 +86,8 @@ public class VaultPatcherConfig {
     }
 
     public static void save() throws IOException {
-        JsonWriter jw = GSON.newJsonWriter(Files.newBufferedWriter(configFile.toPath(), StandardCharsets.UTF_8));
+        JsonWriter jw = new JsonWriter(Files.newBufferedWriter(configFile.toPath(), StandardCharsets.UTF_8));
+        jw.setIndent("  ");
         writeConfig(jw);
     }
 
@@ -98,11 +99,12 @@ public class VaultPatcherConfig {
                 configFile.getParentFile().mkdirs();
             }
             configFile.createNewFile();
-            JsonWriter jw = GSON.newJsonWriter(Files.newBufferedWriter(configFile.toPath(), StandardCharsets.UTF_8));
+            JsonWriter jw = new JsonWriter(Files.newBufferedWriter(configFile.toPath(), StandardCharsets.UTF_8));
+            jw.setIndent("  ");
             writeConfig(jw);
         }
 
-        JsonReader jr = GSON.newJsonReader(new InputStreamReader(Files.newInputStream(configFile.toPath()), StandardCharsets.UTF_8));
+        JsonReader jr = new JsonReader(new InputStreamReader(Files.newInputStream(configFile.toPath()), StandardCharsets.UTF_8));
 
         jr.beginObject();
         while (jr.peek() != JsonToken.END_OBJECT) {

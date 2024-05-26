@@ -37,6 +37,10 @@ public class VPTransformationService implements ITransformationService {
             return;
         }
 
+        if (environment.getProperty(IEnvironment.Keys.ASSETSDIR.get()).isPresent()) {
+            Utils.isClient = true;
+        }
+
         String minecraftVersion = getMinecraftVersion();
         Utils.mcVersion = minecraftVersion;
         if (Utils.isBlank(minecraftVersion)) VaultPatcher.LOGGER.error("[VaultPatcher] Failed to get minecraft version!");

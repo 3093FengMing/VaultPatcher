@@ -23,6 +23,7 @@ public class Utils {
     public static List<TranslationInfo> dynTranslationInfos = new ArrayList<>();
     public static Path mcPath = null;
     public static String mcVersion = null;
+    public static boolean isClient = false;
 
     public static boolean needStacktrace = false;
 
@@ -144,6 +145,10 @@ public class Utils {
             if (!Character.isWhitespace(s.charAt(i))) return false;
         }
         return true;
+    }
+
+    public static String getI18n(String key) {
+
     }
 
 }

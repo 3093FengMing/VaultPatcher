@@ -119,11 +119,12 @@ public class VaultPatcherPatch {
     public void read() throws IOException {
         if (Files.notExists(patchFile)) {
             Files.createFile(patchFile);
-            try (JsonWriter jsonWriter = GSON.newJsonWriter(Files.newBufferedWriter(patchFile, StandardCharsets.UTF_8));) {
-                write(jsonWriter);
+            try (JsonWriter jw = new JsonWriter(Files.newBufferedWriter(patchFile, StandardCharsets.UTF_8))) {
+                jw.setIndent("  ");
+                write(jw);
             }
         }
-        try (JsonReader jsonReader = GSON.newJsonReader(new InputStreamReader(Files.newInputStream(patchFile), StandardCharsets.UTF_8))) {
+        try (JsonReader jsonReader = new JsonReader(new InputStreamReader(Files.newInputStream(patchFile), StandardCharsets.UTF_8))) {
             read(jsonReader);
         }
     }

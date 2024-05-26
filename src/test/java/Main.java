@@ -5,19 +5,20 @@ import java.util.HashMap;
 import java.util.stream.IntStream;
 
 public class Main {
-    String abcc = "sssh";
-    String abcdc = "ss2sh";
+    String abcc = aaa("sssh");
+    String abcdc = aaa("ss2sh");
 
     private static final HashMap<String, String> __vp_map = new HashMap<String, String>(2222) {
         {
             put("aa", "bb");
         }
     };
-    private void aaa(String abc) {
-        System.out.println(abc);
+    private String aaa(String abc) {
+        System.out.println(__vp_map);
         System.out.println(this.abcc);
         __vp_replace(this.abcc);
         __vp_replace("nams");
+        return "aavv";
     }
 
 //    public void main(String sss) {

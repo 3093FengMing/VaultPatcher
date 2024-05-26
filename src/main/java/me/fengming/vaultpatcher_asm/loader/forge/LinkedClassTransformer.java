@@ -7,7 +7,7 @@ import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
 
-public class LinkClassTransformer implements IClassTransformer {
+public class LinkedClassTransformer implements IClassTransformer {
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
         TranslationInfo info = VPLaunchTweaker.classFinding.getOrDefault(name, null);

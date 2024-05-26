@@ -12,6 +12,7 @@ public class TargetClassInfo {
     private String method = "";
     private String local = "";
     private int ordinal = -1;
+    private boolean i18n = false;
     private MatchMode matchMode = MatchMode.FULL;
     private LocalMode localMode = LocalMode.NONE;
 
@@ -39,6 +40,11 @@ public class TargetClassInfo {
                     setOrdinal(reader.nextInt());
                     break;
                 }
+                case "i":
+                case "i18n": {
+                    setI18n(reader.nextBoolean());
+                    break;
+                }
                 default: {
                     reader.skipValue();
                     break;
@@ -53,6 +59,7 @@ public class TargetClassInfo {
         writer.name("name").value("com.example.mod.SomethingClass");
         writer.name("method").value("doSomething");
         writer.name("local").value("Lsomething");
+        writer.name("i18n").value(false);
         writer.name("ordinal").value(209);
         writer.endObject();
     }
@@ -122,6 +129,14 @@ public class TargetClassInfo {
 
     public int getOrdinal() {
         return ordinal;
+    }
+
+    public boolean isI18n() {
+        return i18n;
+    }
+
+    public void setI18n(boolean i18n) {
+        this.i18n = i18n;
     }
 
     @Override

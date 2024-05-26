@@ -15,6 +15,9 @@
     "main": [
       "me.fengming.vaultpatcher_asm.loader.fabric.VaultPatcherInitializer"
     ],
+    "client": [
+      "me.fengming.vaultpatcher_asm.loader.fabric.ClientVaultPatcherInitializer"
+    ],
     "mm:early_risers": [
       "me.fengming.vaultpatcher_asm.loader.fabric.EarlyRiser"
     ]
