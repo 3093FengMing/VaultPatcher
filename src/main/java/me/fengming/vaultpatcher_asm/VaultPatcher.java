@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +24,16 @@ public class VaultPatcher {
     public static List<VaultPatcherPlugin> plugins = new ArrayList<>();
 
     public static void init(Path mcPath) {
+        Path pluginsPath = mcPath.resolve("vaultpatcher").resolve("plugins");
+        if (Files.notExists(pluginsPath)) {
+            try {
+                Files.createDirectories(pluginsPath);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed creating plugin: ", e);
+            }
+        }
         // Load Plugins
-        File[] plugins = mcPath.resolve("vaultpatcher").resolve("plugins").toFile().listFiles(f -> f.getName().endsWith(".jar"));
+        File[] plugins = pluginsPath.toFile().listFiles(f -> f.getName().endsWith(".jar"));
         if (plugins != null) {
             for (File file : plugins) {
                 try (JarFile jarFile = new JarFile(file)) {
