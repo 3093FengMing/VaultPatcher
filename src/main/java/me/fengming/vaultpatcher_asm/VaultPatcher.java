@@ -40,10 +40,9 @@ public class VaultPatcher {
                     String entryPoint = jarFile.getManifest().getMainAttributes().getValue("VaultPatcherPlugin");
                     if (entryPoint == null) throw new RuntimeException("Failed loading plugin " + file.getName() + ": Couldn't find the entry point");
                     ClassLoader parentClassLoader = VaultPatcher.class.getClassLoader();
-                    try (URLClassLoader classLoader = new URLClassLoader(new URL[]{file.toURI().toURL()}, parentClassLoader)) {
-                        VaultPatcherPlugin plugin = classLoader.loadClass(entryPoint).asSubclass(VaultPatcherPlugin.class).newInstance();
-                        VaultPatcher.plugins.add(plugin);
-                    }
+                    URLClassLoader classLoader = new URLClassLoader(new URL[]{file.toURI().toURL()}, parentClassLoader);
+                    VaultPatcherPlugin plugin = classLoader.loadClass(entryPoint).asSubclass(VaultPatcherPlugin.class).newInstance();
+                    VaultPatcher.plugins.add(plugin);
                 } catch (Exception e) {
                     throw new RuntimeException("Failed loading plugin: " + file, e);
                 }
