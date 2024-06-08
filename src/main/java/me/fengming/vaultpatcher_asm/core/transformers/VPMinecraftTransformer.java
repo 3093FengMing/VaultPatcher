@@ -18,6 +18,7 @@ public class VPMinecraftTransformer implements Consumer<ClassNode> {
                 || input.name.equals("net/minecraft/network/chat/contents/LiteralContents") /* Forge 1.18.2+ */
                 || input.name.equals("net/minecraft/class_2585") /* Fabric */) {
             // TextComponent
+            boolean done = false;
             for (MethodNode method : input.methods) {
                 if (method.name.equals("<init>")) {
                     for (AbstractInsnNode insn : method.instructions) {
@@ -26,14 +27,17 @@ public class VPMinecraftTransformer implements Consumer<ClassNode> {
                             insnList.add(new LdcInsnNode(input.name + "#<init>"));
                             insnList.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "me/fengming/vaultpatcher_asm/core/utils/ASMUtils", "__mappingString", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", false));
                             method.instructions.insertBefore(insn, insnList);
+                            done = true;
                         }
                     }
                 }
+                if (done) break;
             }
         } else if (input.name.equals("net/minecraft/client/gui/FontRenderer") /* Forge 1.16.5- */
                 || input.name.equals("net/minecraft/client/gui/Font") /* Forge 1.16.5+ */
                 || input.name.equals("net/minecraft/class_327") /* Fabric */) {
             // Font
+            boolean done = false;
             for (MethodNode method : input.methods) {
                 if (method.name.equals("func_228081_c_") /* Forge 1.16.5- */
                         || method.name.equals("m_92897_") /* Forge 1.16.5-1.19.2 */
@@ -46,7 +50,9 @@ public class VPMinecraftTransformer implements Consumer<ClassNode> {
                     insnList.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "me/fengming/vaultpatcher_asm/core/utils/ASMUtils", "__mappingString", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", false));
                     insnList.add(new VarInsnNode(Opcodes.ASTORE, 1));
                     method.instructions.insertBefore(method.instructions.getFirst(), insnList);
+                    done = true;
                 }
+                if (done) break;
             }
         }
     }
