@@ -20,39 +20,6 @@ public class TranslationInfo {
         this.pairs = new Pairs();
     }
 
-    public void readJson(JsonReader reader) throws IOException {
-        reader.beginObject();
-        while (reader.peek() != JsonToken.END_OBJECT) {
-            switch (reader.nextName()) {
-                case "t":
-                case "target_class": {
-                    getTargetClassInfo().readJson(reader);
-                    break;
-                }
-                case "k":
-                case "key": {
-                    setKey(reader.nextString());
-                    break;
-                }
-                case "v":
-                case "value": {
-                    setValue(reader.nextString());
-                    break;
-                }
-                case "p":
-                case "pairs": {
-                    getPairs().readJson(reader);
-                    break;
-                }
-                default: {
-                    reader.skipValue();
-                    break;
-                }
-            }
-        }
-        reader.endObject();
-    }
-
     public void write(JsonWriter writer) throws IOException {
         writer.beginObject();
         writer.name("target_class");

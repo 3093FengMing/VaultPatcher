@@ -84,7 +84,7 @@ public class VaultPatcherPatch {
                     }
                     case "p":
                     case "pairs": {
-                        pairs.readJson(reader);
+                        pairs.readJson(reader, patchInfo.isDataI18n());
                         break;
                     }
                     default: {

@@ -2,6 +2,7 @@ package me.fengming.vaultpatcher_asm.config;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
+import me.fengming.vaultpatcher_asm.core.utils.Utils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ public class Pairs {
         }
     }
 
-    public void readJson(JsonReader reader) throws IOException {
+    public void readJson(JsonReader reader, boolean i18n) throws IOException {
         reader.beginArray();
         while (reader.peek() != JsonToken.END_ARRAY) {
             reader.beginObject();
@@ -44,7 +45,7 @@ public class Pairs {
                     }
                     case "v":
                     case "value": {
-                        setValue(reader.nextString());
+                        setValue(i18n ? Utils.getI18n(reader.nextString()) : reader.nextString());
                         break;
                     }
                     default: {
