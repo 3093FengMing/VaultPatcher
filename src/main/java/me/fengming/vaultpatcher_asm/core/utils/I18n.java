@@ -28,6 +28,9 @@ public class I18n {
             }
 
             Path i18nPath = Utils.getVpPath().resolve("i18n");
+            if (Files.notExists(i18nPath)) {
+                Files.createDirectories(i18nPath);
+            }
             if (Files.notExists(i18nPath.resolve(currentCode + ".json"))) {
                 VaultPatcher.LOGGER.error("Not found file " + currentCode + ".json");
                 return;
