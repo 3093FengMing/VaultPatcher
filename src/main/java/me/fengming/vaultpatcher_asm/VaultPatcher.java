@@ -60,6 +60,9 @@ public class VaultPatcher {
 
         plugins.forEach(e -> e.start(mcPath));
 
+        VaultPatcher.LOGGER.warn("[VaultPatcher] Loading I18n!");
+        I18n.load(mcPath);
+
         try {
             VaultPatcher.LOGGER.warn("[VaultPatcher] Loading Patches!");
             plugins.forEach(e -> e.onLoadPatches(VaultPatcherPlugin.Phase.BEFORE));
@@ -95,9 +98,6 @@ public class VaultPatcher {
         } catch (IOException e) {
             throw new RuntimeException("Failed to load config: ", e);
         }
-
-        VaultPatcher.LOGGER.warn("[VaultPatcher] Loading I18n!");
-        I18n.load(mcPath);
 
         // optimization
         Utils.needStacktrace = Utils.dynTranslationInfos.stream().anyMatch(e -> !e.getTargetClassInfo().getName().isEmpty());

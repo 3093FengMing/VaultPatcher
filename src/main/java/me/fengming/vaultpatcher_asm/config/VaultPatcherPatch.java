@@ -43,6 +43,7 @@ public class VaultPatcherPatch {
         VaultPatcher.debugInfo(String.format("[VaultPatcher] Mod(s): %s", patchInfo.getInfoMods()));
         VaultPatcher.debugInfo(String.format("[VaultPatcher] Description: %s", patchInfo.getInfoDesc()));
         VaultPatcher.debugInfo(String.format("[VaultPatcher] Dynamic: %s", patchInfo.isDataDynamic()));
+        VaultPatcher.debugInfo(String.format("[VaultPatcher] I18n: %s", patchInfo.isDataI18n()));
 
         while (reader.peek() != JsonToken.END_ARRAY) {
             reader.beginObject();
