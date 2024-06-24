@@ -1,6 +1,5 @@
 package me.fengming.vaultpatcher_asm.config;
 
-import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
@@ -15,12 +14,12 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-public class VaultPatcherPatch {
+public class VaultPatcherModule {
     private final Path patchFile;
     private final List<TranslationInfo> translationInfoList = new ArrayList<>();
     private boolean dynamic;
 
-    public VaultPatcherPatch(String patchFile) {
+    public VaultPatcherModule(String patchFile) {
         VaultPatcher.debugInfo("[VaultPatcher] Found Module " + patchFile);
         Path p = VaultPatcherConfig.config.resolve(patchFile);
         try {

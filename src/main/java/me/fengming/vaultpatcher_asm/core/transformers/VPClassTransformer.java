@@ -298,18 +298,18 @@ public class VPClassTransformer implements Consumer<ClassNode> {
     public void accept(ClassNode input) {
         VaultPatcher.plugins.forEach(e -> e.onTransformClass(input, VaultPatcherPlugin.Phase.BEFORE));
 
-        if (VaultPatcherConfig.isEnableClassPatch()) {
-            ClassNode patched = ClassPatcher.patch(input);
-            VaultPatcher.debugInfo("Using Patch: " + input.name);
-            if (!patched.equals(input)) {
-                input.access = patched.access;
-                input.methods = patched.methods;
-                input.fields = patched.fields;
-                input.innerClasses = patched.innerClasses;
-                input.interfaces = patched.interfaces;
-                input.attrs = patched.attrs;
-            }
-        }
+//        if (VaultPatcherConfig.isEnableClassPatch()) {
+//            ClassNode patched = ClassPatcher.patch(input);
+//            VaultPatcher.debugInfo("Using Patch: " + input.name);
+//            if (!patched.equals(input)) {
+//                input.access = patched.access;
+//                input.methods = patched.methods;
+//                input.fields = patched.fields;
+//                input.innerClasses = patched.innerClasses;
+//                input.interfaces = patched.interfaces;
+//                input.attrs = patched.attrs;
+//            }
+//        }
 
         if (VaultPatcherConfig.getDebugMode().isUseCache()) {
             // check cache

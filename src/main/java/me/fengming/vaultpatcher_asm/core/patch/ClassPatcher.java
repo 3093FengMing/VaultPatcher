@@ -1,6 +1,6 @@
 package me.fengming.vaultpatcher_asm.core.patch;
 
-import me.fengming.vaultpatcher_asm.core.cache.ClassCache;
+import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
@@ -15,7 +15,13 @@ import java.util.Map;
 public class ClassPatcher {
 
     private static final Map<String, ClassNode> patchMap = new HashMap<>();
+
+    public static Map<String, ClassNode> getPatchMap() {
+        return patchMap;
+    }
+
     public static void init(Path path) throws IOException {
+        if (!VaultPatcherConfig.isEnableClassPatch()) return;
         File file = path.toFile();
         if (!file.exists()) {
             file.mkdirs();

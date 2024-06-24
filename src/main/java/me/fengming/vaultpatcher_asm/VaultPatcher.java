@@ -1,9 +1,9 @@
 package me.fengming.vaultpatcher_asm;
 
-import me.fengming.vaultpatcher_asm.config.TranslationInfo;
 import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
-import me.fengming.vaultpatcher_asm.config.VaultPatcherPatch;
+import me.fengming.vaultpatcher_asm.config.VaultPatcherModule;
 import me.fengming.vaultpatcher_asm.core.cache.Caches;
+import me.fengming.vaultpatcher_asm.core.patch.ClassPatcher;
 import me.fengming.vaultpatcher_asm.core.utils.I18n;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
 import me.fengming.vaultpatcher_asm.plugin.VaultPatcherPlugin;
@@ -64,9 +64,18 @@ public class VaultPatcher {
         I18n.load(mcPath);
 
         try {
+            VaultPatcher.LOGGER.warn("[VaultPatcher] Loading Configs!");
+            plugins.forEach(e -> e.onLoadConfig(VaultPatcherPlugin.Phase.BEFORE));
+            VaultPatcherConfig.readConfig(mcPath.resolve("config").resolve("vaultpatcher_asm"));
+            plugins.forEach(e -> e.onLoadConfig(VaultPatcherPlugin.Phase.AFTER));
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load config: ", e);
+        }
+
+        try {
             VaultPatcher.LOGGER.warn("[VaultPatcher] Loading Patches!");
             plugins.forEach(e -> e.onLoadPatches(VaultPatcherPlugin.Phase.BEFORE));
-            Caches.init(Utils.getVpPath().resolve("patch"));
+            ClassPatcher.init(Utils.getVpPath().resolve("patch"));
             plugins.forEach(e -> e.onLoadPatches(VaultPatcherPlugin.Phase.AFTER));
         } catch (IOException e) {
             throw new RuntimeException("Failed to load patch: ", e);
@@ -81,14 +90,11 @@ public class VaultPatcher {
             throw new RuntimeException("Failed to load cache: ", e);
         }
 
-        VaultPatcher.LOGGER.warn("[VaultPatcher] Loading Configs!");
         try {
-            plugins.forEach(e -> e.onLoadConfig(VaultPatcherPlugin.Phase.BEFORE));
-            VaultPatcherConfig.readConfig(mcPath.resolve("config").resolve("vaultpatcher_asm"));
-            plugins.forEach(e -> e.onLoadConfig(VaultPatcherPlugin.Phase.AFTER));
+            VaultPatcher.LOGGER.warn("[VaultPatcher] Loading Modules!");
             List<String> mods = VaultPatcherConfig.getMods();
             for (String mod : mods) {
-                VaultPatcherPatch vpp = new VaultPatcherPatch(mod + ".json");
+                VaultPatcherModule vpp = new VaultPatcherModule(mod + ".json");
                 plugins.forEach(e -> e.onLoadPatch(vpp, VaultPatcherPlugin.Phase.BEFORE));
                 vpp.read();
                 Utils.translationInfos.addAll(vpp.getTranslationInfoList());
@@ -96,7 +102,7 @@ public class VaultPatcher {
                 plugins.forEach(e -> e.onLoadPatch(vpp, VaultPatcherPlugin.Phase.AFTER));
             }
         } catch (IOException e) {
-            throw new RuntimeException("Failed to load config: ", e);
+            throw new RuntimeException("Failed to load modules: ", e);
         }
 
         // optimization

@@ -1,18 +1,17 @@
 package me.fengming.vaultpatcher_asm.loader.forge;
 
 import cpw.mods.modlauncher.Launcher;
-import cpw.mods.modlauncher.api.IEnvironment;
-import cpw.mods.modlauncher.api.ITransformationService;
-import cpw.mods.modlauncher.api.ITransformer;
+import cpw.mods.modlauncher.api.*;
 import me.fengming.vaultpatcher_asm.VaultPatcher;
+import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
+import me.fengming.vaultpatcher_asm.core.patch.ClassPatcher;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
 import org.jetbrains.annotations.NotNull;
+import org.objectweb.asm.tree.ClassNode;
 
 import java.lang.reflect.Field;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class VPTransformationService implements ITransformationService {
@@ -95,8 +94,17 @@ public class VPTransformationService implements ITransformationService {
     public void onLoad(IEnvironment env, Set<String> otherServices) {}
 
     @Override
-    public @NotNull List<ITransformer> transformers() {
-        List<ITransformer> list = Utils.translationInfos.stream().map(ForgeClassTransformer::new).collect(Collectors.toList());
+    public List<ITransformer> transformers() {
+        List<ITransformer> list = new ArrayList<>();
+
+        if (VaultPatcherConfig.isEnableClassPatch()) {
+            ClassPatcher.getPatchMap().forEach((k, v) -> list.add(new ITransformer<ClassNode>() {
+                @Override public ClassNode transform(ClassNode input, ITransformerVotingContext context) {VaultPatcher.debugInfo("Using Patch: " + input.name); return v;}
+                @Override public TransformerVoteResult castVote(ITransformerVotingContext context) {return TransformerVoteResult.YES;}
+                @Override public Set<Target> targets() {return new HashSet<Target>() {{this.add(Target.targetClass(k));}};}
+            }));
+        }
+        list.addAll(Utils.translationInfos.stream().map(ForgeClassTransformer::new).collect(Collectors.toList()));
         list.add(new ForgeClassTransformer(null));
         if (!oldVersion) list.add(new ForgeMinecraftTransformer());
         return list;

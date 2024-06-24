@@ -4,13 +4,16 @@ import com.chocohead.mm.api.ClassTinkerers;
 import me.fengming.vaultpatcher_asm.VaultPatcher;
 import me.fengming.vaultpatcher_asm.config.TranslationInfo;
 import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
+import me.fengming.vaultpatcher_asm.core.patch.ClassPatcher;
 import me.fengming.vaultpatcher_asm.core.transformers.VPClassTransformer;
 import me.fengming.vaultpatcher_asm.core.transformers.VPMinecraftTransformer;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
 import net.fabricmc.loader.api.FabricLoader;
+import org.objectweb.asm.tree.ClassNode;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class EarlyRiser implements Runnable {
     @Override
@@ -20,6 +23,11 @@ public class EarlyRiser implements Runnable {
         Path mcPath = FabricLoader.getInstance().getGameDir();
         VaultPatcher.init(mcPath);
         // initial transformers
+
+        // Class Patches
+        if (VaultPatcherConfig.isEnableClassPatch()) {
+            ClassPatcher.getPatchMap().forEach((k, v) -> ClassTinkerers.addTransformation(k, n -> n = v));
+        }
 
         // Patch
         for (TranslationInfo info : Utils.translationInfos) {

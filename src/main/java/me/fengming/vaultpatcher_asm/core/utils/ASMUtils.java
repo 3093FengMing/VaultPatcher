@@ -48,6 +48,7 @@ public class ASMUtils {
     }
 
     private static String stackTraces2String(StackTraceElement[] stackTraces) {
+        if (stackTraces.length == 0) return "[]";
         StringBuilder sb = new StringBuilder("[");
         for (StackTraceElement stackTrace : stackTraces) {
             sb.append(stackTrace.getClassName()).append("#").append(stackTrace.getMethodName()).append(", ");
