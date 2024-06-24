@@ -13,7 +13,8 @@ import java.util.Map;
 
 public class Caches {
     private static final Map<String, ClassCache> cacheMap = new HashMap<>();
-    public static void initCache(Path path) throws IOException {
+
+    public static void init(Path path) throws IOException {
         if (!VaultPatcherConfig.getDebugMode().isUseCache()) return;
         File file = path.toFile();
         if (!file.exists()) {
@@ -31,14 +32,9 @@ public class Caches {
                 traverse(child, root);
             }
         } else if (file.getName().endsWith(".class")) {
-            String className = filePathToClassName(file.toPath(), root);
+            String className = Utils.filePathToClassName(file.toPath(), root);
             cacheMap.putIfAbsent(className, new ClassCache(file.getParentFile().toPath().resolve(file.getName() + ".sha256"), file.toPath()));
         }
-    }
-
-    private static String filePathToClassName(Path path, Path root) {
-        String s = root.relativize(path).toString();
-        return s.substring(0, s.length() - 6).replace(File.separatorChar, '/');
     }
 
     public static ClassCache getClassCache(String className) {
@@ -46,7 +42,7 @@ public class Caches {
     }
 
     public static void addClassCache(String className, ClassNode node, byte[] hash) {
-        File classFile = ASMUtils.exportClass(node, Utils.mcPath.resolve("vaultpatcher").resolve("cache"));
+        File classFile = ASMUtils.exportClass(node, Utils.getVpPath().resolve("cache"));
         try {
             ClassCache cache = new ClassCache(classFile.getParentFile().toPath().resolve(classFile.getName() + ".sha256"), classFile.toPath());
             cache.create(hash);

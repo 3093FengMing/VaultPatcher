@@ -73,8 +73,6 @@ public class ClassCache {
 
     public void create(byte[] bytesToHash) throws IOException {
         this.updated = true;
-        // ASMUtils.exportClass(node, Utils.mcPath.resolve("vaultpatcher").resolve("cache"));
-
         String currentHash = getSha256(bytesToHash);
         writeHash(currentHash, this.hashFile);
 
@@ -88,7 +86,7 @@ public class ClassCache {
     public void put(ClassNode node, byte[] bytesToHash) {
         if (this.updated) return;
         this.clazz = node;
-        ASMUtils.exportClass(node, Utils.mcPath.resolve("vaultpatcher").resolve("cache"));
+        ASMUtils.exportClass(node, Utils.getVpPath().resolve("cache"));
         String hash = getSha256(bytesToHash);
         writeHash(hash, this.hashFile);
     }

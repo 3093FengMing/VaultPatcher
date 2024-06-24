@@ -10,6 +10,7 @@ import me.fengming.vaultpatcher_asm.core.cache.ClassCache;
 import me.fengming.vaultpatcher_asm.core.hack.VPClassLoader;
 import me.fengming.vaultpatcher_asm.core.node.NodeHandlerParameters;
 import me.fengming.vaultpatcher_asm.core.node.handlers.NodeHandler;
+import me.fengming.vaultpatcher_asm.core.patch.ClassPatcher;
 import me.fengming.vaultpatcher_asm.core.utils.ASMUtils;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
 import me.fengming.vaultpatcher_asm.plugin.VaultPatcherPlugin;
@@ -23,7 +24,6 @@ public class VPClassTransformer implements Consumer<ClassNode> {
     private final DebugMode debug = VaultPatcherConfig.getDebugMode();
     private final TranslationInfo translationInfo;
     private static boolean disableLocal = false;
-    private static List<String> I18nFields = new ArrayList<>();
 
     public VPClassTransformer(TranslationInfo info) {
         this.translationInfo = info;
@@ -298,6 +298,20 @@ public class VPClassTransformer implements Consumer<ClassNode> {
     @Override
     public void accept(ClassNode input) {
         VaultPatcher.plugins.forEach(e -> e.onTransformClass(input, VaultPatcherPlugin.Phase.BEFORE));
+
+        if (VaultPatcherConfig.isEnableClassPatch()) {
+            ClassNode patched = ClassPatcher.patch(input);
+            VaultPatcher.debugInfo("Using Patch: " + input.name);
+            if (!patched.equals(input)) {
+                input.access = patched.access;
+                input.methods = patched.methods;
+                input.fields = patched.fields;
+                input.innerClasses = patched.innerClasses;
+                input.interfaces = patched.interfaces;
+                input.attrs = patched.attrs;
+            }
+        }
+
         if (VaultPatcherConfig.getDebugMode().isUseCache()) {
             // check cache
             ClassCache cache = Caches.getClassCache(input.name);
@@ -324,8 +338,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
         }
         VaultPatcher.plugins.forEach(e -> e.onTransformClass(input, VaultPatcherPlugin.Phase.AFTER));
 
-        if (debug.isExportClass()) ASMUtils.exportClass(input, Utils.mcPath.resolve("vaultpatcher").resolve("exported"));
-
+        if (debug.isExportClass()) ASMUtils.exportClass(input, Utils.getVpPath().resolve("exported"));
     }
 
     private void generate(ClassNode input) {

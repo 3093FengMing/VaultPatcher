@@ -96,5 +96,4 @@ public class ASMUtils {
     public static void insertReplace(String className, MethodNode method, AbstractInsnNode nodePosition, boolean isString) {
         method.instructions.insert(nodePosition, new MethodInsnNode(Opcodes.INVOKESTATIC, Utils.rawPackage(className), "__vp_replace", isString ? "(Ljava/lang/String;)Ljava/lang/String;" : "(Ljava/lang/Object;)Ljava/lang/String;", false));
     }
-
 }

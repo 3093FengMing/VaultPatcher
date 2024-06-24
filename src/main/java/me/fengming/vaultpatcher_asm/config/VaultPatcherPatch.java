@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class VaultPatcherPatch {
-    private static final Gson GSON = new Gson();
     private final Path patchFile;
     private final List<TranslationInfo> translationInfoList = new ArrayList<>();
     private boolean dynamic;
@@ -79,7 +78,7 @@ public class VaultPatcherPatch {
                     }
                     case "v":
                     case "value": {
-                        pairs.setValue(reader.nextString());
+                        pairs.setValue(patchInfo.isDataI18n() ? Utils.getI18n(reader.nextString()) : reader.nextString());
                         break;
                     }
                     case "p":

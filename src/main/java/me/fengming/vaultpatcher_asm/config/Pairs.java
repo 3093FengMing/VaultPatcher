@@ -113,7 +113,7 @@ public class Pairs {
 
     public Pairs merge(Pairs other) {
         if (this.dyn != other.dyn) {
-            throw new RuntimeException("Dynamic Mode of the source pairs is different from that of the other pairs");
+            throw new RuntimeException("Dynamic Mode of the source pairs is different from that of the other pairs!");
         }
         // Will not check duplicate
         if (this.dyn) {

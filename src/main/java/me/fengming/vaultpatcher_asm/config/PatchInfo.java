@@ -12,6 +12,7 @@ public class PatchInfo {
     private String infoMods = "Unknown";
     private String infoAuthors = "Unknown";
     private boolean dataDynamic = false;
+    private boolean dataI18n = false;
 
     public String getInfoName() {
         return infoName;
@@ -53,6 +54,14 @@ public class PatchInfo {
         this.dataDynamic = dataDynamic;
     }
 
+    public boolean isDataI18n() {
+        return this.dataI18n;
+    }
+
+    public void setDataI18n(boolean dataI18n) {
+        this.dataI18n = dataI18n;
+    }
+
     public void readJson(JsonReader reader) throws IOException {
         reader.beginObject();
         while (reader.peek() != JsonToken.END_OBJECT) {
@@ -83,6 +92,11 @@ public class PatchInfo {
                     setDataDynamic(reader.nextBoolean());
                     break;
                 }
+                case "i":
+                case "i18n": {
+                    setDataI18n(reader.nextBoolean());
+                    break;
+                }
                 default: {
                     reader.skipValue();
                     break;
@@ -99,7 +113,7 @@ public class PatchInfo {
         writer.name("mods").value("And this is the applied mod of your module");
         writer.name("authors").value("You can write down your name here");
         writer.name("dynamic").value(false);
-        writer.name("apply_mods").beginArray().endArray();
+        writer.name("i18n").value(false);
         writer.endObject();
     }
 }

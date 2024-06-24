@@ -3,6 +3,7 @@ package me.fengming.vaultpatcher_asm;
 import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
 import me.fengming.vaultpatcher_asm.config.VaultPatcherPatch;
 import me.fengming.vaultpatcher_asm.core.cache.Caches;
+import me.fengming.vaultpatcher_asm.core.utils.I18n;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
 import me.fengming.vaultpatcher_asm.plugin.VaultPatcherPlugin;
 import org.apache.logging.log4j.LogManager;
@@ -58,12 +59,21 @@ public class VaultPatcher {
         plugins.forEach(e -> e.start(mcPath));
 
         try {
+            VaultPatcher.LOGGER.warn("[VaultPatcher] Loading Patches!");
+            plugins.forEach(e -> e.onLoadPatches(VaultPatcherPlugin.Phase.BEFORE));
+            Caches.init(Utils.getVpPath().resolve("patch"));
+            plugins.forEach(e -> e.onLoadPatches(VaultPatcherPlugin.Phase.AFTER));
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load patch: ", e);
+        }
+
+        try {
             VaultPatcher.LOGGER.warn("[VaultPatcher] Loading Caches!");
             plugins.forEach(e -> e.onLoadCaches(VaultPatcherPlugin.Phase.BEFORE));
-            Caches.initCache(mcPath.resolve("vaultpatcher").resolve("cache"));
+            Caches.init(Utils.getVpPath().resolve("cache"));
             plugins.forEach(e -> e.onLoadCaches(VaultPatcherPlugin.Phase.AFTER));
         } catch (IOException e) {
-            throw new RuntimeException("Failed to load cache", e);
+            throw new RuntimeException("Failed to load cache: ", e);
         }
 
         VaultPatcher.LOGGER.warn("[VaultPatcher] Loading Configs!");
@@ -81,8 +91,11 @@ public class VaultPatcher {
                 plugins.forEach(e -> e.onLoadPatch(vpp, VaultPatcherPlugin.Phase.AFTER));
             }
         } catch (IOException e) {
-            throw new RuntimeException("Failed to load config", e);
+            throw new RuntimeException("Failed to load config: ", e);
         }
+
+        VaultPatcher.LOGGER.warn("[VaultPatcher] Loading I18n!");
+        I18n.load(mcPath);
 
         // optimization
         Utils.needStacktrace = Utils.dynTranslationInfos.stream().anyMatch(e -> !e.getTargetClassInfo().getName().isEmpty());

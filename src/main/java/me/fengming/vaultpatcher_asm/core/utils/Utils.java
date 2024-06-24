@@ -7,6 +7,7 @@ import me.fengming.vaultpatcher_asm.plugin.VaultPatcherPlugin;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
 
+import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -35,6 +36,10 @@ public class Utils {
 
     public static Path getPluginConfigPath(VaultPatcherPlugin plugin) {
         return mcPath.resolve("config").resolve("vaultpatcher_asm").resolve("plugins").resolve(plugin.getName());
+    }
+
+    public static Path getVpPath() {
+        return mcPath.resolve("vaultpatcher");
     }
 
     // debug
@@ -148,7 +153,12 @@ public class Utils {
     }
 
     public static String getI18n(String key) {
-        return "WIP";
+        return I18n.getValue(key);
+    }
+
+    public static String filePathToClassName(Path path, Path root) {
+        String s = root.relativize(path).toString();
+        return s.substring(0, s.length() - 6).replace(File.separatorChar, '/');
     }
 
 }

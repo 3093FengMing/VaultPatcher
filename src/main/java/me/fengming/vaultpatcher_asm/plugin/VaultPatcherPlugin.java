@@ -9,6 +9,7 @@ public interface VaultPatcherPlugin {
     String getName();
     void start(Path mcPath);
     default void onLoadCaches(Phase phase) {}
+    default void onLoadPatches(Phase phase) {}
     default void onLoadConfig(Phase phase) {}
     default void onLoadPatch(VaultPatcherPatch patch, Phase phase) {}
     default void onTransformClass(ClassNode classNode, Phase phase) {}

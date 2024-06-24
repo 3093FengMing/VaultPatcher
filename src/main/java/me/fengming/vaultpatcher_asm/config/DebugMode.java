@@ -8,15 +8,11 @@ import java.io.IOException;
 
 public class DebugMode {
     private boolean isEnable = false;
-
     private int outputMode = 0;
-
     private String outputFormat = "<source> -> <target>";
-
     private boolean exportClass = false;
-
     private boolean useCache = true;
-
+    private boolean missingWarn = true;
 
     public boolean isEnable() {
         return isEnable;
@@ -58,6 +54,14 @@ public class DebugMode {
         this.useCache = updateCache;
     }
 
+    public boolean isMissingWarn() {
+        return this.missingWarn;
+    }
+
+    public void setMissingWarn(boolean missingWarn) {
+        this.missingWarn = missingWarn;
+    }
+
     public void readJson(JsonReader reader) throws IOException {
         reader.beginObject();
         while (reader.peek() != JsonToken.END_OBJECT) {
@@ -82,6 +86,10 @@ public class DebugMode {
                 case "use_cache":
                     setUseCache(reader.nextBoolean());
                     break;
+                case "w":
+                case "missing_warn":
+                    setMissingWarn(reader.nextBoolean());
+                    break;
                 default:
                     reader.skipValue();
                     break;
@@ -97,6 +105,7 @@ public class DebugMode {
         writer.name("output_mode").value(getOutputMode());
         writer.name("export_class").value(isExportClass());
         writer.name("use_cache").value(isUseCache());
+        writer.name("missing_warn").value(isMissingWarn());
         writer.endObject();
     }
 }

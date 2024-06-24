@@ -19,6 +19,7 @@ import java.util.List;
 public class VaultPatcherConfig {
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
     public static final DebugMode debug = new DebugMode();
+    public static boolean enableClassPatch = false;
     public static Path config = null;
     public static File configFile = null;
     public static List<String> mods = new ArrayList<>();
@@ -39,6 +40,10 @@ public class VaultPatcherConfig {
 
     public static DebugMode getDebugMode() {
         return debug;
+    }
+
+    public static boolean isEnableClassPatch() {
+        return enableClassPatch;
     }
 
     private static void writeConfig(JsonWriter jw) throws IOException {
@@ -81,6 +86,9 @@ public class VaultPatcherConfig {
         jw.name("debug_mode");
         debug.writeJson(jw);
 
+        jw.name("class_patch");
+        jw.value(enableClassPatch);
+
         jw.endObject();
         jw.close();
     }
@@ -110,11 +118,18 @@ public class VaultPatcherConfig {
         while (jr.peek() != JsonToken.END_OBJECT) {
             switch (jr.nextName()) {
                 case "d":
-                case "debug_mode":
+                case "debug_mode": {
                     if (jr.peek() == JsonToken.BEGIN_OBJECT) {
                         debug.readJson(jr);
                     }
                     break;
+                }
+                case "p":
+                case "enable_class_patch":
+                case "class_patch": {
+                    enableClassPatch = jr.nextBoolean();
+                    break;
+                }
                 case "m":
                 case "mods":
                     if (jr.peek() == JsonToken.BEGIN_ARRAY) {
@@ -122,17 +137,19 @@ public class VaultPatcherConfig {
                     }
                     break;
                 case "c":
-                case "classes":
+                case "classes": {
                     if (jr.peek() == JsonToken.BEGIN_ARRAY) {
                         classes = GSON.fromJson(jr, new TypeToken<List<String>>() {}.getType());
                     }
                     break;
+                }
                 case "a":
-                case "apply_mods":
+                case "apply_mods": {
                     if (jr.peek() == JsonToken.BEGIN_ARRAY) {
                         applyMods = GSON.fromJson(jr, new TypeToken<List<String>>() {}.getType());
                     }
                     break;
+                }
                 default: {
                     jr.skipValue();
                     break;
