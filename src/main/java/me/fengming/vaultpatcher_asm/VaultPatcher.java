@@ -1,5 +1,6 @@
 package me.fengming.vaultpatcher_asm;
 
+import me.fengming.vaultpatcher_asm.config.TranslationInfo;
 import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
 import me.fengming.vaultpatcher_asm.config.VaultPatcherPatch;
 import me.fengming.vaultpatcher_asm.core.cache.Caches;
@@ -30,9 +31,10 @@ public class VaultPatcher {
             try {
                 Files.createDirectories(pluginsPath);
             } catch (IOException e) {
-                throw new RuntimeException("Failed creating plugin: ", e);
+                throw new RuntimeException("Failed creating plugin directory: ", e);
             }
         }
+
         // Load Plugins
         File[] plugins = pluginsPath.toFile().listFiles(f -> f.getName().endsWith(".jar"));
         if (plugins != null) {

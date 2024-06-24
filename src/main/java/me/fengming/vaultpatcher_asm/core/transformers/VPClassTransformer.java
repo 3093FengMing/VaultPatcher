@@ -50,7 +50,6 @@ public class VPClassTransformer implements Consumer<ClassNode> {
                 }
 
                 final NodeHandlerParameters params = new NodeHandlerParameters(disableLocal, disableLocalVariable, input, method, localVariableMap, info);
-
                 for (AbstractInsnNode instruction : method.instructions) {
                     params.addOrdinal();
                     NodeHandler<?> handler = NodeHandler.getHandlerByNode(instruction, params);

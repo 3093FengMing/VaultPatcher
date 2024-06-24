@@ -82,7 +82,6 @@ public class VPTransformationService implements ITransformationService {
             for (int i = 0; i < Instance_args.length; i++) {
                 if (Instance_args[i].equals("--fml.mcVersion")) return Instance_args[i + 1];
             }
-
         } catch (Exception e) {
             throw new IllegalStateException("WHY ARE YOU HERE!!??");
         }
