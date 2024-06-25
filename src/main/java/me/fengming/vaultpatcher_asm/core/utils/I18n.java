@@ -18,25 +18,27 @@ public class I18n {
         BufferedReader br1 = null;
         BufferedReader br2 = null;
         try {
-            br1 = Files.newBufferedReader(mcPath.resolve("options.txt"));
-            String line;
-            while ((line = br1.readLine()) != null) {
-                if (line.startsWith("lang:")) {
-                    currentCode = line.substring(5);
-                    break;
+            if (Files.exists(mcPath.resolve("options.txt"))) {
+                br1 = Files.newBufferedReader(mcPath.resolve("options.txt"));
+                String line;
+                while ((line = br1.readLine()) != null) {
+                    if (line.startsWith("lang:")) {
+                        currentCode = line.substring(5);
+                        break;
+                    }
                 }
-            }
 
-            Path i18nPath = Utils.getVpPath().resolve("i18n");
-            if (Files.notExists(i18nPath)) {
-                Files.createDirectories(i18nPath);
+                Path i18nPath = Utils.getVpPath().resolve("i18n");
+                if (Files.notExists(i18nPath)) {
+                    Files.createDirectories(i18nPath);
+                }
+                if (Files.notExists(i18nPath.resolve(currentCode + ".json"))) {
+                    VaultPatcher.LOGGER.error("Not found file " + currentCode + ".json");
+                    return;
+                }
+                br2 = Files.newBufferedReader(i18nPath.resolve(currentCode + ".json"));
+                langugesMap = GSON.fromJson(br2, new TypeToken<Map<String, String>>() {}.getType());
             }
-            if (Files.notExists(i18nPath.resolve(currentCode + ".json"))) {
-                VaultPatcher.LOGGER.error("Not found file " + currentCode + ".json");
-                return;
-            }
-            br2 = Files.newBufferedReader(i18nPath.resolve(currentCode + ".json"));
-            langugesMap = GSON.fromJson(br2, new TypeToken<Map<String, String>>() {}.getType());
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

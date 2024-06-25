@@ -33,16 +33,16 @@ public class VaultPatcherModule {
     public void read(JsonReader reader) throws IOException {
         reader.beginArray();
 
-        PatchInfo patchInfo = new PatchInfo();
-        patchInfo.readJson(reader);
-        dynamic = patchInfo.isDataDynamic();
-        VaultPatcher.debugInfo(String.format("[VaultPatcher] Loading %s!", patchInfo.getInfoName()));
+        ModuleInfo moduleInfo = new ModuleInfo();
+        moduleInfo.readJson(reader);
+        dynamic = moduleInfo.isDataDynamic();
+        VaultPatcher.debugInfo(String.format("[VaultPatcher] Loading %s!", moduleInfo.getInfoName()));
         VaultPatcher.debugInfo(/*JustPretty*/"[VaultPatcher] About Information:");
-        VaultPatcher.debugInfo(String.format("[VaultPatcher] Author(s): %s", patchInfo.getInfoAuthors()));
-        VaultPatcher.debugInfo(String.format("[VaultPatcher] Mod(s): %s", patchInfo.getInfoMods()));
-        VaultPatcher.debugInfo(String.format("[VaultPatcher] Description: %s", patchInfo.getInfoDesc()));
-        VaultPatcher.debugInfo(String.format("[VaultPatcher] Dynamic: %s", patchInfo.isDataDynamic()));
-        VaultPatcher.debugInfo(String.format("[VaultPatcher] I18n: %s", patchInfo.isDataI18n()));
+        VaultPatcher.debugInfo(String.format("[VaultPatcher] Author(s): %s", moduleInfo.getInfoAuthors()));
+        VaultPatcher.debugInfo(String.format("[VaultPatcher] Mod(s): %s", moduleInfo.getInfoMods()));
+        VaultPatcher.debugInfo(String.format("[VaultPatcher] Description: %s", moduleInfo.getInfoDesc()));
+        VaultPatcher.debugInfo(String.format("[VaultPatcher] Dynamic: %s", moduleInfo.isDataDynamic()));
+        VaultPatcher.debugInfo(String.format("[VaultPatcher] I18n: %s", moduleInfo.isDataI18n()));
 
         while (reader.peek() != JsonToken.END_ARRAY) {
             reader.beginObject();
@@ -78,12 +78,12 @@ public class VaultPatcherModule {
                     }
                     case "v":
                     case "value": {
-                        pairs.setValue(patchInfo.isDataI18n() ? Utils.getI18n(reader.nextString()) : reader.nextString());
+                        pairs.setValue(moduleInfo.isDataI18n() ? Utils.getI18n(reader.nextString()) : reader.nextString());
                         break;
                     }
                     case "p":
                     case "pairs": {
-                        pairs.readJson(reader, patchInfo.isDataI18n());
+                        pairs.readJson(reader, moduleInfo.isDataI18n());
                         break;
                     }
                     default: {
@@ -105,8 +105,8 @@ public class VaultPatcherModule {
         writer.setIndent("  ");
         writer.beginArray();
 
-        PatchInfo patchInfo = new PatchInfo();
-        patchInfo.writeJson(writer);
+        ModuleInfo moduleInfo = new ModuleInfo();
+        moduleInfo.writeJson(writer);
 
         TranslationInfo translationInfo = new TranslationInfo();
         translationInfo.write(writer);
