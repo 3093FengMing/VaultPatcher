@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class I18n {
     private static final Gson GSON = new Gson();
-    private static String currentCode;
+    private static String currentCode = "en_us";
     private static Map<String, String> langugesMap;
 
     public static void load(Path mcPath) {
