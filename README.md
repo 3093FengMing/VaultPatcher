@@ -1,5 +1,5 @@
 # Vault Patcher
-语言：**[简体中文](README.md)丨[English](README_en_us.md)丨[中文教程PLUS](README_PLUS.md)**
+语言：**[简体中文](README.md)丨[English](README_en_us.md)**
 
 **模组发布页: [Modrinth](https://modrinth.com/mod/vault-patcher) [CurseForge](https://curseforge.com/minecraft/mc-mods/vault-patcher) [mcmod](https://www.mcmod.cn/class/8765.html)**
 
