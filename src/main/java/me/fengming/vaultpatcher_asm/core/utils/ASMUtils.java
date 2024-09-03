@@ -1,5 +1,6 @@
 package me.fengming.vaultpatcher_asm.core.utils;
 
+import me.fengming.vaultpatcher_asm.VaultPatcher;
 import me.fengming.vaultpatcher_asm.config.TargetClassInfo;
 import me.fengming.vaultpatcher_asm.config.TranslationInfo;
 import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
@@ -26,7 +27,17 @@ public class ASMUtils {
             String v = Utils.matchPairs(info.getPairs(), s, true);
             if (Utils.isBlank(v) || v.equals(s)) continue;
 
-            if (VaultPatcherConfig.getDebugMode().isEnable()) Utils.printDebugInfo(s, method, v, stackTraces2String(stackTraces), info);
+            if (VaultPatcherConfig.getDebugMode().isEnable()) {
+                String format = VaultPatcherConfig.getDebugMode().getOutputFormat();
+                VaultPatcher.LOGGER.info(
+                        format.replace("<source>", s)
+                                .replace("<target>", v)
+                                .replace("<method>", method)
+                                .replace("<info>", info.toString())
+                                .replace("<class>", stackTraces2String(stackTraces))
+                                .replace("<ordinal>", "Unknown")
+                );
+            }
 
             TargetClassInfo targetClass = info.getTargetClassInfo();
             String className = targetClass.getName();

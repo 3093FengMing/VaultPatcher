@@ -9,6 +9,8 @@ import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
 
+import java.util.Set;
+
 public class LinkedClassTransformer implements IClassTransformer {
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
@@ -20,10 +22,12 @@ public class LinkedClassTransformer implements IClassTransformer {
             input = ClassPatcher.patch(input);
         }
 
-        TranslationInfo info = VPLaunchTweaker.classFinding.getOrDefault(name, null);
-        if (info == null) return basicClass;
+        Set<TranslationInfo> set = VPLaunchTweaker.classFinding.getOrDefault(name, null);
+        if (set == null) return basicClass;
 
-        new VPClassTransformer(VPLaunchTweaker.classFinding.getOrDefault(name, null)).accept(input);
+        for (TranslationInfo info : set) {
+            new VPClassTransformer(info).accept(input);
+        }
         return Utils.nodeToBytes(input);
     }
 }

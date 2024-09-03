@@ -1,9 +1,9 @@
-package me.fengming.vaultpatcher_asm.core.hack;
+package me.fengming.vaultpatcher_asm.core.misc;
 
 import java.lang.reflect.Method;
 
 public class VPClassLoader {
-    // hack
+    // misc
     public static void newClass(ClassLoader parent, String className, byte[] classBytes) {
         try {
             Class<?> clazz = Class.forName("java.lang.ClassLoader");

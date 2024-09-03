@@ -13,12 +13,12 @@ public class FieldNodeHandler extends NodeHandler<FieldInsnNode> {
 
     @Override
     public FieldInsnNode modifyNode() {
-        if (!this.params.disableLocal
+        if (!params.disableLocal
                 && (this.node.getOpcode() == Opcodes.GETFIELD || this.node.getOpcode() == Opcodes.PUTFIELD)
-                && ASMUtils.matchOrdinal(this.params.info, this.params.ordinal)
-                && ASMUtils.matchLocal(this.params.info, this.node.name, false)) {
-            ASMUtils.insertReplace(this.params.classNode.name, this.params.methodNode, this.node, this.node.desc.equals("Ljava/lang/String;"));
-            debugInfo(this.params.ordinal, "ASMTransformMethod-InsertGlobalVariablePut/Get", "Runtime Determination", "Runtime Determination");
+                && ASMUtils.matchOrdinal(params.info, params.ordinal)
+                && ASMUtils.matchLocal(params.info, this.node.name, false)) {
+            ASMUtils.insertReplace(params.classNode.name, params.methodNode, this.node, this.node.desc.equals("Ljava/lang/String;"));
+            debugInfo(params.ordinal, "ASMTransformMethod-InsertGlobalVariablePut/Get", "Runtime Determination", "Runtime Determination");
         }
         return this.node;
     }

@@ -22,6 +22,7 @@ public class VaultPatcherConfig {
     public static boolean enableClassPatch = false;
     public static Path config = null;
     public static File configFile = null;
+    public static String defaultLanguage = "en_us";
     public static List<String> mods = new ArrayList<>();
     public static List<String> classes = new ArrayList<>();
     public static List<String> applyMods = new ArrayList<>();
@@ -107,9 +108,7 @@ public class VaultPatcherConfig {
                 configFile.getParentFile().mkdirs();
             }
             configFile.createNewFile();
-            JsonWriter jw = new JsonWriter(Files.newBufferedWriter(configFile.toPath(), StandardCharsets.UTF_8));
-            jw.setIndent("  ");
-            writeConfig(jw);
+            save();
         }
 
         JsonReader jr = new JsonReader(new InputStreamReader(Files.newInputStream(configFile.toPath()), StandardCharsets.UTF_8));
@@ -128,6 +127,12 @@ public class VaultPatcherConfig {
                 case "enable_class_patch":
                 case "class_patch": {
                     enableClassPatch = jr.nextBoolean();
+                    break;
+                }
+                case "l":
+                case "lang":
+                case "default_language": {
+                    defaultLanguage = jr.nextString();
                     break;
                 }
                 case "m":

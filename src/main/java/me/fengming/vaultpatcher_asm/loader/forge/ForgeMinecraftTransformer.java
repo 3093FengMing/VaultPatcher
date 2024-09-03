@@ -12,7 +12,7 @@ import java.util.Set;
 
 public class ForgeMinecraftTransformer implements ITransformer<ClassNode> {
     public ForgeMinecraftTransformer() {
-        VaultPatcher.LOGGER.info("[VaultPatcher] Loading MinecraftTransformer");
+        VaultPatcher.LOGGER.debug("[VaultPatcher] Loading MinecraftTransformer");
     }
 
     // for Forge

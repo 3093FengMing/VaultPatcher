@@ -60,11 +60,11 @@ public class VaultPatcher {
 
         plugins.forEach(e -> e.start(mcPath));
 
-        VaultPatcher.LOGGER.warn("[VaultPatcher] Loading I18n!");
+        VaultPatcher.LOGGER.debug("[VaultPatcher] Loading I18n!");
         I18n.load(mcPath);
 
         try {
-            VaultPatcher.LOGGER.warn("[VaultPatcher] Loading Configs!");
+            VaultPatcher.LOGGER.debug("[VaultPatcher] Loading Configs!");
             plugins.forEach(e -> e.onLoadConfig(VaultPatcherPlugin.Phase.BEFORE));
             VaultPatcherConfig.readConfig(mcPath.resolve("config").resolve("vaultpatcher_asm"));
             plugins.forEach(e -> e.onLoadConfig(VaultPatcherPlugin.Phase.AFTER));
@@ -73,7 +73,7 @@ public class VaultPatcher {
         }
 
         try {
-            VaultPatcher.LOGGER.warn("[VaultPatcher] Loading Patches!");
+            VaultPatcher.LOGGER.debug("[VaultPatcher] Loading Patches!");
             plugins.forEach(e -> e.onLoadPatches(VaultPatcherPlugin.Phase.BEFORE));
             ClassPatcher.init(Utils.getVpPath().resolve("patch"));
             plugins.forEach(e -> e.onLoadPatches(VaultPatcherPlugin.Phase.AFTER));
@@ -82,7 +82,7 @@ public class VaultPatcher {
         }
 
         try {
-            VaultPatcher.LOGGER.warn("[VaultPatcher] Loading Caches!");
+            VaultPatcher.LOGGER.debug("[VaultPatcher] Loading Caches!");
             plugins.forEach(e -> e.onLoadCaches(VaultPatcherPlugin.Phase.BEFORE));
             Caches.init(Utils.getVpPath().resolve("cache"));
             plugins.forEach(e -> e.onLoadCaches(VaultPatcherPlugin.Phase.AFTER));
@@ -91,19 +91,21 @@ public class VaultPatcher {
         }
 
         try {
-            VaultPatcher.LOGGER.warn("[VaultPatcher] Loading Modules!");
+            VaultPatcher.LOGGER.debug("[VaultPatcher] Loading Modules!");
             List<String> mods = VaultPatcherConfig.getMods();
             for (String mod : mods) {
                 VaultPatcherModule vpp = new VaultPatcherModule(mod + ".json");
-                plugins.forEach(e -> e.onLoadPatch(vpp, VaultPatcherPlugin.Phase.BEFORE));
+                plugins.forEach(e -> e.onLoadModule(vpp, VaultPatcherPlugin.Phase.BEFORE));
                 vpp.read();
                 Utils.translationInfos.addAll(vpp.getTranslationInfoList());
                 Utils.dynTranslationInfos.addAll(vpp.getDynTranslationInfoList());
-                plugins.forEach(e -> e.onLoadPatch(vpp, VaultPatcherPlugin.Phase.AFTER));
+                plugins.forEach(e -> e.onLoadModule(vpp, VaultPatcherPlugin.Phase.AFTER));
             }
         } catch (IOException e) {
             throw new RuntimeException("Failed to load modules: ", e);
         }
+
+        Utils.translationInfos.forEach(info -> Utils.transformers.put(info, false));
 
         // optimization
         Utils.needStacktrace = Utils.dynTranslationInfos.stream().anyMatch(e -> !e.getTargetClassInfo().getName().isEmpty());
@@ -111,7 +113,7 @@ public class VaultPatcher {
         plugins.forEach(VaultPatcherPlugin::end);
     }
 
-    public static void debugInfo(String s) {
-        if (VaultPatcherConfig.getDebugMode().isEnable()) VaultPatcher.LOGGER.info(s);
+    public static void debugInfo(String s, Object... args) {
+        if (VaultPatcherConfig.getDebugMode().isEnable()) VaultPatcher.LOGGER.info(s, args);
     }
 }

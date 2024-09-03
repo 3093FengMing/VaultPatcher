@@ -9,16 +9,16 @@ import me.fengming.vaultpatcher_asm.core.transformers.VPClassTransformer;
 import me.fengming.vaultpatcher_asm.core.transformers.VPMinecraftTransformer;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
 import net.fabricmc.loader.api.FabricLoader;
-import org.objectweb.asm.tree.ClassNode;
 
 import java.nio.file.Path;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class EarlyRiser implements Runnable {
     @Override
     public void run() {
-        VaultPatcher.LOGGER.warn("[VaultPatcher] Loading VPEarlyRiser");
+        VaultPatcher.LOGGER.debug("[VaultPatcher] Loading VPEarlyRiser");
+
+        Utils.platform = Utils.Platform.Fabric;
 
         Path mcPath = FabricLoader.getInstance().getGameDir();
         VaultPatcher.init(mcPath);
@@ -29,7 +29,7 @@ public class EarlyRiser implements Runnable {
             ClassPatcher.getPatchMap().forEach((k, v) -> ClassTinkerers.addTransformation(k, n -> n = v));
         }
 
-        // Patch
+        // Modules
         for (TranslationInfo info : Utils.translationInfos) {
             String cn = info.getTargetClassInfo().getName();
             if (!cn.isEmpty()) {
@@ -51,6 +51,6 @@ public class EarlyRiser implements Runnable {
         ClassTinkerers.addTransformation("net.minecraft.class_327", new VPMinecraftTransformer());
         ClassTinkerers.addTransformation("net.minecraft.class_2585", new VPMinecraftTransformer());
 
-        VaultPatcher.LOGGER.warn("[VaultPatcher] ER DONE!");
+        VaultPatcher.LOGGER.debug("[VaultPatcher] ER DONE!");
     }
 }

@@ -10,23 +10,24 @@ import org.objectweb.asm.tree.ClassNode;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 
 public class Utils {
     public static final List<TranslationInfo> EMPTY_LIST = new ArrayList<>();
+
     public static List<TranslationInfo> translationInfos = new ArrayList<>();
     public static List<TranslationInfo> dynTranslationInfos = new ArrayList<>();
+    public static Map<TranslationInfo, Boolean> transformers = new HashMap<>();
+    public static boolean needStacktrace = false;
+
     public static Path mcPath = null;
     public static String mcVersion = null;
+    public static Platform platform = null;
     public static boolean isClient = false;
 
-    public static boolean needStacktrace = false;
 
     // plugins
 
@@ -40,6 +41,10 @@ public class Utils {
 
     public static Path getVpPath() {
         return mcPath.resolve("vaultpatcher");
+    }
+
+    public static Platform getPlatform() {
+        return platform;
     }
 
     // debug
@@ -59,22 +64,18 @@ public class Utils {
         );
     }
 
-    public static void printDebugInfo(String s, String m, String ret, String c, TranslationInfo info) {
-        DebugMode debug = VaultPatcherConfig.getDebugMode();
-        if (!debug.isEnable()) return;
-        String format = debug.getOutputFormat();
-        VaultPatcher.LOGGER.info("[VaultPatcher] Trying replacing!");
-        VaultPatcher.LOGGER.info(
-                format.replace("<source>", s)
-                        .replace("<target>", ret)
-                        .replace("<method>", m)
-                        .replace("<info>", info.toString())
-                        .replace("<class>", c)
-                        .replace("<ordinal>", "Unknown")
-        );
-    }
-
     // transformer
+
+    public static boolean isTransformed(String className) {
+        for (Map.Entry<TranslationInfo, Boolean> entry : transformers.entrySet()) {
+            TranslationInfo info = entry.getKey();
+            String rClassName = rawPackage(info.getTargetClassInfo().getName());
+            if (className.equals(rClassName) && !entry.getValue()) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     public static byte[] nodeToBytes(ClassNode node) {
         ClassWriter wr = new ClassWriter(0);
@@ -161,4 +162,7 @@ public class Utils {
         return s.substring(0, s.length() - 6).replace(File.separatorChar, '/');
     }
 
+    public enum Platform {
+        Fabric, Forge1_6, Forge1_13
+    }
 }

@@ -7,17 +7,18 @@ import me.fengming.vaultpatcher_asm.config.TranslationInfo;
 import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
 import me.fengming.vaultpatcher_asm.core.cache.Caches;
 import me.fengming.vaultpatcher_asm.core.cache.ClassCache;
-import me.fengming.vaultpatcher_asm.core.hack.VPClassLoader;
+import me.fengming.vaultpatcher_asm.core.misc.VPClassLoader;
 import me.fengming.vaultpatcher_asm.core.node.NodeHandlerParameters;
 import me.fengming.vaultpatcher_asm.core.node.handlers.NodeHandler;
-import me.fengming.vaultpatcher_asm.core.patch.ClassPatcher;
 import me.fengming.vaultpatcher_asm.core.utils.ASMUtils;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
 import me.fengming.vaultpatcher_asm.plugin.VaultPatcherPlugin;
 import org.objectweb.asm.*;
 import org.objectweb.asm.tree.*;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class VPClassTransformer implements Consumer<ClassNode> {
@@ -28,7 +29,8 @@ public class VPClassTransformer implements Consumer<ClassNode> {
     public VPClassTransformer(TranslationInfo info) {
         this.translationInfo = info;
         if (info != null) {
-            VaultPatcher.debugInfo(String.format("[VaultPatcher] Loading VPTransformer for translation info: %s", info));
+            Utils.transformers.put(translationInfo, true);
+            VaultPatcher.debugInfo("[VaultPatcher] Loading VPTransformer for translation info: {}", info);
         }
     }
 
@@ -285,10 +287,10 @@ public class VPClassTransformer implements Consumer<ClassNode> {
         Pairs pairs = info.getPairs();
         for (FieldNode field : input.fields) {
             if (field.value instanceof String) {
-                String o = (String) field.value;
-                String v = Utils.matchPairs(pairs, o, false);
-                Utils.printDebugInfo(o, "ASMTransformField", v, input.name, info);
-                field.value = v;
+                String original = (String) field.value;
+                String value = Utils.matchPairs(pairs, original, false);
+                Utils.printDebugInfo(-1, original, "ASMTransformField", value, input.name, info);
+                field.value = value;
             }
         }
     }
@@ -310,16 +312,16 @@ public class VPClassTransformer implements Consumer<ClassNode> {
 //                input.attrs = patched.attrs;
 //            }
 //        }
-
+        String className = input.name;
         if (VaultPatcherConfig.getDebugMode().isUseCache()) {
             // check cache
-            ClassCache cache = Caches.getClassCache(input.name);
+            ClassCache cache = Caches.getClassCache(className);
             byte[] copy = Utils.nodeToBytes(input);
 
             if (cache != null) {
-                VaultPatcher.debugInfo("Using Cache: " + input.name);
+                VaultPatcher.debugInfo("Using Cache: {}", className);
                 if (!cache.updated(input)) {
-                    VaultPatcher.debugInfo("Updating Cache: " + input.name);
+                    VaultPatcher.debugInfo("Updating Cache: {}", className);
                     generate(input);
                     cache.put(input, copy);
                 }
@@ -327,8 +329,8 @@ public class VPClassTransformer implements Consumer<ClassNode> {
                 input.methods = taken.methods;
                 input.fields = taken.fields;
                 input.innerClasses = taken.innerClasses;
-            } else {
-                VaultPatcher.debugInfo("Generating Class Cache: " + input.name);
+            } else if (Utils.isTransformed(className)) {
+                VaultPatcher.debugInfo("Generating Class Cache: {}", input.name);
                 generate(input);
                 Caches.addClassCache(input.name, input, copy);
             }

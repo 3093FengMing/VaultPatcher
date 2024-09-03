@@ -11,7 +11,10 @@ import org.objectweb.asm.tree.ClassNode;
 
 import java.lang.reflect.Field;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class VPTransformationService implements ITransformationService {
@@ -28,7 +31,7 @@ public class VPTransformationService implements ITransformationService {
         // VaultPatcher.LOGGER.warn("[VaultPatcher] Warning! You are in ASM mode!");
         // VaultPatcher.LOGGER.warn("[VaultPatcher] In this mode, the configuration files will be stored in \"config/vaultpatcher_asm\"!");
 
-        VaultPatcher.LOGGER.warn("[VaultPatcher] Loading VPTransformationService!");
+        VaultPatcher.LOGGER.debug("[VaultPatcher] Loading VPTransformationService!");
 
         Optional<Path> minecraftPathOptional = environment.getProperty(IEnvironment.Keys.GAMEDIR.get());
         if (!minecraftPathOptional.isPresent()) {
@@ -40,19 +43,21 @@ public class VPTransformationService implements ITransformationService {
             Utils.isClient = true;
         }
 
+        Utils.platform = Utils.Platform.Forge1_13;
+
         String minecraftVersion = getMinecraftVersion();
         Utils.mcVersion = minecraftVersion;
         if (Utils.isBlank(minecraftVersion)) VaultPatcher.LOGGER.error("[VaultPatcher] Failed to get minecraft version!");
         // VaultPatcher.LOGGER.info("[VaultPatcher] Get minecraft version: " + minecraftVersion);
         if (isOldVersion(minecraftVersion)) {
-            VaultPatcher.LOGGER.warn("[VaultPatcher] Disable dynamic replace because the game version is 1.16.5 and below (your version: " + minecraftVersion + ")");
+            VaultPatcher.LOGGER.warn("[VaultPatcher] Disable dynamic replace because the game version is 1.16.5 and below (your version: {})", minecraftVersion);
             oldVersion = true;
         }
 
         Path mcPath = minecraftPathOptional.get();
         VaultPatcher.init(mcPath);
 
-        VaultPatcher.LOGGER.warn("[VaultPatcher] TS DONE!");
+        VaultPatcher.LOGGER.debug("[VaultPatcher] TS DONE!");
     }
 
     public static boolean isOldVersion(String version) {
@@ -95,8 +100,11 @@ public class VPTransformationService implements ITransformationService {
 
     @Override
     public List<ITransformer> transformers() {
-        List<ITransformer> list = new ArrayList<>();
 
+        List<ITransformer> list = Utils.translationInfos.stream().map(ForgeClassTransformer::new).collect(Collectors.toList());
+
+        list.add(new ForgeClassTransformer(null));
+        if (!oldVersion) list.add(new ForgeMinecraftTransformer());
         if (VaultPatcherConfig.isEnableClassPatch()) {
             ClassPatcher.getPatchMap().forEach((k, v) -> list.add(new ITransformer<ClassNode>() {
                 @Override public ClassNode transform(ClassNode input, ITransformerVotingContext context) {VaultPatcher.debugInfo("Using Patch: " + input.name); return v;}
@@ -104,9 +112,6 @@ public class VPTransformationService implements ITransformationService {
                 @Override public Set<Target> targets() {return new HashSet<Target>() {{this.add(Target.targetClass(k));}};}
             }));
         }
-        list.addAll(Utils.translationInfos.stream().map(ForgeClassTransformer::new).collect(Collectors.toList()));
-        list.add(new ForgeClassTransformer(null));
-        if (!oldVersion) list.add(new ForgeMinecraftTransformer());
         return list;
     }
 }

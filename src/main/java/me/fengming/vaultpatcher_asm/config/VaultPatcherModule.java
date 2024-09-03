@@ -15,19 +15,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class VaultPatcherModule {
-    private final Path patchFile;
+    private final Path moduleFile;
     private final List<TranslationInfo> translationInfoList = new ArrayList<>();
     private boolean dynamic;
 
-    public VaultPatcherModule(String patchFile) {
-        VaultPatcher.debugInfo("[VaultPatcher] Found Module " + patchFile);
-        Path p = VaultPatcherConfig.config.resolve(patchFile);
+    public VaultPatcherModule(String moduleFile) {
+        VaultPatcher.debugInfo("[VaultPatcher] Found Module {}",moduleFile);
+        Path p = VaultPatcherConfig.config.resolve(moduleFile);
         try {
             Files.createDirectories(p.getParent());
         } catch (IOException e) {
             throw new RuntimeException("Failed to create", e);
         }
-        this.patchFile = p;
+        this.moduleFile = p;
     }
 
     public void read(JsonReader reader) throws IOException {
@@ -36,13 +36,9 @@ public class VaultPatcherModule {
         ModuleInfo moduleInfo = new ModuleInfo();
         moduleInfo.readJson(reader);
         dynamic = moduleInfo.isDataDynamic();
-        VaultPatcher.debugInfo(String.format("[VaultPatcher] Loading %s!", moduleInfo.getInfoName()));
-        VaultPatcher.debugInfo(/*JustPretty*/"[VaultPatcher] About Information:");
-        VaultPatcher.debugInfo(String.format("[VaultPatcher] Author(s): %s", moduleInfo.getInfoAuthors()));
-        VaultPatcher.debugInfo(String.format("[VaultPatcher] Mod(s): %s", moduleInfo.getInfoMods()));
-        VaultPatcher.debugInfo(String.format("[VaultPatcher] Description: %s", moduleInfo.getInfoDesc()));
-        VaultPatcher.debugInfo(String.format("[VaultPatcher] Dynamic: %s", moduleInfo.isDataDynamic()));
-        VaultPatcher.debugInfo(String.format("[VaultPatcher] I18n: %s", moduleInfo.isDataI18n()));
+        VaultPatcher.debugInfo("[VaultPatcher] Loading {}!\nAuthor(s): {}\nMod(s): {}\nDesc: {}\nDyn: {}\nI18n: {}",
+                moduleInfo.getInfoName(), moduleInfo.getInfoAuthors(), moduleInfo.getInfoMods(),
+                moduleInfo.isDataDynamic(), moduleInfo.isDataI18n());
 
         while (reader.peek() != JsonToken.END_ARRAY) {
             reader.beginObject();
@@ -116,14 +112,14 @@ public class VaultPatcherModule {
     }
 
     public void read() throws IOException {
-        if (Files.notExists(patchFile)) {
-            Files.createFile(patchFile);
-            try (JsonWriter jw = new JsonWriter(Files.newBufferedWriter(patchFile, StandardCharsets.UTF_8))) {
+        if (Files.notExists(moduleFile)) {
+            Files.createFile(moduleFile);
+            try (JsonWriter jw = new JsonWriter(Files.newBufferedWriter(moduleFile, StandardCharsets.UTF_8))) {
                 jw.setIndent("  ");
                 write(jw);
             }
         }
-        try (JsonReader jsonReader = new JsonReader(new InputStreamReader(Files.newInputStream(patchFile), StandardCharsets.UTF_8))) {
+        try (JsonReader jsonReader = new JsonReader(new InputStreamReader(Files.newInputStream(moduleFile), StandardCharsets.UTF_8))) {
             read(jsonReader);
         }
     }

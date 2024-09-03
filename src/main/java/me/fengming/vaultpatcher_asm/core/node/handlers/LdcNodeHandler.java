@@ -16,12 +16,12 @@ public class LdcNodeHandler extends NodeHandler<LdcInsnNode> {
     @Override
     public LdcInsnNode modifyNode() {
         VaultPatcher.debugInfo("[VaultPatcher] LdcNodeHandler");
-        VaultPatcher.debugInfo("[VaultPatcher] Params: " + this.params.toString());
+        VaultPatcher.debugInfo("[VaultPatcher] Params: " + params.toString());
         VaultPatcher.debugInfo("[VaultPatcher] Node Cst: " + this.node.cst);
-        if (this.node.cst instanceof String && ASMUtils.matchOrdinal(this.params.info, this.params.ordinal)) {
+        if (this.node.cst instanceof String && ASMUtils.matchOrdinal(params.info, params.ordinal)) {
             String s = (String) this.node.cst;
-            String v = Utils.matchPairs(this.params.info.getPairs(), s, false);
-            debugInfo("ASMTransformMethod-Ldc", s, v);
+            String v = Utils.matchPairs(params.info.getPairs(), s, false);
+            debugInfo(-1, "ASMTransformMethod-Ldc", s, v);
             this.node.cst = v;
         }
         return this.node;
