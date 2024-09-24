@@ -26,7 +26,7 @@ public class VaultPatcher {
     public static List<VaultPatcherPlugin> plugins = new ArrayList<>();
 
     public static void init(Path mcPath) {
-        Path pluginsPath = mcPath.resolve("vaultpatcher").resolve("plugins");
+        Path pluginsPath = Utils.getVpPath().resolve("plugins");
         if (Files.notExists(pluginsPath)) {
             try {
                 Files.createDirectories(pluginsPath);
@@ -42,9 +42,11 @@ public class VaultPatcher {
                 try (JarFile jarFile = new JarFile(file)) {
                     String entryPoint = jarFile.getManifest().getMainAttributes().getValue("VaultPatcherPlugin");
                     if (entryPoint == null) throw new RuntimeException("Failed loading plugin " + file.getName() + ": Couldn't find the entry point");
+
                     ClassLoader parentClassLoader = VaultPatcher.class.getClassLoader();
                     URLClassLoader classLoader = new URLClassLoader(new URL[]{file.toURI().toURL()}, parentClassLoader);
                     VaultPatcherPlugin plugin = classLoader.loadClass(entryPoint).asSubclass(VaultPatcherPlugin.class).newInstance();
+
                     VaultPatcher.plugins.add(plugin);
                 } catch (Exception e) {
                     throw new RuntimeException("Failed loading plugin: " + file, e);

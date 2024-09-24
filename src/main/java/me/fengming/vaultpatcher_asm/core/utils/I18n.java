@@ -40,7 +40,7 @@ public class I18n {
                 Files.createDirectories(i18nPath);
             }
             if (Files.notExists(i18nPath.resolve(currentCode + ".json"))) {
-                VaultPatcher.LOGGER.error("Not found file {}.json", currentCode);
+                VaultPatcher.LOGGER.warn("Not found file {}.json. Will skip I18n loading.", currentCode);
                 return;
             }
 

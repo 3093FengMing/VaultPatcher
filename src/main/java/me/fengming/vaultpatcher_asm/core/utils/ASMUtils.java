@@ -84,7 +84,7 @@ public class ASMUtils {
             fos.close();
             return file;
         } catch (Exception e) {
-            throw new IllegalStateException("Failed to export class", e);
+            throw new IllegalStateException("Failed to export class: ", e);
         }
     }
 

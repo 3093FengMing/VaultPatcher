@@ -100,9 +100,9 @@ public class VPTransformationService implements ITransformationService {
         List<ITransformer> list = new ArrayList<>();
         if (VaultPatcherConfig.isEnableClassPatch()) {
             ClassPatcher.getPatchMap().forEach((k, v) -> list.add(new ITransformer<ClassNode>() {
-                @Override public ClassNode transform(ClassNode input, ITransformerVotingContext context) {VaultPatcher.debugInfo("Using Patch: " + input.name); return v;}
-                @Override public TransformerVoteResult castVote(ITransformerVotingContext context) {return TransformerVoteResult.YES;}
-                @Override public Set<Target> targets() {return new HashSet<Target>() {{this.add(Target.targetClass(k));}};}
+                public ClassNode transform(ClassNode input, ITransformerVotingContext context) {VaultPatcher.debugInfo("Using Patch: " + input.name); return v;}
+                public TransformerVoteResult castVote(ITransformerVotingContext context) {return TransformerVoteResult.YES;}
+                public Set<Target> targets() {return new HashSet<Target>() {{this.add(Target.targetClass(k));}};}
             }));
         }
 
