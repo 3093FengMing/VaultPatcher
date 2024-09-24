@@ -47,6 +47,10 @@ public class VaultPatcherConfig {
         return enableClassPatch;
     }
 
+    public static String getDefaultLanguage() {
+        return defaultLanguage;
+    }
+
     private static void writeConfig(JsonWriter jw) throws IOException {
         jw.setIndent("  ");
         jw.beginObject();

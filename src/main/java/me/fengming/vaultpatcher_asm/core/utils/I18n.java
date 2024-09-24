@@ -32,7 +32,7 @@ public class I18n {
                     }
                 }
             } else {
-                currentCode = VaultPatcherConfig.defaultLanguage;
+                currentCode = VaultPatcherConfig.getDefaultLanguage();
             }
 
             Path i18nPath = Utils.getVpPath().resolve("i18n");

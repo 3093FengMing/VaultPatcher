@@ -25,7 +25,7 @@ public class Utils {
 
     public static Path mcPath = null;
     public static String mcVersion = null;
-    public static Platform platform = null;
+    public static Platform platform = Platform.UNDEFINED;
     public static boolean isClient = false;
 
 
@@ -169,6 +169,6 @@ public class Utils {
     }
 
     public enum Platform {
-        Fabric, Forge1_6, Forge1_13
+        UNDEFINED, Fabric, Forge1_6, Forge1_13
     }
 }

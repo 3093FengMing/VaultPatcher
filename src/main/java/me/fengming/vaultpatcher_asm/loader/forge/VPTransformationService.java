@@ -11,10 +11,7 @@ import org.objectweb.asm.tree.ClassNode;
 
 import java.lang.reflect.Field;
 import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class VPTransformationService implements ITransformationService {
@@ -100,11 +97,7 @@ public class VPTransformationService implements ITransformationService {
 
     @Override
     public List<ITransformer> transformers() {
-
-        List<ITransformer> list = Utils.translationInfos.stream().map(ForgeClassTransformer::new).collect(Collectors.toList());
-
-        list.add(new ForgeClassTransformer(null));
-        if (!oldVersion) list.add(new ForgeMinecraftTransformer());
+        List<ITransformer> list = new ArrayList<>();
         if (VaultPatcherConfig.isEnableClassPatch()) {
             ClassPatcher.getPatchMap().forEach((k, v) -> list.add(new ITransformer<ClassNode>() {
                 @Override public ClassNode transform(ClassNode input, ITransformerVotingContext context) {VaultPatcher.debugInfo("Using Patch: " + input.name); return v;}
@@ -112,6 +105,11 @@ public class VPTransformationService implements ITransformationService {
                 @Override public Set<Target> targets() {return new HashSet<Target>() {{this.add(Target.targetClass(k));}};}
             }));
         }
+
+        list.addAll(Utils.translationInfos.stream().map(ForgeClassTransformer::new).collect(Collectors.toList()));
+
+        list.add(new ForgeClassTransformer(null));
+        if (!oldVersion) list.add(new ForgeMinecraftTransformer());
         return list;
     }
 }
