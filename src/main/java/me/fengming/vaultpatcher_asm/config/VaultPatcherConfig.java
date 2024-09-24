@@ -84,11 +84,14 @@ public class VaultPatcherConfig {
         });
         jw.endArray();
 
-        jw.name("debug_mode");
-        debug.writeJson(jw);
+        jw.name("default_language");
+        jw.value(defaultLanguage);
 
         jw.name("class_patch");
         jw.value(enableClassPatch);
+
+        jw.name("debug_mode");
+        debug.writeJson(jw);
 
         jw.endObject();
         jw.close();

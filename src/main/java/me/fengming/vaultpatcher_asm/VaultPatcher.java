@@ -105,7 +105,7 @@ public class VaultPatcher {
             throw new RuntimeException("Failed to load modules: ", e);
         }
 
-        Utils.translationInfos.forEach(info -> Utils.transformers.put(info, false));
+        Utils.translationInfos.forEach(info -> Utils.transformed.put(info, false));
 
         // optimization
         Utils.needStacktrace = Utils.dynTranslationInfos.stream().anyMatch(e -> !e.getTargetClassInfo().getName().isEmpty());

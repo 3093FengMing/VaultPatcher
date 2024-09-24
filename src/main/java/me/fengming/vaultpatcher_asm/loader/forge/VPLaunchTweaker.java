@@ -20,6 +20,8 @@ public class VPLaunchTweaker implements ITweaker {
     public void acceptOptions(List<String> args, File gameDir, File assetsDir, String profile) {
         Utils.platform = Utils.Platform.Forge1_6;
 
+        if (assetsDir != null) Utils.isClient = true;
+
         VaultPatcher.init(gameDir.toPath());
         Utils.translationInfos.forEach(info -> {
             Set<TranslationInfo> set = classFinding.getOrDefault(info.getTargetClassInfo().getName(), new HashSet<>());

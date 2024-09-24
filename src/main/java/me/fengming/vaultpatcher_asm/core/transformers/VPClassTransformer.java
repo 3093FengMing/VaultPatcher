@@ -29,7 +29,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
     public VPClassTransformer(TranslationInfo info) {
         this.translationInfo = info;
         if (info != null) {
-            Utils.transformers.put(translationInfo, true);
+            Utils.setTransformed(info);
             VaultPatcher.debugInfo("[VaultPatcher] Loading VPTransformer for translation info: {}", info);
         }
     }
@@ -314,7 +314,6 @@ public class VPClassTransformer implements Consumer<ClassNode> {
 //        }
         String className = input.name;
         if (VaultPatcherConfig.getDebugMode().isUseCache()) {
-            // check cache
             ClassCache cache = Caches.getClassCache(className);
             byte[] copy = Utils.nodeToBytes(input);
 
@@ -329,10 +328,14 @@ public class VPClassTransformer implements Consumer<ClassNode> {
                 input.methods = taken.methods;
                 input.fields = taken.fields;
                 input.innerClasses = taken.innerClasses;
-            } else if (Utils.isTransformed(className)) {
+            }
+
+            if (Utils.isTransformed(className)) {
                 VaultPatcher.debugInfo("Generating Class Cache: {}", input.name);
                 generate(input);
                 Caches.addClassCache(input.name, input, copy);
+            } else {
+                generate(input);
             }
         } else {
             generate(input);
@@ -343,7 +346,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
     }
 
     private void generate(ClassNode input) {
-        if (this.translationInfo == null) {
+        if (translationInfo == null) {
             disableLocal = true;
             for (TranslationInfo info : Utils.translationInfos) {
                 if (Utils.isBlank(info.getTargetClassInfo().getName()) || input.name.equals(Utils.rawPackage(info.getTargetClassInfo().getName()))) {
@@ -351,10 +354,10 @@ public class VPClassTransformer implements Consumer<ClassNode> {
                     fieldReplace(input, info);
                 }
             }
-        } else if (Utils.isBlank(this.translationInfo.getTargetClassInfo().getName()) || input.name.equals(Utils.rawPackage(this.translationInfo.getTargetClassInfo().getName()))) {
-            disableLocal = Utils.isBlank(this.translationInfo.getTargetClassInfo().getLocal());
-            methodReplace(input, this.translationInfo);
-            fieldReplace(input, this.translationInfo);
+        } else if (Utils.isBlank(translationInfo.getTargetClassInfo().getName()) || input.name.equals(Utils.rawPackage(translationInfo.getTargetClassInfo().getName()))) {
+            disableLocal = Utils.isBlank(translationInfo.getTargetClassInfo().getLocal());
+            methodReplace(input, translationInfo);
+            fieldReplace(input, translationInfo);
         }
     }
 }

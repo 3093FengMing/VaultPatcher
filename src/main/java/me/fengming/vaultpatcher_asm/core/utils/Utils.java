@@ -20,7 +20,7 @@ public class Utils {
 
     public static List<TranslationInfo> translationInfos = new ArrayList<>();
     public static List<TranslationInfo> dynTranslationInfos = new ArrayList<>();
-    public static Map<TranslationInfo, Boolean> transformers = new HashMap<>();
+    public static Map<TranslationInfo, Boolean> transformed = new HashMap<>();
     public static boolean needStacktrace = false;
 
     public static Path mcPath = null;
@@ -67,13 +67,19 @@ public class Utils {
     // transformer
 
     public static boolean isTransformed(String className) {
-        for (Map.Entry<TranslationInfo, Boolean> entry : transformers.entrySet()) {
+        for (Map.Entry<TranslationInfo, Boolean> entry : transformed.entrySet()) {
             TranslationInfo info = entry.getKey();
             String rClassName = rawPackage(info.getTargetClassInfo().getName());
             if (className.equals(rClassName) && !entry.getValue()) {
                 return false;
             }
         }
+        return true;
+    }
+
+    public static boolean setTransformed(TranslationInfo info) {
+        if (!transformed.containsKey(info)) return false;
+        transformed.put(info, true);
         return true;
     }
 

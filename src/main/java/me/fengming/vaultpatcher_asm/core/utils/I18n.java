@@ -21,12 +21,13 @@ public class I18n {
         BufferedReader br2 = null;
         try {
             // Only In Client
-            if (Files.exists(mcPath.resolve("options.txt"))) {
-                br1 = Files.newBufferedReader(mcPath.resolve("options.txt"));
+            Path optionsFile = mcPath.resolve("options.txt");
+            if (Utils.isClient && Files.exists(optionsFile)) {
+                br1 = Files.newBufferedReader(optionsFile);
                 String line;
                 while ((line = br1.readLine()) != null) {
                     if (line.startsWith("lang:")) {
-                        currentCode = line.substring(5);
+                        currentCode = line.substring("lang:".length());
                         break;
                     }
                 }
@@ -42,6 +43,7 @@ public class I18n {
                 VaultPatcher.LOGGER.error("Not found file {}.json", currentCode);
                 return;
             }
+
             br2 = Files.newBufferedReader(i18nPath.resolve(currentCode + ".json"));
             langugesMap = GSON.fromJson(br2, new TypeToken<Map<String, String>>() {}.getType());
             if (langugesMap == null) {
@@ -49,7 +51,7 @@ public class I18n {
                 VaultPatcher.LOGGER.error("Error loading I18n file.");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            VaultPatcher.LOGGER.error("Error loading I18n file: {}", e);
         } finally {
             try {
                 if (br1 != null) {
@@ -59,7 +61,7 @@ public class I18n {
                     br2.close();
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                VaultPatcher.LOGGER.error("Error loading I18n file: {}", e);
             }
         }
     }

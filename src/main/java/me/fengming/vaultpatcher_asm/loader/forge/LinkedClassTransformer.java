@@ -12,8 +12,11 @@ import org.objectweb.asm.tree.ClassNode;
 import java.util.Set;
 
 public class LinkedClassTransformer implements IClassTransformer {
+
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
+        if (basicClass == null) return null;
+
         ClassNode input = new ClassNode();
         ClassReader cr = new ClassReader(basicClass);
         cr.accept(input, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
