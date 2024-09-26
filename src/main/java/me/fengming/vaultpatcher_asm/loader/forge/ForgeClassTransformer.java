@@ -3,6 +3,7 @@ package me.fengming.vaultpatcher_asm.loader.forge;
 import cpw.mods.modlauncher.api.ITransformer;
 import cpw.mods.modlauncher.api.ITransformerVotingContext;
 import cpw.mods.modlauncher.api.TransformerVoteResult;
+import me.fengming.vaultpatcher_asm.VaultPatcher;
 import me.fengming.vaultpatcher_asm.config.TranslationInfo;
 import me.fengming.vaultpatcher_asm.core.transformers.VPClassTransformer;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
@@ -33,6 +34,11 @@ public class ForgeClassTransformer implements ITransformer<ClassNode> {
     @Override
     public Set<Target> targets() {
         return Utils.getTarget(translationInfo);
+    }
+
+    // neoforge only
+    public cpw.mods.modlauncher.api.TargetType getTargetType() {
+        return Utils.neoGetTargetType("CLASS");
     }
 
 }

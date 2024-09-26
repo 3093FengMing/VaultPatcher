@@ -66,6 +66,16 @@ public class Utils {
 
     // transformer
 
+    public static cpw.mods.modlauncher.api.TargetType neoGetTargetType(String type) {
+        try {
+            Class<?> clazz = Class.forName("cpw.mods.modlauncher.api.TargetType");
+            return (cpw.mods.modlauncher.api.TargetType) clazz.getDeclaredField(type).get(null);
+        } catch (Exception e) {
+            VaultPatcher.LOGGER.error("Error getting target type: ", e);
+        }
+        return null;
+    }
+
     public static boolean isTransformed(String className) {
         for (Map.Entry<TranslationInfo, Boolean> entry : transformed.entrySet()) {
             TranslationInfo info = entry.getKey();

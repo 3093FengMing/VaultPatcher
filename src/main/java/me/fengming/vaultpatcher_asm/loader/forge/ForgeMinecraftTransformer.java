@@ -5,6 +5,7 @@ import cpw.mods.modlauncher.api.ITransformerVotingContext;
 import cpw.mods.modlauncher.api.TransformerVoteResult;
 import me.fengming.vaultpatcher_asm.VaultPatcher;
 import me.fengming.vaultpatcher_asm.core.transformers.VPMinecraftTransformer;
+import me.fengming.vaultpatcher_asm.core.utils.Utils;
 import org.objectweb.asm.tree.ClassNode;
 
 import java.util.HashSet;
@@ -39,5 +40,10 @@ public class ForgeMinecraftTransformer implements ITransformer<ClassNode> {
         targets.add(Target.targetClass("net.minecraft.client.gui.Font"));
         targets.add(Target.targetClass("net.minecraft.client.gui.FontRenderer"));
         return targets;
+    }
+
+    // neoforge only
+    public cpw.mods.modlauncher.api.TargetType getTargetType() {
+        return Utils.neoGetTargetType("CLASS");
     }
 }
