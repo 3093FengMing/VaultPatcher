@@ -66,7 +66,7 @@ public class Utils {
 
     // transformer
 
-    public static cpw.mods.modlauncher.api.TargetType neoGetTargetType(String type) {
+    public static cpw.mods.modlauncher.api.TargetType neoforgeGetTargetType(String type) {
         try {
             Class<?> clazz = Class.forName("cpw.mods.modlauncher.api.TargetType");
             return (cpw.mods.modlauncher.api.TargetType) clazz.getDeclaredField(type).get(null);

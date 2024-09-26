@@ -44,6 +44,6 @@ public class ForgeMinecraftTransformer implements ITransformer<ClassNode> {
 
     // neoforge only
     public cpw.mods.modlauncher.api.TargetType getTargetType() {
-        return Utils.neoGetTargetType("CLASS");
+        return Utils.neoforgeGetTargetType("CLASS");
     }
 }

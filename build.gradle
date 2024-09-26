@@ -29,6 +29,7 @@ jar {
         expand "version": mod_version
     }
 
+    exclude "cpw"
 }
 
 java {

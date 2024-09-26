@@ -26,6 +26,8 @@ public class VaultPatcher {
     public static List<VaultPatcherPlugin> plugins = new ArrayList<>();
 
     public static void init(Path mcPath) {
+        Utils.mcPath = mcPath;
+
         Path pluginsPath = Utils.getVpPath().resolve("plugins");
         if (Files.notExists(pluginsPath)) {
             try {
@@ -58,8 +60,6 @@ public class VaultPatcher {
     }
 
     private static void _init(Path mcPath) {
-        Utils.mcPath = mcPath;
-
         plugins.forEach(e -> e.start(mcPath));
 
         VaultPatcher.LOGGER.debug("[VaultPatcher] Loading I18n!");
