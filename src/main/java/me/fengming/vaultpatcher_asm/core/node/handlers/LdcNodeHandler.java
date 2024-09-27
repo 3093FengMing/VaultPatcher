@@ -18,7 +18,7 @@ public class LdcNodeHandler extends NodeHandler<LdcInsnNode> {
         VaultPatcher.debugInfo("[VaultPatcher] LdcNodeHandler");
         VaultPatcher.debugInfo("[VaultPatcher] Params: " + params.toString());
         VaultPatcher.debugInfo("[VaultPatcher] Node Cst: " + this.node.cst);
-        if (this.node.cst instanceof String && ASMUtils.matchOrdinal(params.info, params.ordinal)) {
+        if (this.node.cst instanceof String && Utils.matchOrdinal(params.info, params.ordinal)) {
             String s = (String) this.node.cst;
             String v = Utils.matchPairs(params.info.getPairs(), s, false);
             debugInfo(-1, "ASMTransformMethod-Ldc", s, v);
