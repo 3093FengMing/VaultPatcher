@@ -23,10 +23,10 @@ public class HandlerDebugInfo {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder(handler.getClass().getName().substring("me.fengming.vaultpatcher_asm.core.node.handlers".length()));
-        sb.append("HandlerDebugInfo{").
+        final StringBuilder sb = new StringBuilder(handler.getClass().getName().substring("me.fengming.vaultpatcher_asm.core.node.handlers.".length()));
+        sb.append("DebugInfo{").
         append("parameters=").append(parameters).
-        append(", opcode='").append(opcode).append('\'');
+        append(", opcode=").append(opcode);
         if (cst != null) sb.append(", cst='").append(cst).append('\'');
         if (name != null) sb.append(", name='").append(name).append('\'');
         if (desc != null) sb.append(", desc='").append(desc).append('\'');

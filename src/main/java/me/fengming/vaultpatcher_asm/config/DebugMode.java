@@ -9,7 +9,9 @@ import java.io.IOException;
 public class DebugMode {
     private boolean isEnable = false;
     private int outputMode = 0;
-    private String outputFormat = "<source> -> <target>";
+    private String outputFormat = "<source> -> <target> in <class> [<ordinal>] | <info>";
+    private int hidePairsLimit = 7;
+    private boolean outputNodeDebug = false;
     private boolean exportClass = false;
     private boolean useCache = true;
     private boolean missingWarn = true;
@@ -36,6 +38,22 @@ public class DebugMode {
 
     public void setOutputFormat(String outputFormat) {
         this.outputFormat = outputFormat;
+    }
+
+    public int getHidePairsLimit() {
+        return this.hidePairsLimit;
+    }
+
+    public void setHidePairsLimit(int hidePairsLimit) {
+        this.hidePairsLimit = hidePairsLimit;
+    }
+
+    public boolean isOutputNodeDebug() {
+        return this.outputNodeDebug;
+    }
+
+    public void setOutputNodeDebug(boolean outputNodeDebug) {
+        this.outputNodeDebug = outputNodeDebug;
     }
 
     public boolean isExportClass() {
@@ -90,6 +108,14 @@ public class DebugMode {
                 case "missing_warn":
                     setMissingWarn(reader.nextBoolean());
                     break;
+                case "h":
+                case "hide_pairs":
+                    setHidePairsLimit(reader.nextInt());
+                    break;
+                case "d":
+                case "output_node_debug":
+                    setOutputNodeDebug(reader.nextBoolean());
+                    break;
                 default:
                     reader.skipValue();
                     break;
@@ -103,6 +129,8 @@ public class DebugMode {
         writer.name("is_enable").value(isEnable());
         writer.name("output_format").value(getOutputFormat());
         writer.name("output_mode").value(getOutputMode());
+        writer.name("hide_pairs").value(getHidePairsLimit());
+        writer.name("output_node_debug").value(isOutputNodeDebug());
         writer.name("export_class").value(isExportClass());
         writer.name("use_cache").value(isUseCache());
         writer.name("missing_warn").value(isMissingWarn());

@@ -69,6 +69,7 @@ public class VaultPatcher {
             VaultPatcher.LOGGER.debug("[VaultPatcher] Loading Configs!");
             plugins.forEach(e -> e.onLoadConfig(VaultPatcherPlugin.Phase.BEFORE));
             VaultPatcherConfig.readConfig(mcPath.resolve("config").resolve("vaultpatcher_asm"));
+            Utils.debug = VaultPatcherConfig.getDebugMode();
             plugins.forEach(e -> e.onLoadConfig(VaultPatcherPlugin.Phase.AFTER));
         } catch (IOException e) {
             throw new RuntimeException("Failed to load config: ", e);
@@ -116,6 +117,6 @@ public class VaultPatcher {
     }
 
     public static void debugInfo(String s, Object... args) {
-        if (VaultPatcherConfig.getDebugMode().isEnable()) VaultPatcher.LOGGER.info(s, args);
+        if (Utils.debug.isEnable()) VaultPatcher.LOGGER.info(s, args);
     }
 }

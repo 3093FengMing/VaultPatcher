@@ -28,6 +28,7 @@ public class Utils {
     public static Platform platform = Platform.UNDEFINED;
     public static boolean isClient = false;
 
+    public static DebugMode debug = new DebugMode();
 
     // plugins
 
@@ -50,17 +51,15 @@ public class Utils {
     // debug
 
     public static void printDebugInfo(int o, String s, String m, String ret, String c, TranslationInfo info) {
-        DebugMode debug = VaultPatcherConfig.getDebugMode();
         if (!debug.isEnable()) return;
         String format = debug.getOutputFormat();
-        VaultPatcher.LOGGER.info("[VaultPatcher] Trying replacing!");
-        VaultPatcher.LOGGER.info(
+        VaultPatcher.LOGGER.info("[VaultPatcher] Trying replacing!\n{}",
                 format.replace("<source>", s)
-                        .replace("<target>", ret)
-                        .replace("<method>", m)
-                        .replace("<info>", info.toString())
-                        .replace("<class>", c)
-                        .replace("<ordinal>", String.valueOf(o))
+                .replace("<target>", ret)
+                .replace("<method>", m)
+                .replace("<info>", info.toString())
+                .replace("<class>", c)
+                .replace("<ordinal>", String.valueOf(o))
         );
     }
 
@@ -94,7 +93,7 @@ public class Utils {
     }
 
     public static byte[] nodeToBytes(ClassNode node) {
-        ClassWriter wr = new ClassWriter(0);
+        ClassWriter wr = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         node.accept(wr);
         return wr.toByteArray();
     }

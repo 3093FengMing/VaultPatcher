@@ -27,8 +27,8 @@ public class ASMUtils {
             String v = Utils.matchPairs(info.getPairs(), s, true);
             if (Utils.isBlank(v) || v.equals(s)) continue;
 
-            if (VaultPatcherConfig.getDebugMode().isEnable()) {
-                String format = VaultPatcherConfig.getDebugMode().getOutputFormat();
+            if (Utils.debug.isEnable()) {
+                String format = Utils.debug.getOutputFormat();
                 VaultPatcher.LOGGER.info(
                         format.replace("<source>", s)
                                 .replace("<target>", v)

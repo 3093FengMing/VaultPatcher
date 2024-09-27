@@ -22,9 +22,10 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 public class VPClassTransformer implements Consumer<ClassNode> {
-    private final DebugMode debug = VaultPatcherConfig.getDebugMode();
     private final TranslationInfo translationInfo;
-    private static boolean disableLocal = false;
+    private boolean disableLocal = false;
+
+    private boolean transformed = false;
 
     public VPClassTransformer(TranslationInfo info) {
         this.translationInfo = info;
@@ -34,10 +35,11 @@ public class VPClassTransformer implements Consumer<ClassNode> {
         }
     }
 
-    private static void methodReplace(ClassNode input, TranslationInfo info) {
+    private void methodReplace(ClassNode input, TranslationInfo info) {
         boolean hasClinit = false;
         boolean isInterface = (input.access & Opcodes.ACC_INTERFACE) != 0;
         boolean needPatch = input.fields.stream().noneMatch(node -> node.name.equals("__vp_map"));
+
         for (MethodNode method : input.methods) {
             String methodName = info.getTargetClassInfo().getMethod();
             if ((Utils.isBlank(methodName) || methodName.equals(method.name)) && !method.name.equals("__vp_init") && !method.name.equals("__vp_replace")) {
@@ -313,7 +315,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
 //            }
 //        }
         String className = input.name;
-        if (VaultPatcherConfig.getDebugMode().isUseCache()) {
+        if (Utils.debug.isUseCache()) {
             ClassCache cache = Caches.getClassCache(className);
             byte[] copy = Utils.nodeToBytes(input);
 
@@ -342,10 +344,22 @@ public class VPClassTransformer implements Consumer<ClassNode> {
         }
         VaultPatcher.plugins.forEach(e -> e.onTransformClass(input, VaultPatcherPlugin.Phase.AFTER));
 
-        if (debug.isExportClass()) ASMUtils.exportClass(input, Utils.getVpPath().resolve("exported"));
+        if (Utils.debug.isExportClass()) ASMUtils.exportClass(input, Utils.getVpPath().resolve("exported"));
+
+        // Recompute frames. Otherwise, it may cause java.lang.VerifyError in java8
+        if (Utils.platform == Utils.Platform.Forge1_6) {
+            ClassNode otherClass = new ClassNode();
+            byte[] bytes = Utils.nodeToBytes(input);
+            ClassReader cr = new ClassReader(bytes);
+            cr.accept(otherClass, ClassReader.SKIP_DEBUG);
+            input.methods = otherClass.methods;
+            input.fields = otherClass.fields;
+            input.innerClasses = otherClass.innerClasses;
+        }
     }
 
     private void generate(ClassNode input) {
+        if (transformed) return;
         if (translationInfo == null) {
             disableLocal = true;
             for (TranslationInfo info : Utils.translationInfos) {
@@ -359,5 +373,6 @@ public class VPClassTransformer implements Consumer<ClassNode> {
             methodReplace(input, translationInfo);
             fieldReplace(input, translationInfo);
         }
+        transformed = true;
     }
 }

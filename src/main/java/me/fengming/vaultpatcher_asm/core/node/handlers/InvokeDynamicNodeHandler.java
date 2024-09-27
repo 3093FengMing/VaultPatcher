@@ -14,7 +14,7 @@ public class InvokeDynamicNodeHandler extends NodeHandler<InvokeDynamicInsnNode>
 
     @Override
     public InvokeDynamicInsnNode modifyNode() {
-        if (this.node.name.equals("makeConcatWithConstants") && ASMUtils.matchOrdinal(params.info, params.ordinal) ) {
+        if (this.node.name.equals("makeConcatWithConstants") && ASMUtils.matchOrdinal(params.info, params.ordinal)) {
             Object[] bsmArgs = this.node.bsmArgs;
             for (int i = 0; i < bsmArgs.length; i++) {
                 if (bsmArgs[i] instanceof String) {

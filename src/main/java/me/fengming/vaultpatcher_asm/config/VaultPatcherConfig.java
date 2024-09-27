@@ -18,6 +18,7 @@ import java.util.List;
 
 public class VaultPatcherConfig {
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
+
     public static final DebugMode debug = new DebugMode();
     public static boolean enableClassPatch = false;
     public static Path config = null;

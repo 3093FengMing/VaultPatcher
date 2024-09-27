@@ -15,7 +15,7 @@ public class Caches {
     private static final Map<String, ClassCache> cacheMap = new HashMap<>();
 
     public static void init(Path path) throws IOException {
-        if (!VaultPatcherConfig.getDebugMode().isUseCache()) return;
+        if (!Utils.debug.isUseCache()) return;
         File file = path.toFile();
         if (!file.exists()) {
             file.mkdirs();

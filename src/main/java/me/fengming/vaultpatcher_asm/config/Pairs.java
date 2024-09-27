@@ -133,9 +133,17 @@ public class Pairs {
     public String toString() {
         StringBuilder sb = new StringBuilder("{");
         if (dyn) {
-            pairsList.forEach(e -> sb.append("'").append(e.first).append("'='").append(e.second).append("'").append(","));
+            if (pairsList.size() <= Utils.debug.getHidePairsLimit()) {
+                pairsList.forEach(e -> sb.append("'").append(e.first).append("'='").append(e.second).append("'").append(","));
+            } else {
+                sb.append("[HIDE]");
+            }
         } else {
-            pairsMap.forEach((key, value) -> sb.append("'").append(key).append("'='").append(value).append("'").append(","));
+            if (pairsMap.size() <= Utils.debug.getHidePairsLimit()) {
+                pairsMap.forEach((key, value) -> sb.append("'").append(key).append("'='").append(value).append("'").append(","));
+            } else {
+                sb.append("[HIDE]");
+            }
         }
         sb.deleteCharAt(sb.length() - 1).append("}");
         return sb.toString();

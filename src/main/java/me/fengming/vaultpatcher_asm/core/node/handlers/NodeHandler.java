@@ -1,6 +1,7 @@
 package me.fengming.vaultpatcher_asm.core.node.handlers;
 
 import me.fengming.vaultpatcher_asm.VaultPatcher;
+import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
 import me.fengming.vaultpatcher_asm.core.node.HandlerDebugInfo;
 import me.fengming.vaultpatcher_asm.core.node.NodeHandlerParameters;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
@@ -16,9 +17,11 @@ public abstract class NodeHandler<E extends AbstractInsnNode> {
     }
 
     public E _modifyNode() {
-        HandlerDebugInfo debugInfo = new HandlerDebugInfo(this, params, node.getOpcode());
-        addDebugInfo(debugInfo);
-        VaultPatcher.debugInfo(debugInfo.toString());
+        if (Utils.debug.isEnable() && Utils.debug.isOutputNodeDebug()) {
+            HandlerDebugInfo debugInfo = new HandlerDebugInfo(this, params, node.getOpcode());
+            addDebugInfo(debugInfo);
+            VaultPatcher.debugInfo(debugInfo.toString());
+        }
         return this.modifyNode();
     }
 
