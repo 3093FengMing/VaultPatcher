@@ -302,18 +302,6 @@ public class VPClassTransformer implements Consumer<ClassNode> {
     public void accept(ClassNode input) {
         VaultPatcher.plugins.forEach(e -> e.onTransformClass(input, VaultPatcherPlugin.Phase.BEFORE));
 
-//        if (VaultPatcherConfig.isEnableClassPatch()) {
-//            ClassNode patched = ClassPatcher.patch(input);
-//            VaultPatcher.debugInfo("Using Patch: " + input.name);
-//            if (!patched.equals(input)) {
-//                input.access = patched.access;
-//                input.methods = patched.methods;
-//                input.fields = patched.fields;
-//                input.innerClasses = patched.innerClasses;
-//                input.interfaces = patched.interfaces;
-//                input.attrs = patched.attrs;
-//            }
-//        }
         String className = input.name;
         if (Utils.debug.isUseCache()) {
             ClassCache cache = Caches.getClassCache(className);
@@ -326,12 +314,14 @@ public class VPClassTransformer implements Consumer<ClassNode> {
                     generate(input);
                     cache.put(input, copy);
                 }
+                // copy class
                 ClassNode taken = cache.take();
                 input.methods = taken.methods;
                 input.fields = taken.fields;
                 input.innerClasses = taken.innerClasses;
             }
 
+            // Ensure that all TranslationInfo is transformed before adding to the cache
             if (Utils.isTransformed(className)) {
                 VaultPatcher.debugInfo("Generating Class Cache: {}", input.name);
                 generate(input);
@@ -342,20 +332,22 @@ public class VPClassTransformer implements Consumer<ClassNode> {
         } else {
             generate(input);
         }
-        VaultPatcher.plugins.forEach(e -> e.onTransformClass(input, VaultPatcherPlugin.Phase.AFTER));
-
-        if (Utils.debug.isExportClass()) ASMUtils.exportClass(input, Utils.getVpPath().resolve("exported"));
 
         // Recompute frames. Otherwise, it may cause java.lang.VerifyError in java8
         if (Utils.platform == Utils.Platform.Forge1_6) {
-            ClassNode otherClass = new ClassNode();
+            ClassNode copied = new ClassNode();
             byte[] bytes = Utils.nodeToBytes(input);
             ClassReader cr = new ClassReader(bytes);
-            cr.accept(otherClass, ClassReader.SKIP_DEBUG);
-            input.methods = otherClass.methods;
-            input.fields = otherClass.fields;
-            input.innerClasses = otherClass.innerClasses;
+            cr.accept(copied, ClassReader.SKIP_DEBUG);
+            // copy class
+            input.methods = copied.methods;
+            input.fields = copied.fields;
+            input.innerClasses = copied.innerClasses;
         }
+
+        VaultPatcher.plugins.forEach(e -> e.onTransformClass(input, VaultPatcherPlugin.Phase.AFTER));
+
+        if (Utils.debug.isExportClass()) ASMUtils.exportClass(input, Utils.getVpPath().resolve("exported"));
     }
 
     private void generate(ClassNode input) {

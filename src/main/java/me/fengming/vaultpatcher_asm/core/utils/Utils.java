@@ -5,7 +5,11 @@ import me.fengming.vaultpatcher_asm.VaultPatcher;
 import me.fengming.vaultpatcher_asm.config.*;
 import me.fengming.vaultpatcher_asm.plugin.VaultPatcherPlugin;
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.MethodInsnNode;
+import org.objectweb.asm.tree.MethodNode;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -50,16 +54,18 @@ public class Utils {
 
     // debug
 
-    public static void printDebugInfo(int o, String s, String m, String ret, String c, TranslationInfo info) {
+    public static void printDebugInfo(int ordinal, String source,
+                                      String method, String target, String clazz,
+                                      TranslationInfo info) {
         if (!debug.isEnable()) return;
         String format = debug.getOutputFormat();
         VaultPatcher.LOGGER.info("[VaultPatcher] Trying replacing!\n{}",
-                format.replace("<source>", s)
-                .replace("<target>", ret)
-                .replace("<method>", m)
+                format.replace("<source>", source)
+                .replace("<target>", target)
+                .replace("<method>", method)
                 .replace("<info>", info.toString())
-                .replace("<class>", c)
-                .replace("<ordinal>", String.valueOf(o))
+                .replace("<class>", clazz)
+                .replace("<ordinal>", ordinal == -1 ? "Unknown" : String.valueOf(ordinal))
         );
     }
 
@@ -108,7 +114,7 @@ public class Utils {
             if (!Utils.isBlank(name)) targets.add(ITransformer.Target.targetClass(Utils.rawPackage(name)));
         }
 
-        targets.iterator().forEachRemaining(t -> VaultPatcher.debugInfo(String.format("[VaultPatcher] VPClassTransformer Target = %s", t.getClassName())));
+        targets.iterator().forEachRemaining(t -> VaultPatcher.debugInfo("[VaultPatcher] VPClassTransformer Target = {}", t.getClassName()));
 
         return targets;
     }
@@ -149,7 +155,7 @@ public class Utils {
     public static String matchPairs(Pairs p, String source, boolean dyn) {
         if (source.isEmpty()) return source; // FIX replace whitespace with "" -> source
         String v = p.getValue(source); // Go to return if its full match
-        if (dyn && p.isNonFullMatch()) { // non-full match
+        if (dyn && p.isNonFullMatch()) {
             for (Pair<String, String> pair : p.getList()) {
                 if (pair.second.charAt(0) == '@' && source.contains(pair.first)) {
                     v = source.replace(pair.first, pair.second.substring(1));
@@ -159,15 +165,28 @@ public class Utils {
         return v == null ? source : v;
     }
 
-    public static boolean isBlank(String s) {
-        if (s == null) return false;
-        if (s.isEmpty()) return true; // there is a short in most cases
-        for (int i = 0; i < s.getBytes(StandardCharsets.UTF_8).length; i++) {
-            if (!Character.isWhitespace(s.charAt(i))) return false;
-        }
-        return true;
+    public static boolean matchLocal(TranslationInfo info, String name, boolean isMethod) {
+        if (name == null) return false;
+        TargetClassInfo i = info.getTargetClassInfo();
+        if (Utils.isBlank(i.getLocal())) return false;
+        if (i.getLocalMode() == TargetClassInfo.LocalMode.NONE
+                || (i.getLocalMode() == TargetClassInfo.LocalMode.CALL_RETURN && isMethod)
+                || (i.getLocalMode() == TargetClassInfo.LocalMode.METHOD_RETURN && isMethod)
+                || (i.getLocalMode() == TargetClassInfo.LocalMode.LOCAL_VARIABLE && !isMethod)
+                || (i.getLocalMode() == TargetClassInfo.LocalMode.GLOBAL_VARIABLE && !isMethod))
+            return i.getLocal().equals(name);
+        return false;
     }
 
+    public static boolean matchOrdinal(TranslationInfo info, int ordinal) {
+        return info.getTargetClassInfo().getOrdinal() == -1 || info.getTargetClassInfo().getOrdinal() == ordinal;
+    }
+
+    public static void insertReplace(String className, MethodNode method, AbstractInsnNode nodePosition, boolean isString) {
+        method.instructions.insert(nodePosition, new MethodInsnNode(Opcodes.INVOKESTATIC, Utils.rawPackage(className), "__vp_replace", isString ? "(Ljava/lang/String;)Ljava/lang/String;" : "(Ljava/lang/Object;)Ljava/lang/String;", false));
+    }
+
+    // other
     public static String getI18n(String key) {
         return I18n.getValue(key);
     }
@@ -175,6 +194,15 @@ public class Utils {
     public static String filePathToClassName(Path path, Path root) {
         String s = root.relativize(path).toString();
         return s.substring(0, s.length() - 6).replace(File.separatorChar, '/');
+    }
+
+    public static boolean isBlank(String s) {
+        if (s == null) return false;
+        if (s.isEmpty()) return true; // there is a short in most cases
+        for (int i = 0; i < s.getBytes(StandardCharsets.UTF_8).length; i++) {
+            if (!Character.isWhitespace(s.charAt(i))) return false;
+        }
+        return true;
     }
 
     public enum Platform {

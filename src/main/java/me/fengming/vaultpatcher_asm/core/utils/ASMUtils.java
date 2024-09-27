@@ -17,31 +17,22 @@ import java.nio.file.Path;
 
 public class ASMUtils {
 
-    public static String __mappingString(String s, String method) {
-        if (s == null) return null;
-        if (Utils.isBlank(s)) return s;
+    // for dynamic replace
+    public static String __mappingString(String orignal, String method) {
+        if (orignal == null) return null;
+        if (Utils.isBlank(orignal)) return orignal;
         // There will be no need to get the stack traces if classname is not needed
         StackTraceElement[] stackTraces = new StackTraceElement[0];
         if (Utils.needStacktrace) stackTraces = Thread.currentThread().getStackTrace();
         for (TranslationInfo info : Utils.dynTranslationInfos) {
-            String v = Utils.matchPairs(info.getPairs(), s, true);
-            if (Utils.isBlank(v) || v.equals(s)) continue;
+            String replaced = Utils.matchPairs(info.getPairs(), orignal, true);
+            if (Utils.isBlank(replaced) || replaced.equals(orignal)) continue;
 
-            if (Utils.debug.isEnable()) {
-                String format = Utils.debug.getOutputFormat();
-                VaultPatcher.LOGGER.info(
-                        format.replace("<source>", s)
-                                .replace("<target>", v)
-                                .replace("<method>", method)
-                                .replace("<info>", info.toString())
-                                .replace("<class>", stackTraces2String(stackTraces))
-                                .replace("<ordinal>", "Unknown")
-                );
-            }
+            Utils.printDebugInfo(-1, orignal, replaced, method, stackTraces2String(stackTraces), info);
 
             TargetClassInfo targetClass = info.getTargetClassInfo();
             String className = targetClass.getName();
-            if (Utils.isBlank(className)) return v;
+            if (Utils.isBlank(className)) return replaced;
 
             String methodName = targetClass.getMethod();
             boolean ignoredMethod = Utils.isBlank(methodName);
@@ -49,13 +40,13 @@ public class ASMUtils {
             for (StackTraceElement stackTrace : stackTraces) {
                 if (!ignoredMethod && !methodName.equals(stackTrace.getMethodName())) continue;
                 switch (targetClass.getMatchMode()) {
-                    case FULL: if (stackTrace.getClassName().equals(className)) return v;
-                    case STARTS: if (stackTrace.getClassName().startsWith(className)) return v;
-                    case ENDS: if (stackTrace.getClassName().endsWith(className)) return v;
+                    case FULL: if (stackTrace.getClassName().equals(className)) return replaced;
+                    case STARTS: if (stackTrace.getClassName().startsWith(className)) return replaced;
+                    case ENDS: if (stackTrace.getClassName().endsWith(className)) return replaced;
                 }
             }
         }
-        return s;
+        return orignal;
     }
 
     private static String stackTraces2String(StackTraceElement[] stackTraces) {
@@ -86,26 +77,5 @@ public class ASMUtils {
         } catch (Exception e) {
             throw new IllegalStateException("Failed to export class: ", e);
         }
-    }
-
-    public static boolean matchLocal(TranslationInfo info, String name, boolean isMethod) {
-        if (name == null) return false;
-        TargetClassInfo i = info.getTargetClassInfo();
-        if (Utils.isBlank(i.getLocal())) return false;
-        if (i.getLocalMode() == TargetClassInfo.LocalMode.NONE
-                || (i.getLocalMode() == TargetClassInfo.LocalMode.CALL_RETURN && isMethod)
-                || (i.getLocalMode() == TargetClassInfo.LocalMode.METHOD_RETURN && isMethod)
-                || (i.getLocalMode() == TargetClassInfo.LocalMode.LOCAL_VARIABLE && !isMethod)
-                || (i.getLocalMode() == TargetClassInfo.LocalMode.GLOBAL_VARIABLE && !isMethod))
-            return i.getLocal().equals(name);
-        return false;
-    }
-
-    public static boolean matchOrdinal(TranslationInfo info, int ordinal) {
-        return info.getTargetClassInfo().getOrdinal() == -1 || info.getTargetClassInfo().getOrdinal() == ordinal;
-    }
-
-    public static void insertReplace(String className, MethodNode method, AbstractInsnNode nodePosition, boolean isString) {
-        method.instructions.insert(nodePosition, new MethodInsnNode(Opcodes.INVOKESTATIC, Utils.rawPackage(className), "__vp_replace", isString ? "(Ljava/lang/String;)Ljava/lang/String;" : "(Ljava/lang/Object;)Ljava/lang/String;", false));
     }
 }

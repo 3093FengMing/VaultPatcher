@@ -3,6 +3,7 @@ package me.fengming.vaultpatcher_asm.core.node.handlers;
 import me.fengming.vaultpatcher_asm.core.node.HandlerDebugInfo;
 import me.fengming.vaultpatcher_asm.core.node.NodeHandlerParameters;
 import me.fengming.vaultpatcher_asm.core.utils.ASMUtils;
+import me.fengming.vaultpatcher_asm.core.utils.Utils;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.VarInsnNode;
 
@@ -16,9 +17,9 @@ public class VarNodeHandler extends NodeHandler<VarInsnNode> {
     public VarInsnNode modifyNode() {
         if (!params.disableLocal
                 && (this.node.getOpcode() == Opcodes.ASTORE || this.node.getOpcode() == Opcodes.ALOAD)
-                && ASMUtils.matchOrdinal(params.info, params.ordinal)
-                && ASMUtils.matchLocal(params.info, params.localVariableMap.getOrDefault(this.node.var, null), false)) {
-            ASMUtils.insertReplace(params.classNode.name, params.methodNode, this.node, false);
+                && Utils.matchOrdinal(params.info, params.ordinal)
+                && Utils.matchLocal(params.info, params.localVariableMap.getOrDefault(this.node.var, null), false)) {
+            Utils.insertReplace(params.classNode.name, params.methodNode, this.node, false);
             debugInfo(params.ordinal, "ASMTransformMethod-InsertLocalVariableStore/Load", "Runtime Determination", "Runtime Determination");
         }
 //        // Parameters

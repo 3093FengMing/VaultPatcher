@@ -3,6 +3,7 @@ package me.fengming.vaultpatcher_asm.core.node.handlers;
 import me.fengming.vaultpatcher_asm.core.node.HandlerDebugInfo;
 import me.fengming.vaultpatcher_asm.core.node.NodeHandlerParameters;
 import me.fengming.vaultpatcher_asm.core.utils.ASMUtils;
+import me.fengming.vaultpatcher_asm.core.utils.Utils;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.FieldInsnNode;
 
@@ -15,9 +16,9 @@ public class FieldNodeHandler extends NodeHandler<FieldInsnNode> {
     public FieldInsnNode modifyNode() {
         if (!params.disableLocal
                 && (this.node.getOpcode() == Opcodes.GETFIELD || this.node.getOpcode() == Opcodes.PUTFIELD)
-                && ASMUtils.matchOrdinal(params.info, params.ordinal)
-                && ASMUtils.matchLocal(params.info, this.node.name, false)) {
-            ASMUtils.insertReplace(params.classNode.name, params.methodNode, this.node, this.node.desc.equals("Ljava/lang/String;"));
+                && Utils.matchOrdinal(params.info, params.ordinal)
+                && Utils.matchLocal(params.info, this.node.name, false)) {
+            Utils.insertReplace(params.classNode.name, params.methodNode, this.node, this.node.desc.equals("Ljava/lang/String;"));
             debugInfo(params.ordinal, "ASMTransformMethod-InsertGlobalVariablePut/Get", "Runtime Determination", "Runtime Determination");
         }
         return this.node;
