@@ -1,5 +1,6 @@
 package me.fengming.vaultpatcher_asm.config;
 
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
@@ -36,7 +37,7 @@ public class VaultPatcherModule {
         ModuleInfo moduleInfo = new ModuleInfo();
         moduleInfo.readJson(reader);
         dynamic = moduleInfo.isDataDynamic();
-        VaultPatcher.debugInfo("[VaultPatcher] Loading {}!\nAuthor(s): {}\nMod(s): {}\nDesc: {}\nDyn: {}\nI18n: {}",
+        VaultPatcher.debugInfo("[VaultPatcher] Loading Module: {}, Author(s): {}, Mod(s): {}, Desc: {}, Dyn: {}, I18n: {}",
                 moduleInfo.getInfoName(), moduleInfo.getInfoAuthors(), moduleInfo.getInfoMods(),
                 moduleInfo.isDataDynamic(), moduleInfo.isDataI18n());
 
@@ -113,6 +114,7 @@ public class VaultPatcherModule {
 
     public void read() throws IOException {
         if (Files.notExists(moduleFile)) {
+            VaultPatcher.LOGGER.warn("[VaultPatcher] Not Found Module File {}, this file will be created and populated with initial content.",moduleFile);
             Files.createFile(moduleFile);
             try (JsonWriter jw = new JsonWriter(Files.newBufferedWriter(moduleFile, StandardCharsets.UTF_8))) {
                 jw.setIndent("  ");
