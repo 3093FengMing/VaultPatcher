@@ -1,6 +1,5 @@
 package me.fengming.vaultpatcher_asm.core.cache;
 
-import me.fengming.vaultpatcher_asm.core.utils.ASMUtils;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -86,7 +85,7 @@ public class ClassCache {
     public void put(ClassNode node, byte[] bytesToHash) {
         if (this.updated) return;
         this.clazz = node;
-        ASMUtils.exportClass(node, Utils.getVpPath().resolve("cache"));
+        Utils.exportClass(node, Utils.getVpPath().resolve("cache"));
         String hash = getSha256(bytesToHash);
         writeHash(hash, this.hashFile);
     }

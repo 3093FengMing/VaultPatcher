@@ -3,7 +3,7 @@ package me.fengming.vaultpatcher_asm.config;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
-import me.fengming.vaultpatcher_asm.core.utils.Utils;
+import me.fengming.vaultpatcher_asm.core.utils.StringUtils;
 
 import java.io.IOException;
 
@@ -69,7 +69,7 @@ public class TargetClassInfo {
     }
 
     public void setName(String name) {
-        if (Utils.isBlank(name)) return;
+        if (StringUtils.isBlank(name)) return;
         char first = name.charAt(0);
         if (first == '@') {
             matchMode = MatchMode.STARTS;
@@ -96,7 +96,7 @@ public class TargetClassInfo {
     }
 
     public void setLocal(String local) {
-        if (Utils.isBlank(local)) {
+        if (StringUtils.isBlank(local)) {
             this.local = local;
         } else {
             char first = local.charAt(0);
@@ -106,7 +106,7 @@ public class TargetClassInfo {
             } else if (first == 'M') {
                 localMode = LocalMode.METHOD_RETURN;
             } else if (first == 'R') {
-                localMode = LocalMode.CALL_RETURN;
+                localMode = LocalMode.INVOKE_RETURN;
             } else if (first == 'G' || first == 'F') {
                 localMode = LocalMode.GLOBAL_VARIABLE;
             } else {
@@ -151,7 +151,7 @@ public class TargetClassInfo {
                 '}';
     }
 
-    public enum LocalMode { CALL_RETURN, LOCAL_VARIABLE, METHOD_RETURN, GLOBAL_VARIABLE, NONE }
+    public enum LocalMode { INVOKE_RETURN, LOCAL_VARIABLE, METHOD_RETURN, GLOBAL_VARIABLE, NONE }
 
     public enum MatchMode { FULL, STARTS, ENDS }
 }

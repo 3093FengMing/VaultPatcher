@@ -1,13 +1,15 @@
-package me.fengming.vaultpatcher_asm.loader.forge;
+package me.fengming.vaultpatcher_asm.loader.modlauncher;
 
 import cpw.mods.modlauncher.api.ITransformer;
 import cpw.mods.modlauncher.api.ITransformerVotingContext;
 import cpw.mods.modlauncher.api.TransformerVoteResult;
 import me.fengming.vaultpatcher_asm.config.TranslationInfo;
 import me.fengming.vaultpatcher_asm.core.transformers.VPClassTransformer;
+import me.fengming.vaultpatcher_asm.core.utils.StringUtils;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
 import org.objectweb.asm.tree.ClassNode;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class ForgeClassTransformer implements ITransformer<ClassNode> {
@@ -32,7 +34,15 @@ public class ForgeClassTransformer implements ITransformer<ClassNode> {
 
     @Override
     public Set<Target> targets() {
-        return Utils.getTarget(translationInfo);
+        Set<ITransformer.Target> targets = new HashSet<>();
+
+        if (this.translationInfo == null) {
+            targets.addAll(Utils.getExpandTargets());
+        } else {
+            String name = this.translationInfo.getTargetClassInfo().getName();
+            if (!StringUtils.isBlank(name)) targets.add(ITransformer.Target.targetClass(StringUtils.rawPackage(name)));
+        }
+        return targets;
     }
 
     // neoforge only

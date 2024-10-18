@@ -22,7 +22,7 @@ public class I18n {
         try {
             // Only In Client
             Path optionsFile = mcPath.resolve("options.txt");
-            if (Utils.isClient && Files.exists(optionsFile)) {
+            if (VaultPatcher.isClient && Files.exists(optionsFile)) {
                 br1 = Files.newBufferedReader(optionsFile);
                 String line;
                 while ((line = br1.readLine()) != null) {

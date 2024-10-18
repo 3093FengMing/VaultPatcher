@@ -1,4 +1,4 @@
-package me.fengming.vaultpatcher_asm.loader.forge;
+package me.fengming.vaultpatcher_asm.loader.launchwrapper;
 
 import me.fengming.vaultpatcher_asm.config.TranslationInfo;
 import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;

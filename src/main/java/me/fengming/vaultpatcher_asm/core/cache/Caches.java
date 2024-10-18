@@ -1,7 +1,5 @@
 package me.fengming.vaultpatcher_asm.core.cache;
 
-import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
-import me.fengming.vaultpatcher_asm.core.utils.ASMUtils;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
 import org.objectweb.asm.tree.ClassNode;
 
@@ -42,7 +40,7 @@ public class Caches {
     }
 
     public static void addClassCache(String className, ClassNode node, byte[] hash) {
-        File classFile = ASMUtils.exportClass(node, Utils.getVpPath().resolve("cache"));
+        File classFile = Utils.exportClass(node, Utils.getVpPath().resolve("cache"));
         try {
             ClassCache cache = new ClassCache(classFile.getParentFile().toPath().resolve(classFile.getName() + ".sha256"), classFile.toPath());
             cache.create(hash);

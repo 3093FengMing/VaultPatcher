@@ -1,13 +1,14 @@
-package me.fengming.vaultpatcher_asm.loader.forge;
+package me.fengming.vaultpatcher_asm.loader.modlauncher;
 
 import cpw.mods.modlauncher.Launcher;
 import cpw.mods.modlauncher.api.*;
 import me.fengming.vaultpatcher_asm.VaultPatcher;
 import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
 import me.fengming.vaultpatcher_asm.core.patch.ClassPatcher;
+import me.fengming.vaultpatcher_asm.core.utils.Platform;
+import me.fengming.vaultpatcher_asm.core.utils.StringUtils;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
 import org.jetbrains.annotations.NotNull;
-import org.objectweb.asm.tree.ClassNode;
 
 import java.lang.reflect.Field;
 import java.nio.file.Path;
@@ -37,14 +38,13 @@ public class VPTransformationService implements ITransformationService {
         }
 
         if (environment.getProperty(IEnvironment.Keys.ASSETSDIR.get()).isPresent()) {
-            Utils.isClient = true;
+            VaultPatcher.isClient = true;
         }
 
-        Utils.platform = Utils.Platform.Forge1_13;
+        VaultPatcher.platform = Platform.Forge1_13;
 
         String minecraftVersion = getMinecraftVersion();
-        Utils.mcVersion = minecraftVersion;
-        if (Utils.isBlank(minecraftVersion)) VaultPatcher.LOGGER.error("[VaultPatcher] Failed to get minecraft version!");
+        if (StringUtils.isBlank(minecraftVersion)) VaultPatcher.LOGGER.error("[VaultPatcher] Failed to get minecraft version!");
         // VaultPatcher.LOGGER.info("[VaultPatcher] Get minecraft version: " + minecraftVersion);
         if (isOldVersion(minecraftVersion)) {
             VaultPatcher.LOGGER.warn("[VaultPatcher] Disable dynamic replace because the game version is 1.16.5 and below (your version: {})", minecraftVersion);
@@ -52,21 +52,21 @@ public class VPTransformationService implements ITransformationService {
         }
 
         Path mcPath = minecraftPathOptional.get();
-        VaultPatcher.init(mcPath);
+        VaultPatcher.init(mcPath, minecraftVersion, Platform.Forge1_13);
 
         VaultPatcher.LOGGER.debug("[VaultPatcher] TS DONE!");
     }
 
     public static boolean isOldVersion(String version) {
-        String[] _116 = {"1", "16", "5"};
+        String[] _1165 = {"1", "16", "5"};
         String[] ver = version.split("\\.", 3);
-        for (int i = 0; i < Math.min(_116.length, ver.length); i++) {
-            int comparison = _116[i].compareTo(ver[i]);
+        for (int i = 0; i < Math.min(_1165.length, ver.length); i++) {
+            int comparison = _1165[i].compareTo(ver[i]);
 
             if (comparison < 0) return false;
             if (comparison > 0) return true;
         }
-        return _116.length >= ver.length;
+        return _1165.length >= ver.length;
     }
 
     private static String getMinecraftVersion() {
@@ -99,11 +99,7 @@ public class VPTransformationService implements ITransformationService {
     public List<ITransformer> transformers() {
         List<ITransformer> list = new ArrayList<>();
         if (VaultPatcherConfig.isEnableClassPatch()) {
-            ClassPatcher.getPatchMap().forEach((k, v) -> list.add(new ITransformer<ClassNode>() {
-                public ClassNode transform(ClassNode input, ITransformerVotingContext context) {VaultPatcher.debugInfo("Using Patch: " + input.name); return v;}
-                public TransformerVoteResult castVote(ITransformerVotingContext context) {return TransformerVoteResult.YES;}
-                public Set<Target> targets() {return new HashSet<Target>() {{this.add(Target.targetClass(k));}};}
-            }));
+            ClassPatcher.getPatchMap().keySet().forEach(k -> list.add(new PatchClassTransformer(k)));
         }
 
         list.addAll(Utils.translationInfos.stream().map(ForgeClassTransformer::new).collect(Collectors.toList()));
@@ -112,4 +108,5 @@ public class VPTransformationService implements ITransformationService {
         if (!oldVersion) list.add(new ForgeMinecraftTransformer());
         return list;
     }
+
 }

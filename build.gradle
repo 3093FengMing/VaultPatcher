@@ -14,7 +14,7 @@ jar {
 
     manifest {
         attributes([
-                "TweakClass": "me.fengming.vaultpatcher_asm.loader.forge.VPLaunchTweaker",
+                "TweakClass": "me.fengming.vaultpatcher_asm.loader.launchwrapper.VPLaunchTweaker",
                 "TweakOrder": 209
         ])
     }

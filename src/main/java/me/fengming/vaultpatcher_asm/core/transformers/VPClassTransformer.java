@@ -1,16 +1,15 @@
 package me.fengming.vaultpatcher_asm.core.transformers;
 
 import me.fengming.vaultpatcher_asm.VaultPatcher;
-import me.fengming.vaultpatcher_asm.config.DebugMode;
-import me.fengming.vaultpatcher_asm.config.Pairs;
-import me.fengming.vaultpatcher_asm.config.TranslationInfo;
-import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
+import me.fengming.vaultpatcher_asm.config.*;
 import me.fengming.vaultpatcher_asm.core.cache.Caches;
 import me.fengming.vaultpatcher_asm.core.cache.ClassCache;
 import me.fengming.vaultpatcher_asm.core.misc.VPClassLoader;
 import me.fengming.vaultpatcher_asm.core.node.NodeHandlerParameters;
 import me.fengming.vaultpatcher_asm.core.node.handlers.NodeHandler;
-import me.fengming.vaultpatcher_asm.core.utils.ASMUtils;
+import me.fengming.vaultpatcher_asm.core.utils.MatchUtils;
+import me.fengming.vaultpatcher_asm.core.utils.Platform;
+import me.fengming.vaultpatcher_asm.core.utils.StringUtils;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
 import me.fengming.vaultpatcher_asm.plugin.VaultPatcherPlugin;
 import org.objectweb.asm.*;
@@ -30,7 +29,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
     public VPClassTransformer(TranslationInfo info) {
         this.translationInfo = info;
         if (info != null) {
-            Utils.setTransformed(info);
+            TransformChecker.setTransformed(info);
             VaultPatcher.debugInfo("[VaultPatcher] Loading VPTransformer for translation info: {}", info);
         }
     }
@@ -42,7 +41,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
 
         for (MethodNode method : input.methods) {
             String methodName = info.getTargetClassInfo().getMethod();
-            if ((Utils.isBlank(methodName) || methodName.equals(method.name)) && !method.name.equals("__vp_init") && !method.name.equals("__vp_replace")) {
+            if ((StringUtils.isBlank(methodName) || methodName.equals(method.name)) && !method.name.equals("__vp_init") && !method.name.equals("__vp_replace")) {
                 // Initial Local Variable Map
                 final HashMap<Integer, String> localVariableMap = new HashMap<>();
                 boolean disableLocalVariable = true;
@@ -68,11 +67,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
                 list.add(new TypeInsnNode(Opcodes.NEW, "java/util/HashMap"));
                 list.add(new InsnNode(Opcodes.DUP));
                 Set<Map.Entry<String, String>> set = info.getPairs().getMap().entrySet();
-                if (set.size() > 5) {
-                    list.add(new IntInsnNode(Opcodes.BIPUSH, set.size()));
-                } else {
-                    list.add(new InsnNode(Opcodes.ICONST_0 + set.size())); // max to 255
-                }
+                list.add(intNode(set.size()));
                 list.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "java/util/HashMap", "<init>", "(I)V", false));
                 list.add(new FieldInsnNode(Opcodes.PUTSTATIC, input.name, "__vp_map", "Ljava/util/HashMap;"));
                 list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, input.name, "__vp_init", "()V"));
@@ -88,6 +83,30 @@ public class VPClassTransformer implements Consumer<ClassNode> {
             patchClass(input, input.name, info.getPairs().getMap().entrySet(), hasClinit, isInterface);
         }
 
+    }
+
+    private static AbstractInsnNode intNode(int value) {
+        if (value > 32767 || value < -32768) {
+            return new LdcInsnNode(value);
+        } else if (value > 127 || value < -128) {
+            return new IntInsnNode(Opcodes.SIPUSH, value);
+        } else if (value > 5 || value < -1) {
+            return new IntInsnNode(Opcodes.BIPUSH, value);
+        } else {
+            return new InsnNode(Opcodes.ICONST_0 + value);
+        }
+    }
+
+    private static void visitIntNode(MethodVisitor mv, int value) {
+        if (value > 32767 || value < -32768) {
+            mv.visitLdcInsn(value);
+        } else if (value > 127 || value < -128) {
+            mv.visitIntInsn(Opcodes.SIPUSH, value);
+        } else if (value > 5 || value < -1) {
+            mv.visitIntInsn(Opcodes.BIPUSH, value);
+        } else {
+            mv.visitInsn(Opcodes.ICONST_0 + value);
+        }
     }
 
     private static void patchClass(ClassVisitor cv, String className, Set<Map.Entry<String, String>> set, boolean hasClinit, boolean isInterface) {
@@ -110,11 +129,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
                 mv.visitLabel(label0);
                 mv.visitTypeInsn(Opcodes.NEW, innerClassName);
                 mv.visitInsn(Opcodes.DUP);
-                if (set.size() > 5) {
-                    mv.visitIntInsn(Opcodes.BIPUSH, set.size());
-                } else {
-                    mv.visitInsn(Opcodes.ICONST_0 + set.size()); // max to 255
-                }
+                visitIntNode(mv, set.size());
                 mv.visitMethodInsn(Opcodes.INVOKESPECIAL, innerClassName, "<init>", "(I)V", false);
                 mv.visitFieldInsn(Opcodes.PUTSTATIC, className, "__vp_map", "Ljava/util/HashMap;");
 
@@ -186,11 +201,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
                 mv.visitLabel(label0);
                 mv.visitTypeInsn(Opcodes.NEW, "java/util/HashMap");
                 mv.visitInsn(Opcodes.DUP);
-                if (set.size() > 5) {
-                    mv.visitIntInsn(Opcodes.BIPUSH, set.size());
-                } else {
-                    mv.visitInsn(Opcodes.ICONST_0 + set.size());
-                }
+                visitIntNode(mv, set.size());
                 mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/util/HashMap", "<init>", "(I)V", false);
                 mv.visitFieldInsn(Opcodes.PUTSTATIC, className, "__vp_map", "Ljava/util/HashMap;");
 
@@ -285,12 +296,16 @@ public class VPClassTransformer implements Consumer<ClassNode> {
 
     }
 
-    private static void fieldReplace(ClassNode input, TranslationInfo info) {
+    private void fieldReplace(ClassNode input, TranslationInfo info) {
+        // If the method name is not specified, the field will be replaced
+        TargetClassInfo targetClass = info.getTargetClassInfo();
+        if (!StringUtils.isBlank(targetClass.getMethod()) || targetClass.getOrdinal() == -1) return;
+
         Pairs pairs = info.getPairs();
         for (FieldNode field : input.fields) {
             if (field.value instanceof String) {
                 String original = (String) field.value;
-                String value = Utils.matchPairs(pairs, original, false);
+                String value = MatchUtils.matchPairs(pairs, original, false);
                 Utils.printDebugInfo(-1, original, "ASMTransformField", value, input.name, info);
                 field.value = value;
             }
@@ -322,7 +337,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
             }
 
             // Ensure that all TranslationInfo is transformed before adding to the cache
-            if (Utils.isTransformed(className)) {
+            if (TransformChecker.isTransformed(className)) {
                 VaultPatcher.debugInfo("Generating Class Cache: {}", input.name);
                 generate(input);
                 Caches.addClassCache(input.name, input, copy);
@@ -333,10 +348,13 @@ public class VPClassTransformer implements Consumer<ClassNode> {
             generate(input);
         }
 
-        // Recompute frames. Otherwise, it may cause java.lang.VerifyError in java8
-        if (Utils.platform == Utils.Platform.Forge1_6) {
+        // Recompute frames. Otherwise, it may cause java.lang.VerifyError on java8
+        if (VaultPatcher.platform == Platform.Forge1_6) {
+            ClassWriter wr = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+            input.accept(wr);
+            byte[] bytes = wr.toByteArray();
+
             ClassNode copied = new ClassNode();
-            byte[] bytes = Utils.nodeToBytes(input);
             ClassReader cr = new ClassReader(bytes);
             cr.accept(copied, ClassReader.SKIP_DEBUG);
             // copy class
@@ -347,7 +365,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
 
         VaultPatcher.plugins.forEach(e -> e.onTransformClass(input, VaultPatcherPlugin.Phase.AFTER));
 
-        if (Utils.debug.isExportClass()) ASMUtils.exportClass(input, Utils.getVpPath().resolve("exported"));
+        if (Utils.debug.isExportClass()) Utils.exportClass(input, Utils.getVpPath().resolve("exported"));
     }
 
     private void generate(ClassNode input) {
@@ -355,16 +373,19 @@ public class VPClassTransformer implements Consumer<ClassNode> {
         if (translationInfo == null) {
             disableLocal = true;
             for (TranslationInfo info : Utils.translationInfos) {
-                if (Utils.isBlank(info.getTargetClassInfo().getName()) || input.name.equals(Utils.rawPackage(info.getTargetClassInfo().getName()))) {
-                    methodReplace(input, info);
-                    fieldReplace(input, info);
+                if (StringUtils.isBlank(info.getTargetClassInfo().getName()) || input.name.equals(StringUtils.rawPackage(info.getTargetClassInfo().getName()))) {
+                    patch(input, info);
                 }
             }
-        } else if (Utils.isBlank(translationInfo.getTargetClassInfo().getName()) || input.name.equals(Utils.rawPackage(translationInfo.getTargetClassInfo().getName()))) {
-            disableLocal = Utils.isBlank(translationInfo.getTargetClassInfo().getLocal());
-            methodReplace(input, translationInfo);
-            fieldReplace(input, translationInfo);
+        } else if (StringUtils.isBlank(translationInfo.getTargetClassInfo().getName()) || input.name.equals(StringUtils.rawPackage(translationInfo.getTargetClassInfo().getName()))) {
+            disableLocal = StringUtils.isBlank(translationInfo.getTargetClassInfo().getLocal());
+            patch(input, translationInfo);
         }
         transformed = true;
+    }
+
+    private void patch(ClassNode input, TranslationInfo info) {
+        methodReplace(input, info);
+        fieldReplace(input, info);
     }
 }

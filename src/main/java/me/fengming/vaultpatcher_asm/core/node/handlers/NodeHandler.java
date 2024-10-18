@@ -4,7 +4,9 @@ import me.fengming.vaultpatcher_asm.VaultPatcher;
 import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
 import me.fengming.vaultpatcher_asm.core.node.HandlerDebugInfo;
 import me.fengming.vaultpatcher_asm.core.node.NodeHandlerParameters;
+import me.fengming.vaultpatcher_asm.core.utils.StringUtils;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
 public abstract class NodeHandler<E extends AbstractInsnNode> {
@@ -14,6 +16,10 @@ public abstract class NodeHandler<E extends AbstractInsnNode> {
     public NodeHandler(E node, NodeHandlerParameters params) {
         this.node = node;
         this.params = params;
+    }
+
+    public static void insertReplace(String className, MethodNode method, AbstractInsnNode nodePosition, boolean isString) {
+        method.instructions.insert(nodePosition, new MethodInsnNode(Opcodes.INVOKESTATIC, StringUtils.rawPackage(className), "__vp_replace", isString ? "(Ljava/lang/String;)Ljava/lang/String;" : "(Ljava/lang/Object;)Ljava/lang/String;", false));
     }
 
     public E _modifyNode() {

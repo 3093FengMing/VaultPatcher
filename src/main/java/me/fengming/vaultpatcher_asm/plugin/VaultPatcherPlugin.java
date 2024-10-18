@@ -19,7 +19,5 @@ public interface VaultPatcherPlugin {
     default void onTransformClass(ClassNode classNode, Phase phase) {}
     void end();
 
-    enum Phase {
-        BEFORE, AFTER
-    }
+    enum Phase { BEFORE, AFTER }
 }

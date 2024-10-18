@@ -4,7 +4,9 @@ import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
 import me.fengming.vaultpatcher_asm.config.VaultPatcherModule;
 import me.fengming.vaultpatcher_asm.core.cache.Caches;
 import me.fengming.vaultpatcher_asm.core.patch.ClassPatcher;
+import me.fengming.vaultpatcher_asm.core.transformers.TransformChecker;
 import me.fengming.vaultpatcher_asm.core.utils.I18n;
+import me.fengming.vaultpatcher_asm.core.utils.Platform;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
 import me.fengming.vaultpatcher_asm.plugin.VaultPatcherPlugin;
 import org.apache.logging.log4j.LogManager;
@@ -24,9 +26,14 @@ public class VaultPatcher {
     public static Logger LOGGER = LogManager.getLogger("VaultPatcher");
 
     public static List<VaultPatcherPlugin> plugins = new ArrayList<>();
+    public static Path mcPath = null;
+    public static String mcVersion = null;
+    public static Platform platform = Platform.UNDEFINED;
+    public static boolean isClient = false;
 
-    public static void init(Path mcPath) {
-        Utils.mcPath = mcPath;
+    public static void init(Path mcPath, String mcVersion, Platform platform) {
+        VaultPatcher.mcPath = mcPath;
+        VaultPatcher.mcVersion = mcVersion;
 
         Path pluginsPath = Utils.getVpPath().resolve("plugins");
         if (Files.notExists(pluginsPath)) {
@@ -108,7 +115,7 @@ public class VaultPatcher {
             throw new RuntimeException("Failed to load modules: ", e);
         }
 
-        Utils.translationInfos.forEach(info -> Utils.transformed.put(info, false));
+        Utils.translationInfos.forEach(info -> TransformChecker.transformed.put(info, false));
 
         // optimization
         Utils.needStacktrace = Utils.dynTranslationInfos.stream().anyMatch(e -> !e.getTargetClassInfo().getName().isEmpty());

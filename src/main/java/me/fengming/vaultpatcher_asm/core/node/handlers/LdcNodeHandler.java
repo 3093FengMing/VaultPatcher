@@ -3,8 +3,7 @@ package me.fengming.vaultpatcher_asm.core.node.handlers;
 import me.fengming.vaultpatcher_asm.VaultPatcher;
 import me.fengming.vaultpatcher_asm.core.node.HandlerDebugInfo;
 import me.fengming.vaultpatcher_asm.core.node.NodeHandlerParameters;
-import me.fengming.vaultpatcher_asm.core.utils.ASMUtils;
-import me.fengming.vaultpatcher_asm.core.utils.Utils;
+import me.fengming.vaultpatcher_asm.core.utils.MatchUtils;
 import org.objectweb.asm.tree.LdcInsnNode;
 
 public class LdcNodeHandler extends NodeHandler<LdcInsnNode> {
@@ -18,9 +17,9 @@ public class LdcNodeHandler extends NodeHandler<LdcInsnNode> {
         VaultPatcher.debugInfo("[VaultPatcher] LdcNodeHandler");
         VaultPatcher.debugInfo("[VaultPatcher] Params: " + params.toString());
         VaultPatcher.debugInfo("[VaultPatcher] Node Cst: " + this.node.cst);
-        if (this.node.cst instanceof String && Utils.matchOrdinal(params.info, params.ordinal)) {
+        if (this.node.cst instanceof String && MatchUtils.matchOrdinal(params.info, params.ordinal)) {
             String s = (String) this.node.cst;
-            String v = Utils.matchPairs(params.info.getPairs(), s, false);
+            String v = MatchUtils.matchPairs(params.info.getPairs(), s, false);
             debugInfo(-1, "ASMTransformMethod-Ldc", s, v);
             this.node.cst = v;
         }
