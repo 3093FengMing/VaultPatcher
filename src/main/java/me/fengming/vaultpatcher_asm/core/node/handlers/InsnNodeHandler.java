@@ -18,7 +18,7 @@ public class InsnNodeHandler extends NodeHandler<InsnNode> {
                 && MatchUtils.matchOrdinal(params.info, params.ordinal)
                 && MatchUtils.matchLocal(params.info, params.methodNode.name, true)) {
             insertReplace(params.classNode.name, params.methodNode, this.node, false);
-            debugInfo(params.ordinal, "ASMTransformMethod-InsertMethodReturn", "Runtime Determination", "Runtime Determination");
+            debugInfo(params.ordinal, "ASMTransformMethod-InsertMethodReturn", "[Dyn]", "[Dyn]");
         }
         return this.node;
     }
