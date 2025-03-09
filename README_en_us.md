@@ -7,7 +7,7 @@
 
 ## Credits
 
-#### Author: FengMing([github](https://github.com/3093FengMing), [afdian](https://afdian.net/a/fengming3093))
+#### Author: FengMing([github](https://github.com/3093FengMing))
 
 #### Configuration Author: teddyxlandlee([github](https://github.com/teddyxlandlee))
 
