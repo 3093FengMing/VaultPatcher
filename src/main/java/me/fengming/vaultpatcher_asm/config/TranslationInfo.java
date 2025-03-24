@@ -3,6 +3,7 @@ package me.fengming.vaultpatcher_asm.config;
 import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class TranslationInfo {
     private final TargetClassInfo targetClassInfo;
@@ -48,6 +49,19 @@ public class TranslationInfo {
                 "targetClassInfo=" + targetClassInfo +
                 ", pairs=" + pairs +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TranslationInfo that = (TranslationInfo) o;
+        return Objects.equals(getTargetClassInfo(), that.getTargetClassInfo()) && Objects.equals(getPairs(), that.getPairs());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getTargetClassInfo(), getPairs());
     }
 
     public static class Mutable extends TranslationInfo {

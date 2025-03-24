@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 public class VPTransformationService implements ITransformationService {
 
-    private boolean oldVersion = false;
+    private boolean disableDynamic = false;
 
     @Override
     public @NotNull String name() {
@@ -46,10 +46,10 @@ public class VPTransformationService implements ITransformationService {
         String minecraftVersion = getMinecraftVersion();
         if (StringUtils.isBlank(minecraftVersion)) VaultPatcher.LOGGER.error("[VaultPatcher] Failed to get minecraft version!");
         // VaultPatcher.LOGGER.info("[VaultPatcher] Get minecraft version: " + minecraftVersion);
-        if (isOldVersion(minecraftVersion)) {
-            VaultPatcher.LOGGER.warn("[VaultPatcher] Disable dynamic replace because the game version is 1.16.5 and below (your version: {})", minecraftVersion);
-            oldVersion = true;
-        }
+//        if (isOldVersion(minecraftVersion)) {
+//            VaultPatcher.LOGGER.warn("[VaultPatcher] Disable dynamic replace because the game version is 1.16.5 and below (your version: {})", minecraftVersion);
+//            disableDynamic = true;
+//        }
 
         Path mcPath = minecraftPathOptional.get();
         VaultPatcher.init(mcPath, minecraftVersion, Platform.Forge1_13);
@@ -105,7 +105,7 @@ public class VPTransformationService implements ITransformationService {
         list.addAll(Utils.translationInfos.stream().map(ForgeClassTransformer::new).collect(Collectors.toList()));
 
         list.add(new ForgeClassTransformer(null));
-        if (!oldVersion) list.add(new ForgeMinecraftTransformer());
+        if (!disableDynamic) list.add(new ForgeMinecraftTransformer());
         return list;
     }
 

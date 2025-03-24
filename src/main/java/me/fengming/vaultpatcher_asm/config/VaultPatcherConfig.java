@@ -58,35 +58,23 @@ public class VaultPatcherConfig {
 
         jw.name("mods");
         jw.beginArray();
-        mods.forEach(e -> {
-            try {
-                jw.value(e);
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
-        });
+        for (String mod : mods) {
+            jw.value(mod);
+        }
         jw.endArray();
 
         jw.name("classes");
         jw.beginArray();
-        classes.forEach(e -> {
-            try {
-                jw.value(e);
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
-        });
+        for (String clazz : classes) {
+            jw.value(clazz);
+        }
         jw.endArray();
 
         jw.name("apply_mods");
         jw.beginArray();
-        applyMods.forEach(e -> {
-            try {
-                jw.value(e);
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
-        });
+        for (String applyMod : applyMods) {
+            jw.value(applyMod);
+        }
         jw.endArray();
 
         jw.name("default_language");

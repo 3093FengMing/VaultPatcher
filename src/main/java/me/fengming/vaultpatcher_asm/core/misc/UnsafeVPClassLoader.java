@@ -14,6 +14,7 @@ public class UnsafeVPClassLoader {
 
     static {
         try {
+            // Java 24??
             Field Field_theUnsafe = Unsafe.class.getDeclaredField("theUnsafe");
             Field_theUnsafe.setAccessible(true);
             unsafe = (Unsafe) Field_theUnsafe.get(null);
