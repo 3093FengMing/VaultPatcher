@@ -27,8 +27,10 @@ public class LinkedClassTransformer implements IClassTransformer {
         if (VaultPatcherConfig.isEnableClassPatch()) {
             patchedClass = ClassPatcher.patch(input.name);
             patched = patchedClass != null;
-            if (patched) input = patchedClass;
-            VaultPatcher.debugInfo("[VaultPatcher] Using Patch: {} {}", input.name, patched);
+            if (patched) {
+                input = patchedClass;
+                VaultPatcher.debugInfo("[VaultPatcher] Using Patch: {}", input.name);
+            }
         }
 
         Set<TranslationInfo> set = VPLaunchTweaker.classFinding.getOrDefault(name, null);
