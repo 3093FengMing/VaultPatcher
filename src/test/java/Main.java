@@ -1,8 +1,4 @@
-import org.objectweb.asm.tree.AbstractInsnNode;
-import org.objectweb.asm.tree.LdcInsnNode;
-
 import java.util.HashMap;
-import java.util.stream.IntStream;
 
 public class Main {
     String abcc = aaa("sssh");

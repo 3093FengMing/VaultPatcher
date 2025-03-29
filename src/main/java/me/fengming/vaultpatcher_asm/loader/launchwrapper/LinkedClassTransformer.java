@@ -10,8 +10,6 @@ import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
 
-import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.Set;
 
 public class LinkedClassTransformer implements IClassTransformer {

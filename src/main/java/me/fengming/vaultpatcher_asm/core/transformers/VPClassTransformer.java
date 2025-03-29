@@ -1,7 +1,9 @@
 package me.fengming.vaultpatcher_asm.core.transformers;
 
 import me.fengming.vaultpatcher_asm.VaultPatcher;
-import me.fengming.vaultpatcher_asm.config.*;
+import me.fengming.vaultpatcher_asm.config.Pairs;
+import me.fengming.vaultpatcher_asm.config.TargetClassInfo;
+import me.fengming.vaultpatcher_asm.config.TranslationInfo;
 import me.fengming.vaultpatcher_asm.core.cache.Caches;
 import me.fengming.vaultpatcher_asm.core.cache.ClassCache;
 import me.fengming.vaultpatcher_asm.core.misc.VPClassLoader;

@@ -2,14 +2,19 @@ package me.fengming.vaultpatcher_asm.core.utils;
 
 import cpw.mods.modlauncher.api.ITransformer;
 import me.fengming.vaultpatcher_asm.VaultPatcher;
-import me.fengming.vaultpatcher_asm.config.*;
+import me.fengming.vaultpatcher_asm.config.DebugMode;
+import me.fengming.vaultpatcher_asm.config.TranslationInfo;
+import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
