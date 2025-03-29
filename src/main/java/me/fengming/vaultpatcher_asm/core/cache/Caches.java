@@ -5,7 +5,11 @@ import org.objectweb.asm.tree.ClassNode;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,24 +19,23 @@ public class Caches {
     public static void init(Path path) throws IOException {
         if (!Utils.debug.isUseCache()) return;
         File file = path.toFile();
-        if (!file.exists()) {
+        if (Files.notExists(path)) {
             file.mkdirs();
         }
-        traverse(file, path);
+        traverse(path);
     }
 
-    private static void traverse(File file, Path root) throws IOException {
-        if (file == null) return;
-        if (file.isDirectory()) {
-            File[] children = file.listFiles();
-            if (children == null || children.length == 0) return;
-            for (File child : children) {
-                traverse(child, root);
+    private static void traverse(Path root) throws IOException {
+        Files.walkFileTree(root, new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                if (!file.getFileName().endsWith(".class")) return super.visitFile(file, attrs);
+
+                String className = Utils.filePathToClassName(file, root);
+                cacheMap.putIfAbsent(className, new ClassCache(file.getParent().resolve(file.getFileName() + ".sha256"), file));
+                return super.visitFile(file, attrs);
             }
-        } else if (file.getName().endsWith(".class")) {
-            String className = Utils.filePathToClassName(file.toPath(), root);
-            cacheMap.putIfAbsent(className, new ClassCache(file.getParentFile().toPath().resolve(file.getName() + ".sha256"), file.toPath()));
-        }
+        });
     }
 
     public static ClassCache getClassCache(String className) {

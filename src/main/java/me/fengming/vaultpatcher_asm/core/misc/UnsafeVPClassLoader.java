@@ -21,7 +21,7 @@ public class UnsafeVPClassLoader {
             Field Field_IMPL_LOOKUP = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
             lookup = (MethodHandles.Lookup) unsafe.getObject(unsafe.staticFieldBase(Field_IMPL_LOOKUP), unsafe.staticFieldOffset(Field_IMPL_LOOKUP));
         } catch (Throwable e) {
-            VaultPatcher.LOGGER.error("Failed to initialize VPClassLoader: ", e);
+            VaultPatcher.LOGGER.error("[VaultPatcher] Failed to initialize VPClassLoader: ", e);
             throw new RuntimeException(e);
         }
     }
@@ -33,7 +33,7 @@ public class UnsafeVPClassLoader {
             MethodHandle handle = lookup.findVirtual(ClassLoader.class, "defineClass", methodType);
             handle.invoke(parent, className, classBytes, 0, classBytes.length);
         } catch (Throwable e) {
-            VaultPatcher.LOGGER.error("Failed to define class: ", e);
+            VaultPatcher.LOGGER.error("[VaultPatcher] Failed to define class: ", e);
             throw new RuntimeException(e);
         }
     }

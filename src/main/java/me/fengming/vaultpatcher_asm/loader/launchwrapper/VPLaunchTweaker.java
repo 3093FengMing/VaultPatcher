@@ -30,13 +30,13 @@ public class VPLaunchTweaker implements ITweaker {
             set.add(info);
             classFinding.put(info.getTargetClassInfo().getName(), set);
         }
-        VaultPatcher.LOGGER.debug("[VaultPatcher] LT DONE!");
+        VaultPatcher.debugInfo("[VaultPatcher] LT DONE!");
     }
 
     @Override
     public void injectIntoClassLoader(LaunchClassLoader classLoader) {
         classLoader.registerTransformer("me.fengming.vaultpatcher_asm.loader.launchwrapper.LinkedClassTransformer");
-        VaultPatcher.LOGGER.debug("[VaultPatcher] CL DONE!");
+        VaultPatcher.debugInfo("[VaultPatcher] CL DONE!");
     }
 
     @Override

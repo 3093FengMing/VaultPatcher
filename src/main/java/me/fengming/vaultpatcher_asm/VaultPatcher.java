@@ -69,11 +69,11 @@ public class VaultPatcher {
     private static void _init(Path mcPath) {
         plugins.forEach(e -> e.start(mcPath));
 
-        VaultPatcher.LOGGER.debug("[VaultPatcher] Loading I18n!");
+        VaultPatcher.debugInfo("[VaultPatcher] Loading I18n!");
         I18n.load(mcPath);
 
         try {
-            VaultPatcher.LOGGER.debug("[VaultPatcher] Loading Configs!");
+            VaultPatcher.debugInfo("[VaultPatcher] Loading Configs!");
             plugins.forEach(e -> e.onLoadConfig(VaultPatcherPlugin.Phase.BEFORE));
             VaultPatcherConfig.readConfig(mcPath.resolve("config").resolve("vaultpatcher_asm"));
             Utils.debug = VaultPatcherConfig.getDebugMode();
@@ -83,7 +83,7 @@ public class VaultPatcher {
         }
 
         try {
-            VaultPatcher.LOGGER.debug("[VaultPatcher] Loading Patches!");
+            VaultPatcher.debugInfo("[VaultPatcher] Loading Patches!");
             plugins.forEach(e -> e.onLoadPatches(VaultPatcherPlugin.Phase.BEFORE));
             ClassPatcher.init(Utils.getVpPath().resolve("patch"));
             plugins.forEach(e -> e.onLoadPatches(VaultPatcherPlugin.Phase.AFTER));
@@ -92,7 +92,7 @@ public class VaultPatcher {
         }
 
         try {
-            VaultPatcher.LOGGER.debug("[VaultPatcher] Loading Caches!");
+            VaultPatcher.debugInfo("[VaultPatcher] Loading Caches!");
             plugins.forEach(e -> e.onLoadCaches(VaultPatcherPlugin.Phase.BEFORE));
             Caches.init(Utils.getVpPath().resolve("cache"));
             plugins.forEach(e -> e.onLoadCaches(VaultPatcherPlugin.Phase.AFTER));
@@ -101,7 +101,7 @@ public class VaultPatcher {
         }
 
         try {
-            VaultPatcher.LOGGER.debug("[VaultPatcher] Loading Modules!");
+            VaultPatcher.debugInfo("[VaultPatcher] Loading Modules!");
             List<String> mods = VaultPatcherConfig.getMods();
             for (String mod : mods) {
                 VaultPatcherModule vpp = new VaultPatcherModule(mod + ".json");
@@ -121,6 +121,10 @@ public class VaultPatcher {
         Utils.needStacktrace = Utils.dynTranslationInfos.stream().anyMatch(e -> !e.getTargetClassInfo().getName().isEmpty());
 
         plugins.forEach(VaultPatcherPlugin::end);
+    }
+
+    public static void debugInfo(String s) {
+        if (Utils.debug.isEnable()) VaultPatcher.LOGGER.info(s);
     }
 
     public static void debugInfo(String s, Object... args) {

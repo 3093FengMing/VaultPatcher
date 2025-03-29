@@ -9,7 +9,7 @@ import java.util.function.Consumer;
 public class VPMinecraftTransformer implements Consumer<ClassNode> {
 
     public VPMinecraftTransformer() {
-        VaultPatcher.LOGGER.debug("[VaultPatcher] Loading MinecraftTransformer");
+        VaultPatcher.debugInfo("[VaultPatcher] Loading MinecraftTransformer");
     }
 
     private static void classTransform(ClassNode input) {

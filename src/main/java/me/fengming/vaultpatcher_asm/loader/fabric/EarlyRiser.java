@@ -18,7 +18,7 @@ import java.util.List;
 public class EarlyRiser implements Runnable {
     @Override
     public void run() {
-        VaultPatcher.LOGGER.debug("[VaultPatcher] Loading VPEarlyRiser");
+        VaultPatcher.debugInfo("[VaultPatcher] Loading VPEarlyRiser");
 
         VaultPatcher.platform = Platform.Fabric;
 
@@ -27,7 +27,7 @@ public class EarlyRiser implements Runnable {
         // initial transformers
 
         if (VaultPatcherConfig.isEnableClassPatch()) {
-            ClassPatcher.getPatchMap().forEach((k, v) -> ClassTinkerers.addTransformation(k, n -> n = v));
+            ClassPatcher.getPatchMap().forEach((k, v) -> ClassTinkerers.addReplacement(k, n -> n = v));
         }
 
         for (TranslationInfo info : Utils.translationInfos) {
@@ -48,7 +48,7 @@ public class EarlyRiser implements Runnable {
         ClassTinkerers.addTransformation("net.minecraft.class_327", new VPMinecraftTransformer());
         ClassTinkerers.addTransformation("net.minecraft.class_2585", new VPMinecraftTransformer());
 
-        VaultPatcher.LOGGER.debug("[VaultPatcher] ER DONE!");
+        VaultPatcher.debugInfo("[VaultPatcher] ER DONE!");
     }
 
     private static String getMinecraftVersion() {

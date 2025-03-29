@@ -14,7 +14,7 @@ public class VPClassLoader {
             Class<?> loadedClass = (Class<?>) Method_defineClass.invoke(parent, className, classBytes, 0, classBytes.length);
             loadedClass.newInstance();
         } catch (Exception e) {
-            VaultPatcher.LOGGER.warn("Failed to load class: {}, will try to use unsafe method", className, e);
+            VaultPatcher.LOGGER.warn("[VaultPatcher] Failed to load class: {}, will try to use unsafe method", className, e);
             UnsafeVPClassLoader.newClass(parent, className, classBytes);
         }
     }

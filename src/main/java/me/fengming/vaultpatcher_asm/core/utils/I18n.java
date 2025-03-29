@@ -40,7 +40,7 @@ public class I18n {
                 Files.createDirectories(i18nPath);
             }
             if (Files.notExists(i18nPath.resolve(currentCode + ".json"))) {
-                VaultPatcher.LOGGER.warn("Not found file {}.json. Will skip I18n loading.", currentCode);
+                VaultPatcher.LOGGER.warn("[VaultPatcher] Not found file {}.json. Will skip I18n loading.", currentCode);
                 return;
             }
 
@@ -48,10 +48,10 @@ public class I18n {
             langugesMap = GSON.fromJson(br2, new TypeToken<Map<String, String>>() {}.getType());
             if (langugesMap == null) {
                 langugesMap = new HashMap<>();
-                VaultPatcher.LOGGER.error("Error loading I18n file.");
+                VaultPatcher.LOGGER.error("[VaultPatcher] Error loading I18n file.");
             }
         } catch (Exception e) {
-            VaultPatcher.LOGGER.error("Error loading I18n file: {}", e);
+            VaultPatcher.LOGGER.error("[VaultPatcher] Error loading I18n file: {}", e);
         } finally {
             try {
                 if (br1 != null) {
@@ -61,7 +61,7 @@ public class I18n {
                     br2.close();
                 }
             } catch (Exception e) {
-                VaultPatcher.LOGGER.error("Error loading I18n file: {}", e);
+                VaultPatcher.LOGGER.error("[VaultPatcher] Error loading I18n file: {}", e);
             }
         }
     }

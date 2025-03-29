@@ -29,7 +29,7 @@ public class VPTransformationService implements ITransformationService {
         // VaultPatcher.LOGGER.warn("[VaultPatcher] Warning! You are in ASM mode!");
         // VaultPatcher.LOGGER.warn("[VaultPatcher] In this mode, the configuration files will be stored in \"config/vaultpatcher_asm\"!");
 
-        VaultPatcher.LOGGER.debug("[VaultPatcher] Loading VPTransformationService!");
+        VaultPatcher.debugInfo("[VaultPatcher] Loading VPTransformationService!");
 
         Optional<Path> minecraftPathOptional = environment.getProperty(IEnvironment.Keys.GAMEDIR.get());
         if (!minecraftPathOptional.isPresent()) {
@@ -54,7 +54,7 @@ public class VPTransformationService implements ITransformationService {
         Path mcPath = minecraftPathOptional.get();
         VaultPatcher.init(mcPath, minecraftVersion, Platform.Forge1_13);
 
-        VaultPatcher.LOGGER.debug("[VaultPatcher] TS DONE!");
+        VaultPatcher.debugInfo("[VaultPatcher] TS DONE!");
     }
 
     public static boolean isOldVersion(String version) {
