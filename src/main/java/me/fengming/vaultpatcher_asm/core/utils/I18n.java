@@ -6,6 +6,7 @@ import me.fengming.vaultpatcher_asm.VaultPatcher;
 import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
 
 import java.io.BufferedReader;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -23,14 +24,10 @@ public class I18n {
             // Only In Client
             Path optionsFile = mcPath.resolve("options.txt");
             if (VaultPatcher.isClient && Files.exists(optionsFile)) {
-                br1 = Files.newBufferedReader(optionsFile);
-                String line;
-                while ((line = br1.readLine()) != null) {
-                    if (line.startsWith("lang:")) {
-                        currentCode = line.substring("lang:".length());
-                        break;
-                    }
-                }
+                br1 = Files.newBufferedReader(optionsFile, Charset.defaultCharset());
+                br1.lines().filter(line -> line.startsWith("lang:"))
+                        .findFirst()
+                        .ifPresent(line -> currentCode = line.substring("lang:".length()));
             } else {
                 currentCode = VaultPatcherConfig.getDefaultLanguage();
             }
