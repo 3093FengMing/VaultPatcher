@@ -49,6 +49,11 @@ public class VaultPatcherModule {
 
             while (reader.peek() != JsonToken.END_OBJECT) {
                 switch (reader.nextName()) {
+                    case "i":
+                    case "i18n": {
+                        mutable.setI18n(reader.nextBoolean());
+                        break;
+                    }
                     case "s":
                     case "target_classes": {
                         reader.beginArray();
@@ -74,12 +79,13 @@ public class VaultPatcherModule {
                     }
                     case "v":
                     case "value": {
-                        pairs.setValue(moduleInfo.isDataI18n() ? Utils.getI18n(reader.nextString()) : reader.nextString());
+                        boolean i18n = moduleInfo.isDataI18n() || mutable.isI18n();
+                        pairs.setValue(i18n ? Utils.getI18n(reader.nextString()) : reader.nextString());
                         break;
                     }
                     case "p":
                     case "pairs": {
-                        pairs.readJson(reader, moduleInfo.isDataI18n());
+                        pairs.readJson(reader, moduleInfo.isDataI18n() || mutable.isI18n());
                         break;
                     }
                     default: {

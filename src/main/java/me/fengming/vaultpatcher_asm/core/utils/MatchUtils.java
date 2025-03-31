@@ -11,7 +11,7 @@ public class MatchUtils {
         if (source.isEmpty()) return source; // FIX replace whitespace with "" -> source
         String v = p.getValue(source); // Go to return if its full match
         if (dyn && p.isNonFullMatch()) {
-            for (Pair<String, String> pair : p.getList()) {
+            for (Pair<String, String> pair : p.getSet()) {
                 if (pair.second.charAt(0) == '@' && source.contains(pair.first)) {
                     v = source.replace(pair.first, pair.second.substring(1));
                 }

@@ -12,7 +12,6 @@ public class TargetClassInfo {
     private String method = "";
     private String local = "";
     private int ordinal = -1;
-    private boolean i18n = false;
     private MatchMode matchMode = MatchMode.FULL;
     private LocalMode localMode = LocalMode.NONE;
 
@@ -38,11 +37,6 @@ public class TargetClassInfo {
                 case "o":
                 case "ordinal": {
                     setOrdinal(reader.nextInt());
-                    break;
-                }
-                case "i":
-                case "i18n": {
-                    setI18n(reader.nextBoolean());
                     break;
                 }
                 default: {
@@ -71,15 +65,22 @@ public class TargetClassInfo {
     public void setName(String name) {
         if (StringUtils.isBlank(name)) return;
         char first = name.charAt(0);
-        if (first == '@') {
-            matchMode = MatchMode.STARTS;
-            this.name = name.substring(1);
-        } else if (first == '#') {
-            matchMode = MatchMode.ENDS;
-            this.name = name.substring(1);
-        } else {
-            matchMode = MatchMode.FULL;
-            this.name = name;
+        switch (first) {
+            case '@': {
+                matchMode = MatchMode.STARTS;
+                this.name = name.substring(1);
+                break;
+            }
+            case '#': {
+                matchMode = MatchMode.ENDS;
+                this.name = name.substring(1);
+                break;
+            }
+            default: {
+                matchMode = MatchMode.FULL;
+                this.name = name;
+                break;
+            }
         }
     }
 
@@ -101,16 +102,28 @@ public class TargetClassInfo {
         } else {
             char first = local.charAt(0);
             this.local = local.substring(1);
-            if (first == 'V') {
-                localMode = LocalMode.LOCAL_VARIABLE;
-            } else if (first == 'M') {
-                localMode = LocalMode.METHOD_RETURN;
-            } else if (first == 'R') {
-                localMode = LocalMode.INVOKE_RETURN;
-            } else if (first == 'G' || first == 'F') {
-                localMode = LocalMode.GLOBAL_VARIABLE;
-            } else {
-                localMode = LocalMode.NONE;
+            switch (first) {
+                case 'V': {
+                    localMode = LocalMode.LOCAL_VARIABLE;
+                    break;
+                }
+                case 'M': {
+                    localMode = LocalMode.METHOD_RETURN;
+                    break;
+                }
+                case 'R': {
+                    localMode = LocalMode.INVOKE_RETURN;
+                    break;
+                }
+                case 'G':
+                case 'F': {
+                    localMode = LocalMode.GLOBAL_VARIABLE;
+                    break;
+                }
+                default: {
+                    localMode = LocalMode.NONE;
+                    break;
+                }
             }
         }
     }
@@ -129,14 +142,6 @@ public class TargetClassInfo {
 
     public int getOrdinal() {
         return ordinal;
-    }
-
-    public boolean isI18n() {
-        return i18n;
-    }
-
-    public void setI18n(boolean i18n) {
-        this.i18n = i18n;
     }
 
     @Override

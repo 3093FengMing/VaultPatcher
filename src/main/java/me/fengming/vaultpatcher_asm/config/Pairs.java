@@ -2,12 +2,12 @@ package me.fengming.vaultpatcher_asm.config;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashBigSet;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Set;
 
 public class Pairs {
     private HashMap<String, String> pairsMap = null;
@@ -15,7 +15,7 @@ public class Pairs {
     private String lastValue = null;
 
     // optimization (only dynamic)
-    private List<Pair<String, String>> pairsList = null;
+    private Set<Pair<String, String>> pairsSet = null;
     private boolean nonFullMatch = false;
     private final boolean dyn;
 
@@ -26,7 +26,7 @@ public class Pairs {
     public Pairs(boolean dyn) {
         this.dyn = dyn;
         if (dyn) {
-            this.pairsList = new ArrayList<>();
+            this.pairsSet = new ObjectOpenHashBigSet<>();
         } else {
             this.pairsMap = new HashMap<>();
         }
@@ -63,8 +63,9 @@ public class Pairs {
     public HashMap<String, String> getMap() {
         return pairsMap;
     }
-    public List<Pair<String, String>> getList() { // Will not verify if it is in dynamic mode
-        return pairsList;
+
+    public Set<Pair<String, String>> getSet() { // Will not verify if it is in dynamic mode
+        return pairsSet;
     }
 
     public void setKey(String key) {
@@ -74,8 +75,8 @@ public class Pairs {
             return;
         }
         if (dyn) {
-            nonFullMatch |= lastValue.length() > 0 && lastValue.charAt(0) == '@'; // must be OR
-            pairsList.add(new Pair<>(key, lastValue));
+            nonFullMatch |= !lastValue.isEmpty() && lastValue.charAt(0) == '@'; // must be OR
+            pairsSet.add(new Pair<>(key, lastValue));
         } else {
             pairsMap.put(key, lastValue);
         }
@@ -90,8 +91,8 @@ public class Pairs {
             return;
         }
         if (dyn) {
-            nonFullMatch |= value.length() > 0 && value.charAt(0) == '@'; // must be OR
-            pairsList.add(new Pair<>(lastKey, value));
+            nonFullMatch |= !value.isEmpty() && value.charAt(0) == '@'; // must be OR
+            pairsSet.add(new Pair<>(lastKey, value));
         } else {
             pairsMap.put(lastKey, value);
         }
@@ -102,7 +103,7 @@ public class Pairs {
     public String getValue(String key) {
         if (dyn) {
             if (nonFullMatch) return null; // Always ignore this value in Utils class
-            Pair<String, String> pair = pairsList.stream()
+            Pair<String, String> pair = pairsSet.stream()
                     .filter(e -> e.first.equals(key))
                     .findFirst()
                     .orElse(null); // Perhaps For Loop is faster than StreamAPI?
@@ -118,7 +119,7 @@ public class Pairs {
         }
         // Will not check duplicate
         if (this.dyn) {
-            this.pairsList.addAll(other.pairsList);
+            this.pairsSet.addAll(other.pairsSet);
         } else {
             this.pairsMap.putAll(other.pairsMap);
         }
@@ -133,8 +134,8 @@ public class Pairs {
     public String toString() {
         StringBuilder sb = new StringBuilder("{");
         if (dyn) {
-            if (pairsList.size() <= Utils.debug.getHidePairsLimit()) {
-                pairsList.forEach(e -> sb.append("'").append(e.first).append("'='").append(e.second).append("'").append(","));
+            if (pairsSet.size() <= Utils.debug.getHidePairsLimit()) {
+                pairsSet.forEach(e -> sb.append("'").append(e.first).append("'='").append(e.second).append("'").append(","));
             } else {
                 sb.append("[HIDE]");
             }

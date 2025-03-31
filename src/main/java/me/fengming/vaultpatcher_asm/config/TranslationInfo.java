@@ -8,6 +8,7 @@ import java.util.Objects;
 public class TranslationInfo {
     private final TargetClassInfo targetClassInfo;
     private final Pairs pairs;
+    private boolean i18n = false;
 
     public TranslationInfo(TargetClassInfo targetClassInfo, Pairs pairs) {
         this.targetClassInfo = targetClassInfo;
@@ -21,6 +22,7 @@ public class TranslationInfo {
 
     public void write(JsonWriter writer) throws IOException {
         writer.beginObject();
+        writer.name("i18n").value(i18n);
         writer.name("target_class");
         getTargetClassInfo().writeJson(writer);
         writer.name("pairs").beginArray().endArray();
@@ -41,6 +43,14 @@ public class TranslationInfo {
 
     public void setValue(String value) {
         pairs.setValue(value);
+    }
+
+    public boolean isI18n() {
+        return i18n;
+    }
+
+    public void setI18n(boolean i18n) {
+        this.i18n = i18n;
     }
 
     @Override
