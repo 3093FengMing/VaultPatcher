@@ -20,24 +20,22 @@ public class VPMinecraftTransformer implements Consumer<ClassNode> {
             // TextComponent
             boolean done = false;
             for (MethodNode method : input.methods) {
-                if (method.name.equals("<init>")) {
-                    for (AbstractInsnNode insn : method.instructions) {
-                        if (insn.getType() == AbstractInsnNode.FIELD_INSN) {
-                            InsnList insnList = new InsnList();
-                            insnList.add(new LdcInsnNode(input.name + "#<init>"));
-                            insnList.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "me/fengming/vaultpatcher_asm/core/utils/DynamicReplaceUtils", "__mappingString", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", false));
-                            method.instructions.insertBefore(insn, insnList);
-                            done = true;
-                        }
-                    }
+                if (!method.name.equals("<init>")) break;
+
+                for (AbstractInsnNode insn : method.instructions) {
+                    if (insn.getType() != AbstractInsnNode.FIELD_INSN) continue;
+
+                    InsnList insnList = new InsnList();
+                    insnList.add(new LdcInsnNode(input.name + "#<init>"));
+                    insnList.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "me/fengming/vaultpatcher_asm/core/utils/DynamicReplaceUtils", "__mappingString", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", false));
+                    method.instructions.insertBefore(insn, insnList);
+                    break;
                 }
-                if (done) break;
             }
         } else if (input.name.equals("net/minecraft/client/gui/FontRenderer") /* Forge 1.16.5- */
                 || input.name.equals("net/minecraft/client/gui/Font") /* Forge 1.16.5+ */
                 || input.name.equals("net/minecraft/class_327") /* Fabric */) {
             // Font
-            boolean done = false;
             for (MethodNode method : input.methods) {
                 if (method.name.equals("func_228081_c_") /* Forge 1.16.5- */
                         || method.name.equals("m_92897_") /* Forge 1.16.5-1.19.2 */
@@ -50,9 +48,8 @@ public class VPMinecraftTransformer implements Consumer<ClassNode> {
                     insnList.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "me/fengming/vaultpatcher_asm/core/utils/DynamicReplaceUtils", "__mappingString", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", false));
                     insnList.add(new VarInsnNode(Opcodes.ASTORE, 1));
                     method.instructions.insertBefore(method.instructions.getFirst(), insnList);
-                    done = true;
+                    break;
                 }
-                if (done) break;
             }
         }
     }

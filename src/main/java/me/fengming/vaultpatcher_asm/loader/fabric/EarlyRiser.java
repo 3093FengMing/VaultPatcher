@@ -23,7 +23,7 @@ public class EarlyRiser implements Runnable {
         VaultPatcher.platform = Platform.Fabric;
 
         Path mcPath = FabricLoader.getInstance().getGameDir();
-        VaultPatcher.init(mcPath, getMinecraftVersion(), Platform.Fabric);
+        VaultPatcher.init(mcPath, getMinecraftVersion());
         // initial transformers
 
         if (VaultPatcherConfig.isEnableClassPatch()) {

@@ -31,7 +31,7 @@ public class VaultPatcher {
     public static Platform platform = Platform.UNDEFINED;
     public static boolean isClient = false;
 
-    public static void init(Path mcPath, String mcVersion, Platform platform) {
+    public static void init(Path mcPath, String mcVersion) {
         VaultPatcher.mcPath = mcPath;
         VaultPatcher.mcVersion = mcVersion;
 

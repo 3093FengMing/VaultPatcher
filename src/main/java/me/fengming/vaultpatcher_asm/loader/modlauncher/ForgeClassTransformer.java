@@ -40,7 +40,9 @@ public class ForgeClassTransformer implements ITransformer<ClassNode> {
             targets.addAll(Utils.getExpandTargets());
         } else {
             String name = this.translationInfo.getTargetClassInfo().getName();
-            if (!StringUtils.isBlank(name)) targets.add(ITransformer.Target.targetClass(StringUtils.rawPackage(name)));
+            if (!StringUtils.isBlank(name)) {
+                targets.add(ITransformer.Target.targetClass(StringUtils.rawPackage(name)));
+            }
         }
         return targets;
     }

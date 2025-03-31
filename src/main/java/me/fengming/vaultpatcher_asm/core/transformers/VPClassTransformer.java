@@ -305,12 +305,11 @@ public class VPClassTransformer implements Consumer<ClassNode> {
 
         Pairs pairs = info.getPairs();
         for (FieldNode field : input.fields) {
-            if (field.value instanceof String) {
-                String original = (String) field.value;
-                String value = MatchUtils.matchPairs(pairs, original, false);
-                Utils.printDebugInfo(-1, original, "ASMTransformField", value, input.name, info);
-                field.value = value;
-            }
+            if (!(field.value instanceof String)) continue;
+            String original = (String) field.value;
+            String value = MatchUtils.matchPairs(pairs, original, false);
+            Utils.printDebugInfo(-1, original, "ASMTransformField", value, input.name, info);
+            field.value = value;
         }
     }
 
@@ -328,7 +327,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
                 VaultPatcher.debugInfo("Using Cache: {}", className);
                 if (!cache.updated(input)) {
                     VaultPatcher.debugInfo("Updating Cache: {}", className);
-                    generate(input);
+                    transform(input);
                     cache.put(input, copy);
                 }
                 // copy class
@@ -340,14 +339,14 @@ public class VPClassTransformer implements Consumer<ClassNode> {
 
             // Ensure that all TranslationInfo is transformed before adding to the cache
             if (TransformChecker.isTransformed(className)) {
-                VaultPatcher.debugInfo("Generating Class Cache: {}", input.name);
-                generate(input);
-                Caches.addClassCache(input.name, input, copy);
+                VaultPatcher.debugInfo("[VaultPatcher] Generating Class Cache: {}", input.name);
+                transform(input);
+                Caches.addClassCache(input.name, input);
             } else {
-                generate(input);
+                transform(input);
             }
         } else {
-            generate(input);
+            transform(input);
         }
 
         // Recompute frames. Otherwise, it may cause java.lang.VerifyError on java8
@@ -370,16 +369,14 @@ public class VPClassTransformer implements Consumer<ClassNode> {
         if (Utils.debug.isExportClass()) Utils.exportClass(input, Utils.getVpPath().resolve("exported"));
     }
 
-    private void generate(ClassNode input) {
+    private void transform(ClassNode input) {
         if (transformed) return;
         if (translationInfo == null) {
             disableLocal = true;
             for (TranslationInfo info : Utils.translationInfos) {
-                if (StringUtils.isBlank(info.getTargetClassInfo().getName()) || input.name.equals(StringUtils.rawPackage(info.getTargetClassInfo().getName()))) {
-                    patch(input, info);
-                }
+                patch(input, info);
             }
-        } else if (StringUtils.isBlank(translationInfo.getTargetClassInfo().getName()) || input.name.equals(StringUtils.rawPackage(translationInfo.getTargetClassInfo().getName()))) {
+        } else {
             disableLocal = StringUtils.isBlank(translationInfo.getTargetClassInfo().getLocal());
             patch(input, translationInfo);
         }
@@ -387,7 +384,10 @@ public class VPClassTransformer implements Consumer<ClassNode> {
     }
 
     private void patch(ClassNode input, TranslationInfo info) {
-        methodReplace(input, info);
-        fieldReplace(input, info);
+        String infoName = info.getTargetClassInfo().getName();
+        if (StringUtils.isBlank(infoName) || input.name.equals(StringUtils.rawPackage(infoName))) {
+            methodReplace(input, info);
+            fieldReplace(input, info);
+        }
     }
 }

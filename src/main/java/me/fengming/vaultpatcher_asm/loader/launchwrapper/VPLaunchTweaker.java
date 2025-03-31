@@ -24,7 +24,7 @@ public class VPLaunchTweaker implements ITweaker {
 
         if (assetsDir != null) VaultPatcher.isClient = true;
 
-        VaultPatcher.init(gameDir.toPath(), getMinecraftVersion(), Platform.Forge1_6);
+        VaultPatcher.init(gameDir.toPath(), getMinecraftVersion());
         for (TranslationInfo info : Utils.translationInfos) {
             Set<TranslationInfo> set = classFinding.getOrDefault(info.getTargetClassInfo().getName(), new HashSet<>());
             set.add(info);

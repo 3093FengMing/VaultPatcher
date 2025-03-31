@@ -1,20 +1,18 @@
 package me.fengming.vaultpatcher_asm.core.transformers;
 
+import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
+import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import me.fengming.vaultpatcher_asm.config.TranslationInfo;
 import me.fengming.vaultpatcher_asm.core.utils.StringUtils;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class TransformChecker {
 
-    public static Map<TranslationInfo, Boolean> transformed = new HashMap<>();
+    public static Object2BooleanMap<TranslationInfo> transformed = new Object2BooleanOpenHashMap<>();
 
     public static boolean isTransformed(String className) {
-        for (Map.Entry<TranslationInfo, Boolean> entry : transformed.entrySet()) {
-            TranslationInfo info = entry.getKey();
-            String rClassName = StringUtils.rawPackage(info.getTargetClassInfo().getName());
-            if (className.equals(rClassName) && !entry.getValue()) {
+        for (Object2BooleanMap.Entry<TranslationInfo> entry : transformed.object2BooleanEntrySet()) {
+            String rClassName = StringUtils.rawPackage(entry.getKey().getTargetClassInfo().getName());
+            if (className.equals(rClassName) && !entry.getBooleanValue()) {
                 return false;
             }
         }

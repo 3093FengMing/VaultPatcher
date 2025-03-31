@@ -57,7 +57,7 @@ public class VPTransformationService implements ITransformationService {
 //        }
 
         Path mcPath = minecraftPathOptional.get();
-        VaultPatcher.init(mcPath, minecraftVersion, Platform.Forge1_13);
+        VaultPatcher.init(mcPath, minecraftVersion);
 
         VaultPatcher.debugInfo("[VaultPatcher] TS DONE!");
     }

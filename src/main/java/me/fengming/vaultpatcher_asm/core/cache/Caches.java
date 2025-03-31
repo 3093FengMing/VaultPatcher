@@ -42,11 +42,11 @@ public class Caches {
         return cacheMap.getOrDefault(className, null);
     }
 
-    public static void addClassCache(String className, ClassNode node, byte[] hash) {
+    public static void addClassCache(String className, ClassNode node) {
         File classFile = Utils.exportClass(node, Utils.getVpPath().resolve("cache"));
         try {
             ClassCache cache = new ClassCache(classFile.getParentFile().toPath().resolve(classFile.getName() + ".sha256"), classFile.toPath());
-            cache.create(hash);
+            cache.create(Utils.nodeToBytes(node));
             cacheMap.put(className, cache);
         } catch (IOException e) {
             throw new RuntimeException("Failed to add cache", e);
