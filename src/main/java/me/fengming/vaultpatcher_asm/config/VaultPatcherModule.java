@@ -4,6 +4,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import me.fengming.vaultpatcher_asm.VaultPatcher;
+import me.fengming.vaultpatcher_asm.core.utils.I18n;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
 
 import java.io.IOException;
@@ -80,7 +81,7 @@ public class VaultPatcherModule {
                     case "v":
                     case "value": {
                         boolean i18n = moduleInfo.isDataI18n() || mutable.isI18n();
-                        pairs.setValue(i18n ? Utils.getI18n(reader.nextString()) : reader.nextString());
+                        pairs.setValue(i18n ? I18n.getValue(reader.nextString()) : reader.nextString());
                         break;
                     }
                     case "p":

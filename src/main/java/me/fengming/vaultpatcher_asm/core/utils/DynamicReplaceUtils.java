@@ -3,6 +3,7 @@ package me.fengming.vaultpatcher_asm.core.utils;
 import me.fengming.vaultpatcher_asm.config.TargetClassInfo;
 import me.fengming.vaultpatcher_asm.config.TranslationInfo;
 
+@SuppressWarnings("unused")
 public class DynamicReplaceUtils {
 
     // for dynamic replace
@@ -28,9 +29,15 @@ public class DynamicReplaceUtils {
             for (StackTraceElement stackTrace : stackTraces) {
                 if (!ignoredMethod && !methodName.equals(stackTrace.getMethodName())) continue;
                 switch (targetClass.getMatchMode()) {
-                    case FULL: if (stackTrace.getClassName().equals(className)) return replaced;
-                    case STARTS: if (stackTrace.getClassName().startsWith(className)) return replaced;
-                    case ENDS: if (stackTrace.getClassName().endsWith(className)) return replaced;
+                    case FULL:
+                        if (stackTrace.getClassName().equals(className)) return replaced;
+                        break;
+                    case STARTS:
+                        if (stackTrace.getClassName().startsWith(className)) return replaced;
+                        break;
+                    case ENDS:
+                        if (stackTrace.getClassName().endsWith(className)) return replaced;
+                        break;
                 }
             }
         }
@@ -45,5 +52,4 @@ public class DynamicReplaceUtils {
         }
         return sb.delete(sb.length() - 2, sb.length()).append("]").toString();
     }
-
 }

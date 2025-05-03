@@ -135,10 +135,10 @@ public class Utils {
                 file.createNewFile();
             }
             file.setWritable(true);
-            FileOutputStream fos = new FileOutputStream(file);
-            fos.write(b);
-            fos.flush();
-            fos.close();
+            try (FileOutputStream fos = new FileOutputStream(file)) {
+                fos.write(b);
+                fos.flush();
+            }
             return file;
         } catch (Exception e) {
             throw new IllegalStateException("Failed to export class: ", e);

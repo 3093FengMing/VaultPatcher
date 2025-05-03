@@ -306,13 +306,14 @@ public class VPClassTransformer implements Consumer<ClassNode> {
         if (!StringUtils.isBlank(targetClass.getMethod()) || targetClass.getOrdinal() == -1) return;
 
         Pairs pairs = info.getPairs();
-        for (FieldNode field : input.fields) {
-            if (!(field.value instanceof String)) continue;
-            String original = (String) field.value;
-            String value = MatchUtils.matchPairs(pairs, original, false);
-            Utils.printDebugInfo(-1, original, "ASMTransformField", value, input.name, info);
-            field.value = value;
-        }
+        input.fields.stream()
+                .filter(field -> field.value instanceof String)
+                .forEach(field -> {
+                    String original = (String) field.value;
+                    String value = MatchUtils.matchPairs(pairs, original, false);
+                    Utils.printDebugInfo(-1, original, "ASMTransformField", value, input.name, info);
+                    field.value = value;
+                });
     }
 
     // for Fabric
@@ -334,10 +335,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
                 }
                 ClassNode taken = cache.take();
                 Utils.deepCopyClass(input, taken);
-            }
-
-            // Ensure that all TranslationInfo is transformed before adding to the cache
-            if (TransformChecker.isTransformed(className)) {
+            } else if (TransformChecker.isTransformed(className)) {
                 VaultPatcher.debugInfo("[VaultPatcher] Generating Class Cache: {}", input.name);
                 transform(input);
                 Caches.addClassCache(input.name, input);
@@ -362,16 +360,16 @@ public class VPClassTransformer implements Consumer<ClassNode> {
 
         VaultPatcher.plugins.forEach(e -> e.onTransformClass(input, VaultPatcherPlugin.Phase.AFTER));
 
-        if (Utils.debug.isExportClass()) Utils.exportClass(input, Utils.getVpPath().resolve("exported"));
+        if (Utils.debug.isExportClass()) {
+            Utils.exportClass(input, Utils.getVpPath().resolve("exported"));
+        }
     }
 
     private void transform(ClassNode input) {
         if (transformed) return;
         if (translationInfo == null) {
             disableLocal = true;
-            for (TranslationInfo info : Utils.translationInfos) {
-                patch(input, info);
-            }
+            Utils.translationInfos.forEach(info -> patch(input, info));
         } else {
             disableLocal = StringUtils.isBlank(translationInfo.getTargetClassInfo().getLocal());
             patch(input, translationInfo);

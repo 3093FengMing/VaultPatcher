@@ -8,39 +8,45 @@ import me.fengming.vaultpatcher_asm.config.TranslationInfo;
 public class MatchUtils {
 
     public static String matchPairs(Pairs p, String source, boolean dyn) {
-        if (source.isEmpty()) return source; // FIX replace whitespace with "" -> source
-        String v = p.getValue(source); // Go to return if its full match
+        if (source == null || source.isEmpty()) return source;
+        
+        String v = p.getValue(source);
+        if (v != null) return v;
+        
         if (dyn && p.isNonFullMatch()) {
             for (Pair<String, String> pair : p.getSet()) {
                 if (pair.second.charAt(0) == '@' && source.contains(pair.first)) {
-                    v = source.replace(pair.first, pair.second.substring(1));
+                    return source.replace(pair.first, pair.second.substring(1));
                 }
             }
         }
-        return v == null ? source : v;
+        return source;
     }
 
     public static boolean matchLocal(TranslationInfo info, String name, boolean isMethod) {
-        if (name == null) return false;
-        TargetClassInfo i = info.getTargetClassInfo();
-        if (StringUtils.isBlank(i.getLocal())) return false;
-        switch (i.getLocalMode()) {
+        if (name == null || info == null) return false;
+        
+        TargetClassInfo targetClass = info.getTargetClassInfo();
+        String local = targetClass.getLocal();
+        if (StringUtils.isBlank(local)) return false;
+        
+        switch (targetClass.getLocalMode()) {
             case INVOKE_RETURN:
-            case METHOD_RETURN: {
-                if (isMethod) return i.getLocal().equals(name);
-            }
+            case METHOD_RETURN:
+                return isMethod && local.equals(name);
             case LOCAL_VARIABLE:
-            case GLOBAL_VARIABLE: {
-                if (!isMethod) return i.getLocal().equals(name);
-            }
-            case NONE: {
-                return i.getLocal().equals(name);
-            }
+            case GLOBAL_VARIABLE:
+                return !isMethod && local.equals(name);
+            case NONE:
+                return local.equals(name);
+            default:
+                return false;
         }
-        return false;
     }
 
     public static boolean matchOrdinal(TranslationInfo info, int ordinal) {
-        return info.getTargetClassInfo().getOrdinal() == -1 || info.getTargetClassInfo().getOrdinal() == ordinal;
+        if (info == null) return false;
+        int targetOrdinal = info.getTargetClassInfo().getOrdinal();
+        return targetOrdinal == -1 || targetOrdinal == ordinal;
     }
 }

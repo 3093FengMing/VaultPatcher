@@ -11,7 +11,6 @@ import me.fengming.vaultpatcher_asm.core.utils.Platform;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
-import sun.misc.Ref;
 
 import java.lang.reflect.Field;
 import java.nio.file.Path;
@@ -27,19 +26,30 @@ public class EarlyRiser implements Runnable {
         Path mcPath = FabricLoader.getInstance().getGameDir();
         VaultPatcher.isClient = FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT;
         VaultPatcher.init(mcPath, getMinecraftVersion());
-        // initial transformers
 
+        // do patches
         if (VaultPatcherConfig.isEnableClassPatch()) {
             ClassPatcher.getPatches().forEach((k, v) -> ClassTinkerers.addReplacement(k, n -> Utils.deepCopyClass(n, v)));
         }
 
         for (TranslationInfo info : Utils.translationInfos) {
             String cn = info.getTargetClassInfo().getName();
-            if (!cn.isEmpty()) {
-                ClassTinkerers.addTransformation(cn, new VPClassTransformer(info));
-            }
+            if (cn.isEmpty()) continue;
+            ClassTinkerers.addTransformation(cn, new VPClassTransformer(info));
         }
 
+        addExpandClasses();
+        addMinecraftClasses();
+
+        VaultPatcher.debugInfo("[VaultPatcher] ER DONE!");
+    }
+
+    private static void addMinecraftClasses() {
+        ClassTinkerers.addTransformation("net.minecraft.class_327", new VPMinecraftTransformer());
+        ClassTinkerers.addTransformation("net.minecraft.class_2585", new VPMinecraftTransformer());
+    }
+
+    private static void addExpandClasses() {
         List<String> targetMods = VaultPatcherConfig.getApplyMods();
         for (String targetMod : targetMods) {
             Utils.getClassesNameByJar(VaultPatcher.mcPath.resolve("mods").resolve(targetMod + ".jar").toString())
@@ -47,11 +57,6 @@ public class EarlyRiser implements Runnable {
         }
 
         VaultPatcherConfig.getClasses().forEach(s -> ClassTinkerers.addTransformation(s, new VPClassTransformer(null)));
-
-        ClassTinkerers.addTransformation("net.minecraft.class_327", new VPMinecraftTransformer());
-        ClassTinkerers.addTransformation("net.minecraft.class_2585", new VPMinecraftTransformer());
-
-        VaultPatcher.debugInfo("[VaultPatcher] ER DONE!");
     }
 
     private static String getMinecraftVersion() {

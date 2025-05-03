@@ -6,7 +6,6 @@ import me.fengming.vaultpatcher_asm.config.TranslationInfo;
 import me.fengming.vaultpatcher_asm.core.utils.StringUtils;
 
 public class TransformChecker {
-
     public static Object2BooleanMap<TranslationInfo> transformed = new Object2BooleanOpenHashMap<>();
 
     public static boolean isTransformed(String className) {
