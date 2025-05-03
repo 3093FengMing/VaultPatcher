@@ -62,6 +62,23 @@ public class Utils {
         }
     }
 
+    public static void deepCopyClass(ClassNode a, ClassNode b) {
+        a.interfaces = b.interfaces;
+        a.name = b.name;
+        a.methods = b.methods;
+        a.fields = b.fields;
+        a.innerClasses = b.innerClasses;
+        a.superName = b.superName;
+        a.access = b.access;
+        a.attrs = b.attrs;
+        a.nestHostClass = b.nestHostClass;
+        a.nestMembers = b.nestMembers;
+        a.visibleAnnotations = b.visibleAnnotations;
+        a.visibleTypeAnnotations = b.visibleTypeAnnotations;
+        a.invisibleAnnotations = b.invisibleAnnotations;
+        a.invisibleTypeAnnotations = b.invisibleTypeAnnotations;
+    }
+
     public static byte[] nodeToBytes(ClassNode node) {
         ClassWriter wr = new ClassWriter(0); // flag = 0, not compute frames to prevent class loading
         node.accept(wr);

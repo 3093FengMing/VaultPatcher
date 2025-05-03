@@ -330,11 +330,8 @@ public class VPClassTransformer implements Consumer<ClassNode> {
                     transform(input);
                     cache.put(input, copy);
                 }
-                // copy class
                 ClassNode taken = cache.take();
-                input.methods = taken.methods;
-                input.fields = taken.fields;
-                input.innerClasses = taken.innerClasses;
+                Utils.deepCopyClass(input, taken);
             }
 
             // Ensure that all TranslationInfo is transformed before adding to the cache
@@ -358,10 +355,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
             ClassNode copied = new ClassNode();
             ClassReader cr = new ClassReader(bytes);
             cr.accept(copied, ClassReader.SKIP_DEBUG);
-            // copy class
-            input.methods = copied.methods;
-            input.fields = copied.fields;
-            input.innerClasses = copied.innerClasses;
+            Utils.deepCopyClass(input, copied);
         }
 
         VaultPatcher.plugins.forEach(e -> e.onTransformClass(input, VaultPatcherPlugin.Phase.AFTER));

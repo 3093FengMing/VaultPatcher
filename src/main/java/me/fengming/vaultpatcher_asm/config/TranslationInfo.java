@@ -99,7 +99,9 @@ public class TranslationInfo {
         }
 
         public TranslationInfo toImmutable() {
-            return new TranslationInfo(this.targetClassInfo, this.pairs);
+            TranslationInfo info = new TranslationInfo(this.targetClassInfo, this.pairs);
+            info.setI18n(this.isI18n());
+            return info;
         }
     }
 }

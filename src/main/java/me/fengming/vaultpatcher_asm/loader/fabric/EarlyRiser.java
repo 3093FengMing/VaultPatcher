@@ -9,7 +9,9 @@ import me.fengming.vaultpatcher_asm.core.transformers.VPClassTransformer;
 import me.fengming.vaultpatcher_asm.core.transformers.VPMinecraftTransformer;
 import me.fengming.vaultpatcher_asm.core.utils.Platform;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
+import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
+import sun.misc.Ref;
 
 import java.lang.reflect.Field;
 import java.nio.file.Path;
@@ -23,11 +25,12 @@ public class EarlyRiser implements Runnable {
         VaultPatcher.platform = Platform.Fabric;
 
         Path mcPath = FabricLoader.getInstance().getGameDir();
+        VaultPatcher.isClient = FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT;
         VaultPatcher.init(mcPath, getMinecraftVersion());
         // initial transformers
 
         if (VaultPatcherConfig.isEnableClassPatch()) {
-            ClassPatcher.getPatches().forEach((k, v) -> ClassTinkerers.addReplacement(k, n -> n = v));
+            ClassPatcher.getPatches().forEach((k, v) -> ClassTinkerers.addReplacement(k, n -> Utils.deepCopyClass(n, v)));
         }
 
         for (TranslationInfo info : Utils.translationInfos) {
