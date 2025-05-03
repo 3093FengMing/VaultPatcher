@@ -1,6 +1,5 @@
 package me.fengming.vaultpatcher_asm.core.node.handlers;
 
-import me.fengming.vaultpatcher_asm.VaultPatcher;
 import me.fengming.vaultpatcher_asm.core.node.HandlerDebugInfo;
 import me.fengming.vaultpatcher_asm.core.node.NodeHandlerParameters;
 import me.fengming.vaultpatcher_asm.core.utils.MatchUtils;
@@ -14,13 +13,10 @@ public class LdcNodeHandler extends NodeHandler<LdcInsnNode> {
 
     @Override
     public LdcInsnNode modifyNode() {
-        VaultPatcher.debugInfo("[VaultPatcher] LdcNodeHandler");
-        VaultPatcher.debugInfo("[VaultPatcher] Params: " + params.toString());
-        VaultPatcher.debugInfo("[VaultPatcher] Node Cst: " + this.node.cst);
         if (this.node.cst instanceof String && MatchUtils.matchOrdinal(params.info, params.ordinal)) {
             String s = (String) this.node.cst;
             String v = MatchUtils.matchPairs(params.info.getPairs(), s, false);
-            debugInfo(-1, "ASMTransformMethod-Ldc", s, v);
+            debugInfo(params.ordinal, "ASMTransformMethod-Ldc", s, v);
             this.node.cst = v;
         }
         return this.node;

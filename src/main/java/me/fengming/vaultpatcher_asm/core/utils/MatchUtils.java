@@ -24,12 +24,19 @@ public class MatchUtils {
         if (name == null) return false;
         TargetClassInfo i = info.getTargetClassInfo();
         if (StringUtils.isBlank(i.getLocal())) return false;
-        if (i.getLocalMode() == TargetClassInfo.LocalMode.NONE
-                || (i.getLocalMode() == TargetClassInfo.LocalMode.INVOKE_RETURN && isMethod)
-                || (i.getLocalMode() == TargetClassInfo.LocalMode.METHOD_RETURN && isMethod)
-                || (i.getLocalMode() == TargetClassInfo.LocalMode.LOCAL_VARIABLE && !isMethod)
-                || (i.getLocalMode() == TargetClassInfo.LocalMode.GLOBAL_VARIABLE && !isMethod))
-            return i.getLocal().equals(name);
+        switch (i.getLocalMode()) {
+            case INVOKE_RETURN:
+            case METHOD_RETURN: {
+                if (isMethod) return i.getLocal().equals(name);
+            }
+            case LOCAL_VARIABLE:
+            case GLOBAL_VARIABLE: {
+                if (!isMethod) return i.getLocal().equals(name);
+            }
+            case NONE: {
+                return i.getLocal().equals(name);
+            }
+        }
         return false;
     }
 
