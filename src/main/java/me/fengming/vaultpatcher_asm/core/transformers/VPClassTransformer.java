@@ -348,14 +348,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
 
         // Recompute frames. Otherwise, it may cause java.lang.VerifyError on java8
         if (VaultPatcher.platform == Platform.Forge1_6) {
-            ClassWriter wr = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-            input.accept(wr);
-            byte[] bytes = wr.toByteArray();
-
-            ClassNode copied = new ClassNode();
-            ClassReader cr = new ClassReader(bytes);
-            cr.accept(copied, ClassReader.SKIP_DEBUG);
-            Utils.deepCopyClass(input, copied);
+            recompute(input);
         }
 
         VaultPatcher.plugins.forEach(e -> e.onTransformClass(input, VaultPatcherPlugin.Phase.AFTER));
@@ -363,6 +356,17 @@ public class VPClassTransformer implements Consumer<ClassNode> {
         if (Utils.debug.isExportClass()) {
             Utils.exportClass(input, Utils.getVpPath().resolve("exported"));
         }
+    }
+
+    private static void recompute(ClassNode input) {
+        ClassWriter wr = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        input.accept(wr);
+        byte[] bytes = wr.toByteArray();
+
+        ClassNode copied = new ClassNode();
+        ClassReader cr = new ClassReader(bytes);
+        cr.accept(copied, ClassReader.SKIP_DEBUG);
+        Utils.deepCopyClass(input, copied);
     }
 
     private void transform(ClassNode input) {

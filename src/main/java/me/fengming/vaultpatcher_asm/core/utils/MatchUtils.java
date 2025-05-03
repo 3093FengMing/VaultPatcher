@@ -9,10 +9,10 @@ public class MatchUtils {
 
     public static String matchPairs(Pairs p, String source, boolean dyn) {
         if (source == null || source.isEmpty()) return source;
-        
+
         String v = p.getValue(source);
         if (v != null) return v;
-        
+
         if (dyn && p.isNonFullMatch()) {
             for (Pair<String, String> pair : p.getSet()) {
                 if (pair.second.charAt(0) == '@' && source.contains(pair.first)) {
@@ -24,13 +24,12 @@ public class MatchUtils {
     }
 
     public static boolean matchLocal(TranslationInfo info, String name, boolean isMethod) {
-        if (name == null || info == null) return false;
-        
-        TargetClassInfo targetClass = info.getTargetClassInfo();
-        String local = targetClass.getLocal();
+        if (name == null) return false;
+        TargetClassInfo i = info.getTargetClassInfo();
+        String local = i.getLocal();
         if (StringUtils.isBlank(local)) return false;
         
-        switch (targetClass.getLocalMode()) {
+        switch (i.getLocalMode()) {
             case INVOKE_RETURN:
             case METHOD_RETURN:
                 return isMethod && local.equals(name);
@@ -45,8 +44,7 @@ public class MatchUtils {
     }
 
     public static boolean matchOrdinal(TranslationInfo info, int ordinal) {
-        if (info == null) return false;
-        int targetOrdinal = info.getTargetClassInfo().getOrdinal();
-        return targetOrdinal == -1 || targetOrdinal == ordinal;
+        return info.getTargetClassInfo().getOrdinal() == -1 || 
+               info.getTargetClassInfo().getOrdinal() == ordinal;
     }
 }
