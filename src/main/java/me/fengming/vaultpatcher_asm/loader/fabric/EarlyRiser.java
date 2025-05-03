@@ -27,7 +27,7 @@ public class EarlyRiser implements Runnable {
         // initial transformers
 
         if (VaultPatcherConfig.isEnableClassPatch()) {
-            ClassPatcher.getPatchMap().forEach((k, v) -> ClassTinkerers.addReplacement(k, n -> n = v));
+            ClassPatcher.getPatches().forEach((k, v) -> ClassTinkerers.addReplacement(k, n -> n = v));
         }
 
         for (TranslationInfo info : Utils.translationInfos) {

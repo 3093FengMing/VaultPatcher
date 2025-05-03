@@ -11,15 +11,15 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class PatchClassTransformer implements ITransformer<ClassNode> {
-    private final String className;
+    private final Set<String> classNames;
 
-    public PatchClassTransformer(String className) {
-        this.className = className;
+    public PatchClassTransformer(Set<String> classNames) {
+        this.classNames = classNames;
     }
 
     public ClassNode transform(ClassNode input, ITransformerVotingContext context) {
         VaultPatcher.debugInfo("[VaultPatcher] Using Patch: {}", input.name);
-        return ClassPatcher.patch(className);
+        return ClassPatcher.patch(input);
     }
 
     public TransformerVoteResult castVote(ITransformerVotingContext context) {
@@ -28,7 +28,7 @@ public class PatchClassTransformer implements ITransformer<ClassNode> {
 
     public Set<Target> targets() {
         HashSet<Target> targets = new HashSet<>();
-        targets.add(Target.targetClass(className));
+        classNames.forEach(n -> targets.add(Target.targetClass(n)));
         return targets;
     }
 }

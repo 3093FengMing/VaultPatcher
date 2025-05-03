@@ -2,8 +2,11 @@ package me.fengming.vaultpatcher_asm.core.utils;
 
 import java.nio.charset.StandardCharsets;
 
-public class StringUtils
-{
+public class StringUtils {
+    public static String dotPackage(String s) {
+        return s.replace('.', '/');
+    }
+
     public static String rawPackage(String s) {
         return s.replace('.', '/');
     }

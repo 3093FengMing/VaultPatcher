@@ -23,14 +23,10 @@ public class LinkedClassTransformer implements IClassTransformer {
         cr.accept(input, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
 
         boolean patched = false;
-        ClassNode patchedClass;
         if (VaultPatcherConfig.isEnableClassPatch()) {
-            patchedClass = ClassPatcher.patch(input.name);
-            patched = patchedClass != null;
-            if (patched) {
-                input = patchedClass;
-                VaultPatcher.debugInfo("[VaultPatcher] Using Patch: {}", input.name);
-            }
+            input = ClassPatcher.patch(input);
+            patched = true;
+            VaultPatcher.debugInfo("[VaultPatcher] Using Patch: {}", input.name);
         }
 
         Set<TranslationInfo> set = VPLaunchTweaker.classFinding.getOrDefault(name, null);
@@ -39,7 +35,6 @@ public class LinkedClassTransformer implements IClassTransformer {
         for (TranslationInfo info : set) {
             new VPClassTransformer(info).accept(input);
         }
-        VaultPatcher.debugInfo("sususu");
         return Utils.nodeToBytes(input);
     }
 }

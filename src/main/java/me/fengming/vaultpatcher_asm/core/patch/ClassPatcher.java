@@ -15,13 +15,13 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class ClassPatcher {
+    private static final Map<String, ClassNode> PATCHES = new HashMap<>();
 
-    private static final Map<String, ClassNode> patchMap = new HashMap<>();
-
-    public static Map<String, ClassNode> getPatchMap() {
-        return patchMap;
+    public static Map<String, ClassNode> getPatches() {
+        return PATCHES;
     }
 
     public static void init(Path path) throws IOException {
@@ -43,13 +43,17 @@ public class ClassPatcher {
                 ClassNode node = new ClassNode();
                 ClassReader cr = new ClassReader(Files.newInputStream(file));
                 cr.accept(node, 0);
-                patchMap.putIfAbsent(className, node);
+                PATCHES.putIfAbsent(className, node);
                 return super.visitFile(file, attrs);
             }
         });
     }
 
+    public static ClassNode patch(ClassNode o) {
+        return Optional.of(patch(o.name)).orElse(o);
+    }
+
     public static ClassNode patch(String className) {
-        return patchMap.getOrDefault(className, null);
+        return PATCHES.getOrDefault(className, null);
     }
 }

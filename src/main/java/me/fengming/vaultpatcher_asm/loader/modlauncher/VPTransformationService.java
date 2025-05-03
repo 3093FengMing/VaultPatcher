@@ -104,7 +104,7 @@ public class VPTransformationService implements ITransformationService {
     public List<ITransformer> transformers() {
         List<ITransformer> list = new ArrayList<>();
         if (VaultPatcherConfig.isEnableClassPatch()) {
-            ClassPatcher.getPatchMap().keySet().forEach(k -> list.add(new PatchClassTransformer(k)));
+            list.add(new PatchClassTransformer(ClassPatcher.getPatches().keySet()));
         }
 
         list.addAll(Utils.translationInfos.stream().map(ForgeClassTransformer::new).collect(Collectors.toList()));
