@@ -50,7 +50,9 @@ public class ClassPatcher {
     }
 
     public static ClassNode patch(ClassNode o) {
-        return Optional.of(patch(o.name)).orElse(o);
+        ClassNode patched = patch(o.name);
+        if (patched == null) return o;
+        return patched;
     }
 
     public static ClassNode patch(String className) {
