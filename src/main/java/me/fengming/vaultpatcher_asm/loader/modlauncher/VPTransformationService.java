@@ -51,10 +51,10 @@ public class VPTransformationService implements ITransformationService {
         String minecraftVersion = getMinecraftVersion();
         if (StringUtils.isBlank(minecraftVersion)) VaultPatcher.LOGGER.error("[VaultPatcher] Failed to get minecraft version!");
         // VaultPatcher.LOGGER.info("[VaultPatcher] Get minecraft version: " + minecraftVersion);
-//        if (isOldVersion(minecraftVersion)) {
-//            VaultPatcher.LOGGER.warn("[VaultPatcher] Disable dynamic replace because the game version is 1.16.5 and below (your version: {})", minecraftVersion);
-//            disableDynamic = true;
-//        }
+        if (isOldVersion(minecraftVersion)) {
+            VaultPatcher.LOGGER.warn("[VaultPatcher] Disable dynamic replace because the game version is 1.16.5 or below (your version: {})", minecraftVersion);
+            disableDynamic = true;
+        }
 
         Path mcPath = minecraftPathOptional.get();
         VaultPatcher.init(mcPath, minecraftVersion);

@@ -57,6 +57,7 @@ public class VPMinecraftTransformer implements Consumer<ClassNode> {
     // for Fabric
     @Override
     public void accept(ClassNode input) {
+        VaultPatcher.debugInfo("[VaultPatcher] Loading MinecraftTransformer for class {}", input.name);
         classTransform(input);
     }
 }
