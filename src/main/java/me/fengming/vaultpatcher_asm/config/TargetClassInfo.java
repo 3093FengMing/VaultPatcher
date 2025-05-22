@@ -2,16 +2,16 @@ package me.fengming.vaultpatcher_asm.config;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
-import com.google.gson.stream.JsonWriter;
+import me.fengming.vaultpatcher_asm.VaultPatcher;
 import me.fengming.vaultpatcher_asm.core.utils.StringUtils;
 
 import java.io.IOException;
 
 public class TargetClassInfo {
-    private String name = "";
+    private String dynamicName = ""; // used for dynamic replace
     private String method = "";
     private String local = "";
-    private int ordinal = -1;
+    private Pair<Integer, Integer> ordinal = new Pair<>(-1, -1);
     private MatchMode matchMode = MatchMode.FULL;
     private LocalMode localMode = LocalMode.NONE;
 
@@ -19,11 +19,6 @@ public class TargetClassInfo {
         reader.beginObject();
         while (reader.peek() != JsonToken.END_OBJECT) {
             switch (reader.nextName()) {
-                case "n":
-                case "name": {
-                    setName(reader.nextString());
-                    break;
-                }
                 case "m":
                 case "method": {
                     setMethod(reader.nextString());
@@ -36,7 +31,17 @@ public class TargetClassInfo {
                 }
                 case "o":
                 case "ordinal": {
-                    setOrdinal(reader.nextInt());
+                    JsonToken peeked = reader.peek();
+                    if (peeked == JsonToken.NUMBER) {
+                        this.ordinal.first = this.ordinal.second = reader.nextInt();
+                    } else if (peeked == JsonToken.STRING) {
+                        String ordinal = reader.nextString();
+                        String[] upAndDown = ordinal.split("-", 2);
+                        this.ordinal.first = Integer.parseInt(upAndDown[0]);
+                        this.ordinal.second = upAndDown[1].equalsIgnoreCase("e") ? -1 : Integer.parseInt(upAndDown[1]);
+                    } else {
+                        VaultPatcher.LOGGER.warn("Couldn't read ordinal: {} as {}", reader.nextString(), peeked);
+                    }
                     break;
                 }
                 default: {
@@ -48,37 +53,27 @@ public class TargetClassInfo {
         reader.endObject();
     }
 
-    public void writeJson(JsonWriter writer) throws IOException {
-        writer.beginObject();
-        writer.name("name").value("com.example.mod.SomethingClass");
-        writer.name("method").value("doSomething");
-        writer.name("local").value("Lsomething");
-        writer.name("i18n").value(false);
-        writer.name("ordinal").value(209);
-        writer.endObject();
+    public String getDynamicName() {
+        return dynamicName;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        if (StringUtils.isBlank(name)) return;
-        char first = name.charAt(0);
+    public void setDynamicName(String dynamicName) {
+        if (StringUtils.isBlank(dynamicName)) return;
+        char first = dynamicName.charAt(0);
         switch (first) {
             case '@': {
                 matchMode = MatchMode.STARTS;
-                this.name = name.substring(1);
+                this.dynamicName = dynamicName.substring(1);
                 break;
             }
             case '#': {
                 matchMode = MatchMode.ENDS;
-                this.name = name.substring(1);
+                this.dynamicName = dynamicName.substring(1);
                 break;
             }
             default: {
                 matchMode = MatchMode.FULL;
-                this.name = name;
+                this.dynamicName = dynamicName;
                 break;
             }
         }
@@ -136,18 +131,17 @@ public class TargetClassInfo {
         return localMode;
     }
 
-    public void setOrdinal(int ordinal) {
-        this.ordinal = ordinal;
+    public Pair<Integer, Integer> getOrdinal() {
+        return this.ordinal;
     }
 
-    public int getOrdinal() {
-        return ordinal;
+    public void setOrdinal(Pair<Integer, Integer> ordinal) {
+        this.ordinal = ordinal;
     }
 
     @Override
     public String toString() {
-        return "TargetClassInfo{" +
-                "name='" + name + '\'' +
+        return "TargetClassInfo{" + "name='" + dynamicName + '\'' +
                 ", method='" + method + '\'' +
                 ", local='" + local + '\'' +
                 ", ordinal=" + ordinal +

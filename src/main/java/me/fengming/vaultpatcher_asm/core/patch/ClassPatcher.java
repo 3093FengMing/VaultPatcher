@@ -15,7 +15,6 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 public class ClassPatcher {
     private static final Map<String, ClassNode> PATCHES = new HashMap<>();

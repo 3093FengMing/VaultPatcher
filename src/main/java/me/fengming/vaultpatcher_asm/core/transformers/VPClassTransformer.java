@@ -37,15 +37,16 @@ public class VPClassTransformer implements Consumer<ClassNode> {
     }
 
     private void methodReplace(ClassNode input, TranslationInfo info) {
+        String methodName = info.getTargetClassInfo().getMethod();
+
         boolean hasClinit = false;
         boolean isInterface = (input.access & Opcodes.ACC_INTERFACE) != 0;
-        boolean needPatch = input.fields.stream().noneMatch(node -> node.name.equals("__vp_map"));
+        boolean skipMethodsCheck = StringUtils.isBlank(methodName);
 
         for (MethodNode method : input.methods) {
-            String methodName = info.getTargetClassInfo().getMethod();
             if (method.name.startsWith("__vp")) continue;
 
-            if (StringUtils.isBlank(methodName) || methodName.equals(method.name)) {
+            if (skipMethodsCheck || methodName.equals(method.name)) {
                 // Initial Local Variable Map
                 final HashMap<Integer, String> localVariableMap = new HashMap<>();
                 boolean disableLocalVariable = true;
@@ -65,7 +66,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
                 }
             }
 
-            if (!disableLocal && needPatch && method.name.equals("<clinit>")) {
+            if (!disableLocal && method.name.equals("<clinit>")) {
                 InsnList list = new InsnList();
 
                 list.add(new TypeInsnNode(Opcodes.NEW, "java/util/HashMap"));
@@ -83,7 +84,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
         }
 
         // patch it (add replace method)
-        if (!disableLocal && needPatch) {
+        if (!disableLocal) {
             patchClass(input, input.name, info.getPairs().getMap().entrySet(), hasClinit, isInterface);
         }
 
@@ -303,7 +304,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
     private void fieldReplace(ClassNode input, TranslationInfo info) {
         // If the method name is not specified, the field will be replaced
         TargetClassInfo targetClass = info.getTargetClassInfo();
-        if (!StringUtils.isBlank(targetClass.getMethod()) || targetClass.getOrdinal() == -1) return;
+        if (!StringUtils.isBlank(targetClass.getMethod()) || targetClass.getOrdinal().first == -1) return;
 
         Pairs pairs = info.getPairs();
         input.fields.stream()
@@ -373,7 +374,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
         if (transformed) return;
         if (translationInfo == null) {
             disableLocal = true;
-            Utils.translationInfos.forEach(info -> patch(input, info));
+            Utils.forEachInfos(info -> patch(input, info));
         } else {
             disableLocal = StringUtils.isBlank(translationInfo.getTargetClassInfo().getLocal());
             patch(input, translationInfo);
@@ -382,8 +383,8 @@ public class VPClassTransformer implements Consumer<ClassNode> {
     }
 
     private void patch(ClassNode input, TranslationInfo info) {
-        String infoName = info.getTargetClassInfo().getName();
-        if (StringUtils.isBlank(infoName) || input.name.equals(StringUtils.rawPackage(infoName))) {
+        String className = info.getTargetClass();
+        if (StringUtils.isBlank(className) || input.name.equals(StringUtils.rawPackage(className))) {
             methodReplace(input, info);
             fieldReplace(input, info);
         }

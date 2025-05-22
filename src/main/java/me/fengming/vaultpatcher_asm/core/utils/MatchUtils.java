@@ -44,7 +44,7 @@ public class MatchUtils {
     }
 
     public static boolean matchOrdinal(TranslationInfo info, int ordinal) {
-        return info.getTargetClassInfo().getOrdinal() == -1 || 
-               info.getTargetClassInfo().getOrdinal() == ordinal;
+        Pair<Integer, Integer> pair = info.getTargetClassInfo().getOrdinal();
+        return pair.first <= ordinal && (pair.second == -1 || ordinal <= pair.second);
     }
 }

@@ -1,32 +1,24 @@
 package me.fengming.vaultpatcher_asm.config;
 
-import com.google.gson.stream.JsonWriter;
-
-import java.io.IOException;
 import java.util.Objects;
 
 public class TranslationInfo {
+    protected final String targetClass;
     private final TargetClassInfo targetClassInfo;
     private final Pairs pairs;
-    private boolean i18n = false;
 
-    public TranslationInfo(TargetClassInfo targetClassInfo, Pairs pairs) {
+    public TranslationInfo(String targetClass, TargetClassInfo targetClassInfo, Pairs pairs) {
+        this.targetClass = targetClass;
         this.targetClassInfo = targetClassInfo;
         this.pairs = pairs;
     }
 
-    public TranslationInfo() {
-        this.targetClassInfo = new TargetClassInfo();
-        this.pairs = new Pairs();
+    public TranslationInfo(String targetClass) {
+        this(targetClass, new TargetClassInfo(), new Pairs());
     }
 
-    public void write(JsonWriter writer) throws IOException {
-        writer.beginObject();
-        writer.name("i18n").value(i18n);
-        writer.name("target_class");
-        getTargetClassInfo().writeJson(writer);
-        writer.name("pairs").beginArray().endArray();
-        writer.endObject();
+    public String getTargetClass() {
+        return this.targetClass;
     }
 
     public TargetClassInfo getTargetClassInfo() {
@@ -35,22 +27,6 @@ public class TranslationInfo {
 
     public Pairs getPairs() {
         return pairs;
-    }
-
-    public void setKey(String key) {
-        pairs.setKey(key);
-    }
-
-    public void setValue(String value) {
-        pairs.setValue(value);
-    }
-
-    public boolean isI18n() {
-        return i18n;
-    }
-
-    public void setI18n(boolean i18n) {
-        this.i18n = i18n;
     }
 
     @Override
@@ -78,6 +54,10 @@ public class TranslationInfo {
         private TargetClassInfo targetClassInfo;
         private Pairs pairs;
 
+        public Mutable(String targetClass) {
+            super(targetClass);
+        }
+
         @Override
         public Pairs getPairs() {
             return this.pairs;
@@ -88,20 +68,18 @@ public class TranslationInfo {
             return this.targetClassInfo;
         }
 
-        public TranslationInfo setPairs(Pairs pairs) {
+        public Mutable setPairs(Pairs pairs) {
             this.pairs = pairs;
-            return this.toImmutable();
+            return this;
         }
 
-        public TranslationInfo setTargetClassInfo(TargetClassInfo targetClassInfo) {
+        public Mutable setTargetClassInfo(TargetClassInfo targetClassInfo) {
             this.targetClassInfo = targetClassInfo;
-            return this.toImmutable();
+            return this;
         }
 
         public TranslationInfo toImmutable() {
-            TranslationInfo info = new TranslationInfo(this.targetClassInfo, this.pairs);
-            info.setI18n(this.isI18n());
-            return info;
+            return new TranslationInfo(this.targetClass, this.targetClassInfo, this.pairs);
         }
     }
 }

@@ -20,7 +20,7 @@ public class DynamicReplaceUtils {
             Utils.printDebugInfo(-1, orignal, method, replaced, stackTraces2String(stackTraces), info);
 
             TargetClassInfo targetClass = info.getTargetClassInfo();
-            String className = targetClass.getName();
+            String className = targetClass.getDynamicName();
             if (StringUtils.isBlank(className)) return replaced;
 
             String methodName = targetClass.getMethod();

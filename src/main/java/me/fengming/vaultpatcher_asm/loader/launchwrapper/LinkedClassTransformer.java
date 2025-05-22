@@ -12,6 +12,7 @@ import org.objectweb.asm.tree.ClassNode;
 
 import java.util.Set;
 
+@SuppressWarnings("unused")
 public class LinkedClassTransformer implements IClassTransformer {
 
     @Override
@@ -29,7 +30,7 @@ public class LinkedClassTransformer implements IClassTransformer {
             VaultPatcher.debugInfo("[VaultPatcher] Using Patch: {}", input.name);
         }
 
-        Set<TranslationInfo> set = VPLaunchTweaker.classFinding.getOrDefault(name, null);
+        Set<TranslationInfo> set = Utils.translationInfoMap.getOrDefault(name, null);
         if (set == null) return patched ? Utils.nodeToBytes(input) : basicClass;
 
         for (TranslationInfo info : set) {

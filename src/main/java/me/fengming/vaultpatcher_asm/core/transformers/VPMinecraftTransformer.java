@@ -18,7 +18,6 @@ public class VPMinecraftTransformer implements Consumer<ClassNode> {
                 || input.name.equals("net/minecraft/network/chat/contents/LiteralContents") /* Forge 1.18.2+ */
                 || input.name.equals("net/minecraft/class_2585") /* Fabric */) {
             // TextComponent
-            boolean done = false;
             for (MethodNode method : input.methods) {
                 if (!method.name.equals("<init>")) break;
 

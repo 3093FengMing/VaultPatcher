@@ -2,7 +2,6 @@ package me.fengming.vaultpatcher_asm.loader.fabric;
 
 import com.chocohead.mm.api.ClassTinkerers;
 import me.fengming.vaultpatcher_asm.VaultPatcher;
-import me.fengming.vaultpatcher_asm.config.TranslationInfo;
 import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
 import me.fengming.vaultpatcher_asm.core.patch.ClassPatcher;
 import me.fengming.vaultpatcher_asm.core.transformers.VPClassTransformer;
@@ -32,11 +31,7 @@ public class EarlyRiser implements Runnable {
             ClassPatcher.getPatches().forEach((k, v) -> ClassTinkerers.addReplacement(k, n -> Utils.deepCopyClass(n, v)));
         }
 
-        for (TranslationInfo info : Utils.translationInfos) {
-            String cn = info.getTargetClassInfo().getName();
-            if (cn.isEmpty()) continue;
-            ClassTinkerers.addTransformation(cn, new VPClassTransformer(info));
-        }
+        Utils.translationInfoMap.forEach((k, v) -> v.forEach(e -> ClassTinkerers.addTransformation(k, new VPClassTransformer(e))));
 
         addExpandClasses();
         addMinecraftClasses();

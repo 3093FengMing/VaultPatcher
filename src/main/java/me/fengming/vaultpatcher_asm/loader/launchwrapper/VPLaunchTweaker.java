@@ -1,22 +1,15 @@
 package me.fengming.vaultpatcher_asm.loader.launchwrapper;
 
 import me.fengming.vaultpatcher_asm.VaultPatcher;
-import me.fengming.vaultpatcher_asm.config.TranslationInfo;
 import me.fengming.vaultpatcher_asm.core.utils.Platform;
-import me.fengming.vaultpatcher_asm.core.utils.Utils;
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 
 import java.io.File;
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class VPLaunchTweaker implements ITweaker {
-    // MultiMap
-    public static HashMap<String, Set<TranslationInfo>> classFinding = new HashMap<>();
 
     @Override
     public void acceptOptions(List<String> args, File gameDir, File assetsDir, String profile) {
@@ -25,11 +18,6 @@ public class VPLaunchTweaker implements ITweaker {
         if (assetsDir != null) VaultPatcher.isClient = true;
 
         VaultPatcher.init(gameDir.toPath(), getMinecraftVersion());
-        for (TranslationInfo info : Utils.translationInfos) {
-            Set<TranslationInfo> set = classFinding.getOrDefault(info.getTargetClassInfo().getName(), new HashSet<>());
-            set.add(info);
-            classFinding.put(info.getTargetClassInfo().getName(), set);
-        }
         VaultPatcher.debugInfo("[VaultPatcher] LT DONE!");
     }
 

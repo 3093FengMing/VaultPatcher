@@ -107,18 +107,16 @@ public class VaultPatcher {
                 VaultPatcherModule vpp = new VaultPatcherModule(mod + ".json");
                 plugins.forEach(e -> e.onLoadModule(vpp, VaultPatcherPlugin.Phase.BEFORE));
                 vpp.read();
-                Utils.translationInfos.addAll(vpp.getTranslationInfoList());
-                Utils.dynTranslationInfos.addAll(vpp.getDynTranslationInfoList());
                 plugins.forEach(e -> e.onLoadModule(vpp, VaultPatcherPlugin.Phase.AFTER));
             }
         } catch (IOException e) {
             throw new RuntimeException("Failed to load modules: ", e);
         }
 
-        Utils.translationInfos.forEach(info -> TransformChecker.transformed.put(info, false));
+        TransformChecker.init();
 
         // optimization
-        Utils.needStacktrace = Utils.dynTranslationInfos.stream().anyMatch(e -> !e.getTargetClassInfo().getName().isEmpty());
+        Utils.needStacktrace = Utils.dynTranslationInfos.stream().anyMatch(e -> !e.getTargetClassInfo().getDynamicName().isEmpty());
 
         plugins.forEach(VaultPatcherPlugin::end);
     }
