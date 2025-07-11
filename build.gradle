@@ -65,7 +65,7 @@ repositories {
 dependencies {
     compileOnly 'org.jetbrains:annotations:23.0.0'
 
-    implementation 'com.google.code.gson:gson:2.8.9'
+    implementation 'com.google.code.gson:gson:2.2.4'
     implementation 'it.unimi.dsi:fastutil:7.0.10'
 
     implementation 'net.fabricmc:fabric-loader:0.14.12'

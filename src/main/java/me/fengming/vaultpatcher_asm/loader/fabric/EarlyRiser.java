@@ -31,7 +31,7 @@ public class EarlyRiser implements Runnable {
             ClassPatcher.getPatches().forEach((k, v) -> ClassTinkerers.addReplacement(k, n -> Utils.deepCopyClass(n, v)));
         }
 
-        Utils.translationInfoMap.forEach((k, v) -> v.forEach(e -> ClassTinkerers.addTransformation(k, new VPClassTransformer(e))));
+        Utils.translationInfoMap.forEach((k, v) -> ClassTinkerers.addTransformation(k, new VPClassTransformer(v)));
 
         addExpandClasses();
         addMinecraftClasses();

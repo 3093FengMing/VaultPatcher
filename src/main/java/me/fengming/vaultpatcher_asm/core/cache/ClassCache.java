@@ -67,7 +67,7 @@ public class ClassCache {
             this.cr.accept(this.clazz, 0);
         }
 
-        return this.updated;
+        return !this.updated;
     }
 
     public void create(byte[] bytesToHash) throws IOException {

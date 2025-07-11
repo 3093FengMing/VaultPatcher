@@ -16,16 +16,16 @@ import java.util.Set;
 
 public class ForgeClassTransformer implements ITransformer<ClassNode> {
 
-    private final TranslationInfo translationInfo;
+    private final Set<TranslationInfo> translationInfos;
 
-    public ForgeClassTransformer(TranslationInfo info) {
-        this.translationInfo = info;
+    public ForgeClassTransformer(Set<TranslationInfo> infos) {
+        this.translationInfos = infos;
     }
 
     // for Forge
     @Override
     public ClassNode transform(ClassNode input, ITransformerVotingContext context) {
-        new VPClassTransformer(this.translationInfo).accept(input);
+        new VPClassTransformer(this.translationInfos).accept(input);
         return input;
     }
 
@@ -38,12 +38,14 @@ public class ForgeClassTransformer implements ITransformer<ClassNode> {
     public Set<Target> targets() {
         Set<ITransformer.Target> targets = new HashSet<>();
 
-        if (this.translationInfo == null) {
+        if (this.translationInfos == null) {
             targets.addAll(getExpandTargets());
         } else {
-            String name = this.translationInfo.getTargetClass();
-            if (!StringUtils.isBlank(name)) {
-                targets.add(ITransformer.Target.targetClass(StringUtils.rawPackage(name)));
+            for (TranslationInfo info : this.translationInfos) {
+                String name = info.getTargetClass();
+                if (!StringUtils.isBlank(name)) {
+                    targets.add(ITransformer.Target.targetClass(StringUtils.rawPackage(name)));
+                }
             }
         }
         return targets;

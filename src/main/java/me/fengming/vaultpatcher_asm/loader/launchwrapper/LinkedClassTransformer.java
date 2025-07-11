@@ -25,17 +25,18 @@ public class LinkedClassTransformer implements IClassTransformer {
 
         boolean patched = false;
         if (VaultPatcherConfig.isEnableClassPatch()) {
-            input = ClassPatcher.patch(input);
-            patched = true;
-            VaultPatcher.debugInfo("[VaultPatcher] Using Patch: {}", input.name);
+            ClassNode patchedClass = ClassPatcher.patch(input.name);
+            if (patchedClass != null) {
+                patched = true;
+                input = patchedClass;
+                VaultPatcher.debugInfo("[VaultPatcher] Using Patch: {}", input.name);
+            }
         }
 
         Set<TranslationInfo> set = Utils.translationInfoMap.getOrDefault(name, null);
         if (set == null) return patched ? Utils.nodeToBytes(input) : basicClass;
 
-        for (TranslationInfo info : set) {
-            new VPClassTransformer(info).accept(input);
-        }
+        new VPClassTransformer(set).accept(input);
         return Utils.nodeToBytes(input);
     }
 }

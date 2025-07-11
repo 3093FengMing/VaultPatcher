@@ -1,9 +1,6 @@
 package me.fengming.vaultpatcher_asm.core.utils;
 
-import me.fengming.vaultpatcher_asm.config.TargetClassInfo;
 import me.fengming.vaultpatcher_asm.config.TranslationInfo;
-
-import java.util.Arrays;
 
 @SuppressWarnings("unused")
 public class DynamicReplaceUtils {

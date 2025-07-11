@@ -18,7 +18,6 @@ import java.util.zip.ZipEntry;
 
 public class Utils {
     public static Map<String, Set<TranslationInfo>> translationInfoMap = new Object2ReferenceOpenHashMap<>();
-    public static List<TranslationInfo> translationInfos = new ArrayList<>();
     public static List<TranslationInfo> dynTranslationInfos = new ArrayList<>();
     public static boolean needStacktrace = false;
 
@@ -75,8 +74,6 @@ public class Utils {
         a.superName = b.superName;
         a.access = b.access;
         a.attrs = b.attrs;
-        a.nestHostClass = b.nestHostClass;
-        a.nestMembers = b.nestMembers;
         a.visibleAnnotations = b.visibleAnnotations;
         a.visibleTypeAnnotations = b.visibleTypeAnnotations;
         a.invisibleAnnotations = b.invisibleAnnotations;
@@ -84,7 +81,7 @@ public class Utils {
     }
 
     public static byte[] nodeToBytes(ClassNode node) {
-        ClassWriter wr = new ClassWriter(0); // flag = 0, not compute frames to prevent class loading
+        ClassWriter wr = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         node.accept(wr);
         return wr.toByteArray();
     }

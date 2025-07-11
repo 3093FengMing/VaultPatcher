@@ -14,6 +14,7 @@ import java.util.Map;
 
 public class I18n {
     private static final Gson GSON = new Gson();
+    private static final Path PATH = Utils.getVpPath().resolve("i18n");
     private static String currentCode = "en_us";
     private static Map<String, String> langugesMap = new HashMap<>();
 
@@ -21,6 +22,7 @@ public class I18n {
         BufferedReader br1 = null;
         BufferedReader br2 = null;
         try {
+
             // Only In Client
             Path optionsFile = mcPath.resolve("options.txt");
             if (VaultPatcher.isClient && Files.exists(optionsFile)) {
@@ -28,20 +30,23 @@ public class I18n {
                 br1.lines().filter(line -> line.startsWith("lang:"))
                         .findFirst()
                         .ifPresent(line -> currentCode = line.substring("lang:".length()));
+                if (notExists()) {
+                    currentCode = VaultPatcherConfig.getDefaultLanguage();
+                    if (notExists()) currentCode = "en_us";
+                }
             } else {
                 currentCode = VaultPatcherConfig.getDefaultLanguage();
             }
 
-            Path i18nPath = Utils.getVpPath().resolve("i18n");
-            if (Files.notExists(i18nPath)) {
-                Files.createDirectories(i18nPath);
+            if (Files.notExists(PATH)) {
+                Files.createDirectories(PATH);
             }
-            if (Files.notExists(i18nPath.resolve(currentCode + ".json"))) {
+            if (Files.notExists(PATH.resolve(currentCode + ".json"))) {
                 VaultPatcher.LOGGER.warn("[VaultPatcher] Not found file {}.json. Will skip I18n loading.", currentCode);
                 return;
             }
 
-            br2 = Files.newBufferedReader(i18nPath.resolve(currentCode + ".json"));
+            br2 = Files.newBufferedReader(PATH.resolve(currentCode + ".json"));
             langugesMap = GSON.fromJson(br2, new TypeToken<Map<String, String>>() {}.getType());
             if (langugesMap == null) {
                 langugesMap = new HashMap<>();
@@ -61,6 +66,10 @@ public class I18n {
                 VaultPatcher.LOGGER.error("[VaultPatcher] Error loading I18n file: {}", e);
             }
         }
+    }
+
+    private static boolean notExists() {
+        return Files.notExists(PATH.resolve(currentCode + ".json"));
     }
 
     public static String getValue(String key) {

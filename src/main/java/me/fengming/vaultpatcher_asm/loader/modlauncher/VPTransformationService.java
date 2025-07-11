@@ -107,7 +107,9 @@ public class VPTransformationService implements ITransformationService {
             list.add(new PatchClassTransformer(ClassPatcher.getPatches().keySet()));
         }
 
-        list.addAll(Utils.translationInfos.stream().map(ForgeClassTransformer::new).collect(Collectors.toList()));
+        list.addAll(Utils.translationInfoMap.values().stream()
+                .map(ForgeClassTransformer::new)
+                .collect(Collectors.toList()));
 
         list.add(new ForgeClassTransformer(null));
         if (!disableDynamic) list.add(new ForgeMinecraftTransformer());

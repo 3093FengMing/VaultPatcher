@@ -23,16 +23,16 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 public class VPClassTransformer implements Consumer<ClassNode> {
-    private final TranslationInfo translationInfo;
+    private final Set<TranslationInfo> translationInfos;
     private boolean disableLocal = false;
 
     private boolean transformed = false;
 
-    public VPClassTransformer(TranslationInfo info) {
-        this.translationInfo = info;
-        if (info != null) {
-            TransformChecker.setTransformed(info);
-            VaultPatcher.debugInfo("[VaultPatcher] Loading VPTransformer for translation info: {}", info);
+    public VPClassTransformer(Set<TranslationInfo> infos) {
+        this.translationInfos = infos;
+        if (infos != null) {
+            // TransformChecker.setTransformed(infos);
+            VaultPatcher.debugInfo("[VaultPatcher] Loading VPTransformer for translation info: {}", infos);
         }
     }
 
@@ -71,9 +71,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
 
                 list.add(new TypeInsnNode(Opcodes.NEW, "java/util/HashMap"));
                 list.add(new InsnNode(Opcodes.DUP));
-                Set<Map.Entry<String, String>> set = info.getPairs().getMap().entrySet();
-                list.add(intNode(set.size()));
-                list.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "java/util/HashMap", "<init>", "(I)V", false));
+                list.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "java/util/HashMap", "<init>", "()V", false));
                 list.add(new FieldInsnNode(Opcodes.PUTSTATIC, input.name, "__vp_map", "Ljava/util/HashMap;"));
                 list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, input.name, "__vp_init", "()V"));
 
@@ -88,30 +86,6 @@ public class VPClassTransformer implements Consumer<ClassNode> {
             patchClass(input, input.name, info.getPairs().getMap().entrySet(), hasClinit, isInterface);
         }
 
-    }
-
-    private static AbstractInsnNode intNode(int value) {
-        if (value > 32767 || value < -32768) {
-            return new LdcInsnNode(value);
-        } else if (value > 127 || value < -128) {
-            return new IntInsnNode(Opcodes.SIPUSH, value);
-        } else if (value > 5 || value < -1) {
-            return new IntInsnNode(Opcodes.BIPUSH, value);
-        } else {
-            return new InsnNode(Opcodes.ICONST_0 + value);
-        }
-    }
-
-    private static void visitIntNode(MethodVisitor mv, int value) {
-        if (value > 32767 || value < -32768) {
-            mv.visitLdcInsn(value);
-        } else if (value > 127 || value < -128) {
-            mv.visitIntInsn(Opcodes.SIPUSH, value);
-        } else if (value > 5 || value < -1) {
-            mv.visitIntInsn(Opcodes.BIPUSH, value);
-        } else {
-            mv.visitInsn(Opcodes.ICONST_0 + value);
-        }
     }
 
     private static void patchClass(ClassVisitor cv, String className, Set<Map.Entry<String, String>> set, boolean hasClinit, boolean isInterface) {
@@ -134,8 +108,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
                 mv.visitLabel(label0);
                 mv.visitTypeInsn(Opcodes.NEW, innerClassName);
                 mv.visitInsn(Opcodes.DUP);
-                visitIntNode(mv, set.size());
-                mv.visitMethodInsn(Opcodes.INVOKESPECIAL, innerClassName, "<init>", "(I)V", false);
+                mv.visitMethodInsn(Opcodes.INVOKESPECIAL, innerClassName, "<init>", "()V", false);
                 mv.visitFieldInsn(Opcodes.PUTSTATIC, className, "__vp_map", "Ljava/util/HashMap;");
 
                 Label label1 = new Label();
@@ -206,8 +179,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
                 mv.visitLabel(label0);
                 mv.visitTypeInsn(Opcodes.NEW, "java/util/HashMap");
                 mv.visitInsn(Opcodes.DUP);
-                visitIntNode(mv, set.size());
-                mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/util/HashMap", "<init>", "(I)V", false);
+                mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/util/HashMap", "<init>", "()V", false);
                 mv.visitFieldInsn(Opcodes.PUTSTATIC, className, "__vp_map", "Ljava/util/HashMap;");
 
                 Label label1 = new Label();
@@ -307,14 +279,14 @@ public class VPClassTransformer implements Consumer<ClassNode> {
         if (!StringUtils.isBlank(targetClass.getMethod()) || targetClass.getOrdinal().first == -1) return;
 
         Pairs pairs = info.getPairs();
-        input.fields.stream()
-                .filter(field -> field.value instanceof String)
-                .forEach(field -> {
-                    String original = (String) field.value;
-                    String value = MatchUtils.matchPairs(pairs, original, false);
-                    Utils.printDebugInfo(-1, original, "ASMTransformField", value, input.name, info);
-                    field.value = value;
-                });
+        for (FieldNode field : input.fields) {
+            if (field.value instanceof String) {
+                String original = (String) field.value;
+                String value = MatchUtils.matchPairs(pairs, original, false);
+                Utils.printDebugInfo(-1, original, "ASMTransformField", value, input.name, info);
+                field.value = value;
+            }
+        }
     }
 
     // for Fabric
@@ -329,19 +301,18 @@ public class VPClassTransformer implements Consumer<ClassNode> {
 
             if (cache != null) {
                 VaultPatcher.debugInfo("Using Cache: {}", className);
-                if (!cache.updated(input)) {
+                if (cache.updated(input)) {
                     VaultPatcher.debugInfo("Updating Cache: {}", className);
                     transform(input);
                     cache.put(input, copy);
+                } else {
+                    ClassNode taken = cache.take();
+                    Utils.deepCopyClass(input, taken);
                 }
-                ClassNode taken = cache.take();
-                Utils.deepCopyClass(input, taken);
-            } else if (TransformChecker.isTransformed(className)) {
+            } else {
                 VaultPatcher.debugInfo("[VaultPatcher] Generating Class Cache: {}", input.name);
                 transform(input);
                 Caches.addClassCache(input.name, input);
-            } else {
-                transform(input);
             }
         } else {
             transform(input);
@@ -349,7 +320,14 @@ public class VPClassTransformer implements Consumer<ClassNode> {
 
         // Recompute frames. Otherwise, it may cause java.lang.VerifyError on java8
         if (VaultPatcher.platform == Platform.Forge1_6) {
-            recompute(input);
+            ClassWriter wr = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+            input.accept(wr);
+            byte[] bytes = wr.toByteArray();
+
+            ClassNode copied = new ClassNode();
+            ClassReader cr = new ClassReader(bytes);
+            cr.accept(copied, ClassReader.SKIP_DEBUG);
+            Utils.deepCopyClass(input, copied);
         }
 
         VaultPatcher.plugins.forEach(e -> e.onTransformClass(input, VaultPatcherPlugin.Phase.AFTER));
@@ -359,25 +337,15 @@ public class VPClassTransformer implements Consumer<ClassNode> {
         }
     }
 
-    private static void recompute(ClassNode input) {
-        ClassWriter wr = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-        input.accept(wr);
-        byte[] bytes = wr.toByteArray();
-
-        ClassNode copied = new ClassNode();
-        ClassReader cr = new ClassReader(bytes);
-        cr.accept(copied, ClassReader.SKIP_DEBUG);
-        Utils.deepCopyClass(input, copied);
-    }
-
     private void transform(ClassNode input) {
         if (transformed) return;
-        if (translationInfo == null) {
+        if (translationInfos == null) {
             disableLocal = true;
             Utils.forEachInfos(info -> patch(input, info));
         } else {
-            disableLocal = StringUtils.isBlank(translationInfo.getTargetClassInfo().getLocal());
-            patch(input, translationInfo);
+            disableLocal = translationInfos.stream()
+                    .allMatch(i -> StringUtils.isBlank(i.getTargetClassInfo().getLocal()));
+            translationInfos.forEach(info -> patch(input, info));
         }
         transformed = true;
     }
