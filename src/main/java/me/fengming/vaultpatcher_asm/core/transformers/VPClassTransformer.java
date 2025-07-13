@@ -39,6 +39,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
     }
 
     private void methodReplace(ClassNode input) {
+        boolean mixedClinit = false;
         boolean hasClinit = false;
         boolean isInterface = (input.access & Opcodes.ACC_INTERFACE) != 0;
         for (TranslationInfo info : translationInfos) {
@@ -53,11 +54,12 @@ public class VPClassTransformer implements Consumer<ClassNode> {
                     handlerInstructions(input, method, info);
                 }
 
-                if (!disableLocal && method.name.equals("<clinit>")) {
+                if (!mixedClinit && !disableLocal && method.name.equals("<clinit>")) {
                     InsnList list = createClinitAddition(input, isInterface);
 
-                    method.instructions.insert(method.instructions.getLast(), list);
+                    method.instructions.insertBefore(method.instructions.getLast(), list);
                     hasClinit = true;
+                    mixedClinit = true;
                 }
             }
         }
