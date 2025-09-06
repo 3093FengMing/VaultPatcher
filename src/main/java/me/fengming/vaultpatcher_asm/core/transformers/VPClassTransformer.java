@@ -185,7 +185,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
                 */
 
                 // inner class
-                ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+                ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
                 cw.visit(Opcodes.V1_8, Opcodes.ACC_FINAL | Opcodes.ACC_SUPER, innerClassName, "Ljava/util/HashMap<Ljava/lang/String;Ljava/lang/String;>;", "java/util/HashMap", null);
                 cw.visitSource("VaultPatcher_" + innerClassName, null);
                 cw.visitOuterClass(className, null, null);
@@ -405,8 +405,14 @@ public class VPClassTransformer implements Consumer<ClassNode> {
         }
 
         // Recompute frames. Otherwise, it may cause java.lang.VerifyError on java8
+        // Let stack frames treat everything as Object conservatively to avoid calling unloaded class
         if (VaultPatcher.platform == Platform.Forge1_6) {
-            ClassWriter wr = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+            ClassWriter wr = new ClassWriter(ClassWriter.COMPUTE_FRAMES){
+                @Override
+                protected String getCommonSuperClass(String type1, String type2){
+                    return "java/lang/Object";
+                }
+            };
             input.accept(wr);
             byte[] bytes = wr.toByteArray();
 
