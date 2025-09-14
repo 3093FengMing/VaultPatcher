@@ -31,8 +31,8 @@ public class TranslationInfo {
 
     @Override
     public String toString() {
-        return "TranslationInfo{" +
-                "targetClassInfo=" + targetClassInfo +
+        return "TranslationInfo{" + "targetClass='" + targetClass + '\'' +
+                ", targetClassInfo=" + targetClassInfo +
                 ", pairs=" + pairs +
                 '}';
     }

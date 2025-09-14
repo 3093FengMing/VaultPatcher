@@ -141,7 +141,7 @@ public class TargetClassInfo {
 
     @Override
     public String toString() {
-        return "TargetClassInfo{" + "name='" + dynamicName + '\'' +
+        return "TargetClassInfo{" + "dynamicName='" + dynamicName + '\'' +
                 ", method='" + method + '\'' +
                 ", local='" + local + '\'' +
                 ", ordinal=" + ordinal +

@@ -81,12 +81,7 @@ public class Utils {
     }
 
     public static byte[] nodeToBytes(ClassNode node) {
-        ClassWriter wr = new ClassWriter(ClassWriter.COMPUTE_FRAMES){
-            @Override
-            protected String getCommonSuperClass(String type1, String type2){
-                return "java/lang/Object";
-            }
-        };
+        ClassWriter wr = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         node.accept(wr);
         return wr.toByteArray();
     }

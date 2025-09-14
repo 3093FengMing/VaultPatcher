@@ -34,21 +34,26 @@ public class VPClassTransformer implements Consumer<ClassNode> {
         this.translationInfos = infos;
         if (infos != null) {
             // TransformChecker.setTransformed(infos);
-            VaultPatcher.debugInfo("[VaultPatcher] Loading VPTransformer for translation infos: {}", infos);
+            VaultPatcher.debugInfo("[VaultPatcher] Loading VPTransformer for translation infos: {}, class: {}", infos);
         }
     }
 
     private void methodReplace(ClassNode input) {
+        boolean patched = false;
         boolean mixedClinit = false;
         boolean hasClinit = false;
         boolean isInterface = (input.access & Opcodes.ACC_INTERFACE) != 0;
+
         for (TranslationInfo info : translationInfos) {
             String methodName = info.getTargetClassInfo().getMethod();
 
             boolean skipMethodsCheck = StringUtils.isBlank(methodName);
 
             for (MethodNode method : input.methods) {
-                if (method.name.startsWith("__vp")) continue;
+                if (method.name.startsWith("__vp")) {
+                    patched = true;
+                    continue;
+                }
 
                 if (skipMethodsCheck || methodName.equals(method.name)) {
                     handlerInstructions(input, method, info);
@@ -65,7 +70,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
         }
 
         // patch it (add replace method)
-        if (!disableLocal) {
+        if (!disableLocal && !patched) {
             Set<Map.Entry<String, String>> set = translationInfos.stream()
                     .map(TranslationInfo::getPairs)
                     .map(Pairs::getMap)
@@ -381,6 +386,8 @@ public class VPClassTransformer implements Consumer<ClassNode> {
         VaultPatcher.plugins.forEach(e -> e.onTransformClass(input, VaultPatcherPlugin.Phase.BEFORE));
 
         String className = input.name;
+        VaultPatcher.debugInfo("[VaultPatcher] Accept class {} for translation infos {}", className, translationInfos);
+
         if (Utils.debug.isUseCache()) {
             ClassCache cache = Caches.getClassCache(className);
             byte[] copy = Utils.nodeToBytes(input);
@@ -407,7 +414,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
         // Recompute frames. Otherwise, it may cause java.lang.VerifyError on java8
         // Let stack frames treat everything as Object conservatively to avoid calling unloaded class
         if (VaultPatcher.platform == Platform.Forge1_6) {
-            ClassWriter wr = new ClassWriter(ClassWriter.COMPUTE_FRAMES){
+            ClassWriter wr = new ClassWriter(ClassWriter.COMPUTE_FRAMES) {
                 @Override
                 protected String getCommonSuperClass(String type1, String type2){
                     return "java/lang/Object";
