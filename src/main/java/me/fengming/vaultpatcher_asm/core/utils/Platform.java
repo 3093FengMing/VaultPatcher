@@ -23,4 +23,4 @@ public enum Platform {
                 return UNDEFINED;
         }
     }
-    }
+}
