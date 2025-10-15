@@ -115,6 +115,10 @@ public class TargetClassInfo {
                     localMode = LocalMode.GLOBAL_VARIABLE;
                     break;
                 }
+                case 'A':{
+                    localMode = LocalMode.ARRAY_ELEMENT;
+                    break;
+                }
                 default: {
                     localMode = LocalMode.NONE;
                     break;
@@ -131,6 +135,7 @@ public class TargetClassInfo {
         return localMode;
     }
 
+
     public Pair<Integer, Integer> getOrdinal() {
         return this.ordinal;
     }
@@ -139,18 +144,7 @@ public class TargetClassInfo {
         this.ordinal = ordinal;
     }
 
-    @Override
-    public String toString() {
-        return "TargetClassInfo{" + "name='" + dynamicName + '\'' +
-                ", method='" + method + '\'' +
-                ", local='" + local + '\'' +
-                ", ordinal=" + ordinal +
-                ", matchMode=" + matchMode +
-                ", localMode=" + localMode +
-                '}';
-    }
-
-    public enum LocalMode { INVOKE_RETURN, LOCAL_VARIABLE, METHOD_RETURN, GLOBAL_VARIABLE, NONE }
+    public enum LocalMode { INVOKE_RETURN, LOCAL_VARIABLE, METHOD_RETURN, GLOBAL_VARIABLE, ARRAY_ELEMENT, NONE }
 
     public enum MatchMode { FULL, STARTS, ENDS }
 }

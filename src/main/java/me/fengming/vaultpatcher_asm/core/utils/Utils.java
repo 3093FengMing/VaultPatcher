@@ -41,17 +41,11 @@ public class Utils {
 
     public static void printDebugInfo(int ordinal, String source,
                                       String method, String target, String clazz,
-                                      TranslationInfo info) {
+                                      TranslationInfo info, String detail) {
         if (!debug.isEnable()) return;
-        String format = debug.getOutputFormat();
-        VaultPatcher.LOGGER.info("[VaultPatcher] Trying replacing!\n{}",
-                format.replace("<source>", source)
-                .replace("<target>", target)
-                .replace("<method>", method)
-                .replace("<info>", info.toString())
-                .replace("<class>", clazz)
-                .replace("<ordinal>", ordinal == -1 ? "Unknown" : String.valueOf(ordinal))
-        );
+        int showSame=debug.getOutputMode();
+        if (showSame==0 && source.equals(target)) return;
+        VaultPatcher.LOGGER.info("[VaultPatcher] Trying replacing!\n{}", String.format("'%s' -> '%s' in %s | TranslationInfo{name=%s, method=%s, localMode=%s, local=%s, ordinal=%s, matchMode=%s, ASM/DynMethod=%s, %s}", source, target, clazz.replace('/', '.'), info.getTargetClassInfo().getDynamicName(), info.getTargetClassInfo().getMethod(), info.getTargetClassInfo().getLocalMode(), info.getTargetClassInfo().getLocal(), (ordinal==-1 ? "Unknown" : String.valueOf(ordinal)), info.getTargetClassInfo().getMatchMode(), method, detail));
     }
 
     // transformer
@@ -81,7 +75,12 @@ public class Utils {
     }
 
     public static byte[] nodeToBytes(ClassNode node) {
-        ClassWriter wr = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        ClassWriter wr = new ClassWriter(ClassWriter.COMPUTE_FRAMES){
+            @Override
+            protected String getCommonSuperClass(String type1, String type2){
+                return "java/lang/Object";
+            }
+        };
         node.accept(wr);
         return wr.toByteArray();
     }

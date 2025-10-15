@@ -28,6 +28,7 @@ public class VaultPatcher {
     public static List<VaultPatcherPlugin> plugins = new ArrayList<>();
     public static Path mcPath = null;
     public static String mcVersion = null;
+    public static Platform javaVersion = Platform.getJavaVersion(System.getProperty("java.specification.version"));
     public static Platform platform = Platform.UNDEFINED;
     public static boolean isClient = false;
 

@@ -34,8 +34,25 @@ public abstract class NodeHandler<E extends AbstractInsnNode> {
 
     public abstract void addDebugInfo(HandlerDebugInfo info);
 
-    public void debugInfo(int ordinal, String method, String source, String ret) {
-        Utils.printDebugInfo(ordinal, source, method, ret, params.classNode.name, params.info);
+    public void debugInfo(int ordinal, String method, String source, String ret, String detail) {
+        Utils.printDebugInfo(ordinal, source, method, ret, params.classNode.name, params.info, detail);
+    }
+
+    public static String buildDetail(AbstractInsnNode node, MethodNode method) {
+        String calledMethod = null;
+
+        for (AbstractInsnNode p = node; p != null; p = p.getNext()) {
+            if (p instanceof MethodInsnNode && !((MethodInsnNode) p).name.equals("__vp_replace") && !((MethodInsnNode) p).owner.equals("java/lang/StringBuilder")) {
+                MethodInsnNode min = (MethodInsnNode) p;
+                calledMethod = min.owner.replace('/', '.') + "." + min.name + min.desc;
+                break;
+            }
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("In_which_method: ").append(method.name).append(", Called by: ").append(calledMethod == null ? "None" : calledMethod);
+
+        return sb.toString();
     }
 
     public static NodeHandler<? extends AbstractInsnNode> getHandlerByNode(AbstractInsnNode node, NodeHandlerParameters params) {
@@ -49,6 +66,9 @@ public abstract class NodeHandler<E extends AbstractInsnNode> {
             case AbstractInsnNode.VAR_INSN:
                 return new VarNodeHandler((VarInsnNode) node, params);
             case AbstractInsnNode.INSN:
+                if (node.getOpcode() == Opcodes.AALOAD){
+                    return new ArrayNodeHandler((InsnNode) node, params);
+                }
                 return new InsnNodeHandler((InsnNode) node, params);
             case AbstractInsnNode.FIELD_INSN:
                 return new FieldNodeHandler((FieldInsnNode) node, params);

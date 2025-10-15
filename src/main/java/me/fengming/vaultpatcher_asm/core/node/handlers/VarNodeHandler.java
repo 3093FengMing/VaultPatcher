@@ -19,7 +19,8 @@ public class VarNodeHandler extends NodeHandler<VarInsnNode> {
                 && MatchUtils.matchOrdinal(params.info, params.ordinal)
                 && MatchUtils.matchLocal(params.info, params.localVariableMap.getOrDefault(this.node.var, null), false)) {
             insertReplace(params.classNode.name, params.methodNode, this.node, false);
-            debugInfo(params.ordinal, "ASMTransformMethod-InsertLocalVariableStore/Load", "[Dyn]", "[Dyn]");
+            String detail = buildDetail(this.node, params.methodNode);
+            debugInfo(params.ordinal, "ASMTransformMethod-InsertLocalVariableStore/Load", "[key]", "[value]", detail);
         }
 //        // Parameters
 //        method.parameters.forEach(p -> {

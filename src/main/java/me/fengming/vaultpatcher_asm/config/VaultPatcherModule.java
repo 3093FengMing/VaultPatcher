@@ -19,7 +19,7 @@ public class VaultPatcherModule {
 
     public VaultPatcherModule(String moduleFile) {
         VaultPatcher.debugInfo("[VaultPatcher] Found Module {}",moduleFile);
-        Path p = VaultPatcherConfig.config.resolve(moduleFile);
+        Path p = Utils.getVpPath().resolve("modules").resolve(moduleFile);
         try {
             Files.createDirectories(p.getParent());
         } catch (IOException e) {

@@ -15,7 +15,7 @@ public class DynamicReplaceUtils {
             String replaced = MatchUtils.matchPairs(info.getPairs(), original, true);
             if (StringUtils.isBlank(replaced) || replaced.equals(original)) continue;
 
-            Utils.printDebugInfo(-1, original, method, replaced, stackTraces2String(stackTraces), info);
+            Utils.printDebugInfo(-1, original, method, replaced, stackTraces2String(stackTraces), info, null);
 
             String className = info.getTargetClass();
             if (StringUtils.isBlank(className)) return replaced;

@@ -23,7 +23,8 @@ public class InvokeDynamicNodeHandler extends NodeHandler<InvokeDynamicInsnNode>
                         parts[j] = MatchUtils.matchPairs(params.info.getPairs(), parts[j], false);
                     }
                     String v = String.join("\u0001", parts);
-                    debugInfo(params.ordinal, "ASMTransformMethod-StringConcat", str.replace("\u0001", "<p>"), v.replace("\u0001", "<p>"));
+                    String detail = buildDetail(this.node, params.methodNode);
+                    debugInfo(params.ordinal, "ASMTransformMethod-StringConcat", str.replace("\u0001", "<p>"), v.replace("\u0001", "<p>"), detail);
                     bsmArgs[i] = v;
                 }
             }

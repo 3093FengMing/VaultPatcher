@@ -17,10 +17,7 @@ import me.fengming.vaultpatcher_asm.plugin.VaultPatcherPlugin;
 import org.objectweb.asm.*;
 import org.objectweb.asm.tree.*;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -33,12 +30,14 @@ public class VPClassTransformer implements Consumer<ClassNode> {
     public VPClassTransformer(Set<TranslationInfo> infos) {
         this.translationInfos = infos;
         if (infos != null) {
+            String className = infos.iterator().next().getTargetClass();
             // TransformChecker.setTransformed(infos);
-            VaultPatcher.debugInfo("[VaultPatcher] Loading VPTransformer for translation infos: {}", infos);
+            VaultPatcher.debugInfo("[VaultPatcher] Loading VPTransformer for class: {}", className);
         }
     }
 
     private void methodReplace(ClassNode input) {
+        boolean patched = false;
         boolean mixedClinit = false;
         boolean hasClinit = false;
         boolean isInterface = (input.access & Opcodes.ACC_INTERFACE) != 0;
@@ -48,7 +47,10 @@ public class VPClassTransformer implements Consumer<ClassNode> {
             boolean skipMethodsCheck = StringUtils.isBlank(methodName);
 
             for (MethodNode method : input.methods) {
-                if (method.name.startsWith("__vp")) continue;
+                if (method.name.startsWith("__vp")) {
+                    patched = true;
+                    continue;
+                }
 
                 if (skipMethodsCheck || methodName.equals(method.name)) {
                     handlerInstructions(input, method, info);
@@ -65,10 +67,16 @@ public class VPClassTransformer implements Consumer<ClassNode> {
         }
 
         // patch it (add replace method)
-        if (!disableLocal) {
+        if (!disableLocal && !patched) {
             Set<Map.Entry<String, String>> set = translationInfos.stream()
+                    .filter(info -> {
+                        TargetClassInfo tci = info.getTargetClassInfo();
+                        String local = tci == null ? null : tci.getLocal();
+                        return local != null && !local.isEmpty(); // has local info
+                    })
                     .map(TranslationInfo::getPairs)
                     .map(Pairs::getMap)
+                    .filter(Objects::nonNull)
                     .map(HashMap::entrySet)
                     .flatMap(Collection::stream)
                     .collect(Collectors.toSet());
@@ -185,7 +193,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
                 */
 
                 // inner class
-                ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+                ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
                 cw.visit(Opcodes.V1_8, Opcodes.ACC_FINAL | Opcodes.ACC_SUPER, innerClassName, "Ljava/util/HashMap<Ljava/lang/String;Ljava/lang/String;>;", "java/util/HashMap", null);
                 cw.visitSource("VaultPatcher_" + innerClassName, null);
                 cw.visitOuterClass(className, null, null);
@@ -368,7 +376,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
                 if (field.value instanceof String) {
                     String original = (String) field.value;
                     String value = MatchUtils.matchPairs(pairs, original, false);
-                    Utils.printDebugInfo(-1, original, "ASMTransformField", value, input.name, info);
+                    Utils.printDebugInfo(-1, original, "ASMTransformField", value, input.name, info, null);
                     field.value = value;
                 }
             }
@@ -405,8 +413,14 @@ public class VPClassTransformer implements Consumer<ClassNode> {
         }
 
         // Recompute frames. Otherwise, it may cause java.lang.VerifyError on java8
+        // Let stack frames treat everything as Object conservatively to avoid calling unloaded class
         if (VaultPatcher.platform == Platform.Forge1_6) {
-            ClassWriter wr = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+            ClassWriter wr = new ClassWriter(ClassWriter.COMPUTE_FRAMES){
+                @Override
+                protected String getCommonSuperClass(String type1, String type2){
+                    return "java/lang/Object";
+                }
+            };
             input.accept(wr);
             byte[] bytes = wr.toByteArray();
 

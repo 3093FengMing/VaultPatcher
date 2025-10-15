@@ -131,23 +131,4 @@ public class Pairs {
         return nonFullMatch;
     }
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder("{");
-        if (dyn) {
-            if (pairsSet.size() <= Utils.debug.getHidePairsLimit()) {
-                pairsSet.forEach(e -> sb.append("'").append(e.first).append("'='").append(e.second).append("'").append(","));
-            } else {
-                sb.append("[HIDE]");
-            }
-        } else {
-            if (pairsMap.size() <= Utils.debug.getHidePairsLimit()) {
-                pairsMap.forEach((key, value) -> sb.append("'").append(key).append("'='").append(value).append("'").append(","));
-            } else {
-                sb.append("[HIDE]");
-            }
-        }
-        sb.deleteCharAt(sb.length() - 1).append("}");
-        return sb.toString();
-    }
 }

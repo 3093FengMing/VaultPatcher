@@ -13,10 +13,11 @@ public class LdcNodeHandler extends NodeHandler<LdcInsnNode> {
 
     @Override
     public LdcInsnNode modifyNode() {
-        if (this.node.cst instanceof String && MatchUtils.matchOrdinal(params.info, params.ordinal)) {
+        if (this.node.cst instanceof String && MatchUtils.matchOrdinal(params.info, params.ordinal) && (params.info.getTargetClassInfo().getLocal()==null || params.info.getTargetClassInfo().getLocal().isEmpty())) {
             String s = (String) this.node.cst;
             String v = MatchUtils.matchPairs(params.info.getPairs(), s, false);
-            debugInfo(params.ordinal, "ASMTransformMethod-Ldc", s, v);
+            String detail = buildDetail(this.node, params.methodNode);
+            debugInfo(params.ordinal, "ASMTransformMethod-Ldc", s, v, detail);
             this.node.cst = v;
         }
         return this.node;

@@ -16,7 +16,8 @@ public class MethodNodeHandler extends NodeHandler<MethodInsnNode> {
                 && MatchUtils.matchOrdinal(params.info, params.ordinal)
                 && MatchUtils.matchLocal(params.info, this.node.name, true)) {
             insertReplace(params.classNode.name, params.methodNode, this.node, this.node.desc.endsWith(")Ljava/lang/String"));
-            debugInfo(params.ordinal, "ASMTransformMethod-InsertCalledMethodReturn", "[Dyn]", "[Dyn]");
+            String detail = buildDetail(this.node, params.methodNode);
+            debugInfo(params.ordinal, "ASMTransformMethod-InsertCalledMethodReturn", "[key]", "[value]", detail);
         }
         return this.node;
     }

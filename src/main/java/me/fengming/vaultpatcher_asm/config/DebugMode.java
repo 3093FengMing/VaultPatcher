@@ -9,8 +9,6 @@ import java.io.IOException;
 public class DebugMode {
     private boolean isEnable = false;
     private int outputMode = 0;
-    private String outputFormat = "<source> -> <target> in <class> [<ordinal>] | <info>";
-    private int hidePairsLimit = 7;
     private boolean outputNodeDebug = false;
     private boolean exportClass = false;
     private boolean useCache = true;
@@ -30,22 +28,6 @@ public class DebugMode {
 
     public void setOutputMode(int outputMode) {
         this.outputMode = outputMode;
-    }
-
-    public String getOutputFormat() {
-        return outputFormat;
-    }
-
-    public void setOutputFormat(String outputFormat) {
-        this.outputFormat = outputFormat;
-    }
-
-    public int getHidePairsLimit() {
-        return this.hidePairsLimit;
-    }
-
-    public void setHidePairsLimit(int hidePairsLimit) {
-        this.hidePairsLimit = hidePairsLimit;
     }
 
     public boolean isOutputNodeDebug() {
@@ -88,10 +70,6 @@ public class DebugMode {
                 case "is_enable":
                     setEnable(reader.nextBoolean());
                     break;
-                case "f":
-                case "output_format":
-                    setOutputFormat(reader.nextString());
-                    break;
                 case "m":
                 case "output_mode":
                     setOutputMode(reader.nextInt());
@@ -108,10 +86,6 @@ public class DebugMode {
                 case "missing_warn":
                     setMissingWarn(reader.nextBoolean());
                     break;
-                case "h":
-                case "hide_pairs":
-                    setHidePairsLimit(reader.nextInt());
-                    break;
                 case "d":
                 case "output_node_debug":
                     setOutputNodeDebug(reader.nextBoolean());
@@ -127,9 +101,7 @@ public class DebugMode {
     public void writeJson(JsonWriter writer) throws IOException {
         writer.beginObject();
         writer.name("is_enable").value(isEnable());
-        writer.name("output_format").value(getOutputFormat());
         writer.name("output_mode").value(getOutputMode());
-        writer.name("hide_pairs").value(getHidePairsLimit());
         writer.name("output_node_debug").value(isOutputNodeDebug());
         writer.name("export_class").value(isExportClass());
         writer.name("use_cache").value(isUseCache());
