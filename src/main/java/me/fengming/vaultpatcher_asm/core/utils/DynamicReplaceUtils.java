@@ -1,5 +1,6 @@
 package me.fengming.vaultpatcher_asm.core.utils;
 
+import me.fengming.vaultpatcher_asm.config.TargetClassInfo;
 import me.fengming.vaultpatcher_asm.config.TranslationInfo;
 
 @SuppressWarnings("unused")
@@ -15,17 +16,41 @@ public class DynamicReplaceUtils {
             String replaced = MatchUtils.matchPairs(info.getPairs(), original, true);
             if (StringUtils.isBlank(replaced) || replaced.equals(original)) continue;
 
-            Utils.printDebugInfo(-1, original, method, replaced, stackTraces2String(stackTraces), info, null);
-
-            String className = info.getTargetClass();
-            if (StringUtils.isBlank(className)) return replaced;
-
             String methodName = info.getTargetClassInfo().getMethod();
-            boolean ignoredMethod = StringUtils.isBlank(methodName);
+            boolean ignoreMethod = StringUtils.isBlank(methodName);
 
-            for (StackTraceElement stackTrace : stackTraces) {
-                if (!ignoredMethod && !methodName.equals(stackTrace.getMethodName())) continue;
-                if (stackTrace.getClassName().equals(className)) return replaced;
+            String dynName = info.getTargetClassInfo().getDynamicName();
+            TargetClassInfo.MatchMode mode = info.getTargetClassInfo().getMatchMode();
+
+            // Global replace when no classes are set
+            if (StringUtils.isBlank(dynName)) {
+                Utils.printDebugInfo(-1, original, method, replaced, stackTraces2String(stackTraces), info, null);
+                return replaced;
+            }
+
+            // match classes that are set
+            for (StackTraceElement ste : stackTraces) {
+                if (!ignoreMethod && !methodName.equals(ste.getMethodName())) continue;
+
+                boolean ok = false;
+                if (!StringUtils.isBlank(dynName)) {
+                    String cn = ste.getClassName();
+                    switch (mode) {
+                        case FULL:
+                            ok = cn.equals(dynName);
+                            break;
+                        case STARTS:
+                            ok = cn.startsWith(dynName);
+                            break;
+                        case ENDS:
+                            ok = cn.endsWith(dynName);
+                            break;
+                    }
+                }
+                if (ok) {
+                    Utils.printDebugInfo(-1, original, method, replaced, stackTraces2String(stackTraces), info, null);
+                    return replaced;
+                }
             }
         }
         return original;

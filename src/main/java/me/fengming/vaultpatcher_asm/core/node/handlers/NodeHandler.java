@@ -48,11 +48,8 @@ public abstract class NodeHandler<E extends AbstractInsnNode> {
                 break;
             }
         }
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("In_which_method: ").append(method.name).append(", Called by: ").append(calledMethod == null ? "None" : calledMethod);
-
-        return sb.toString();
+        String detail=String.format("In_which_method: %s, Called by: %s", method.name, (calledMethod == null ? "None" : calledMethod));
+        return detail;
     }
 
     public static NodeHandler<? extends AbstractInsnNode> getHandlerByNode(AbstractInsnNode node, NodeHandlerParameters params) {

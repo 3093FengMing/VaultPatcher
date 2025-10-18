@@ -4,6 +4,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import me.fengming.vaultpatcher_asm.VaultPatcher;
+import me.fengming.vaultpatcher_asm.core.utils.StringUtils;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
 
 import java.io.IOException;
@@ -35,7 +36,7 @@ public class VaultPatcherModule {
         moduleInfo.readJson(reader);
         boolean dynamic = moduleInfo.isDataDynamic();
         VaultPatcher.debugInfo("[VaultPatcher] Loading Module: {}, Author(s): {}, Mod(s): {}, Desc: {}, Dyn: {}, I18n: {}",
-                moduleInfo.getInfoName(), moduleInfo.getInfoAuthors(), moduleInfo.getInfoMods(),
+                moduleInfo.getInfoName(), moduleInfo.getInfoAuthors(), moduleInfo.getInfoMods(), moduleInfo.getInfoDesc(),
                 moduleInfo.isDataDynamic(), moduleInfo.isDataI18n());
 
         while (reader.peek() != JsonToken.END_ARRAY) {
@@ -53,7 +54,13 @@ public class VaultPatcherModule {
                     case "target_classes": {
                         reader.beginArray();
                         while (reader.peek() != JsonToken.END_ARRAY) {
-                            targetClasses.add(reader.nextString());
+                            if (dynamic) {
+                                targetClassInfo.setDynamicName(reader.nextString());
+                            }
+                            else {
+                                targetClasses.add(reader.nextString());
+                            }
+
                         }
                         reader.endArray();
                         break;
@@ -73,10 +80,22 @@ public class VaultPatcherModule {
                     }
                 }
             }
+            if (targetClasses.isEmpty()) {
+                targetClasses.add("");
+            }
             for (String targetClass : targetClasses) {
-                TranslationInfo.Mutable mutable = new TranslationInfo.Mutable(targetClass);
-                mutable.setPairs(pairs).setTargetClassInfo(targetClassInfo);
-                Utils.addTranslationInfo(targetClass, mutable);
+                if (dynamic) {
+                    boolean isHalfMatch = !StringUtils.isBlank(targetClass) &&
+                            (targetClass.charAt(0) == '@' || targetClass.charAt(0) == '#');
+
+                    TranslationInfo.Mutable mutable = new TranslationInfo.Mutable(isHalfMatch ? "" : targetClass);
+                    mutable.setPairs(pairs).setTargetClassInfo(targetClassInfo);
+                    Utils.dynTranslationInfos.add(mutable.toImmutable());
+                } else {
+                    TranslationInfo.Mutable mutable = new TranslationInfo.Mutable(targetClass);
+                    mutable.setPairs(pairs).setTargetClassInfo(targetClassInfo);
+                    Utils.addTranslationInfo(targetClass, mutable);
+                }
             }
 
             reader.endObject();
@@ -96,6 +115,11 @@ public class VaultPatcherModule {
     }
 
     public void read() throws IOException {
+        Path p_old=VaultPatcherConfig.config.resolve(moduleFile.getFileName());
+        if (Files.notExists(moduleFile) && Files.exists(p_old)) {
+            Files.move(p_old, moduleFile);
+            VaultPatcher.LOGGER.warn("[VaultPatcher] Moving Moudle file {} from config/vaultpatcher_asm to vaultpatcher/modules.", moduleFile);
+        }
         if (Files.notExists(moduleFile)) {
             VaultPatcher.LOGGER.warn("[VaultPatcher] Not Found Module File {}, this file will be created and populated with initial content.", moduleFile);
             Files.createFile(moduleFile);

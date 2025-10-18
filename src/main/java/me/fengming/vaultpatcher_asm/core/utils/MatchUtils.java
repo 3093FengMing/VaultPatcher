@@ -33,10 +33,10 @@ public class MatchUtils {
             case INVOKE_RETURN:
             case METHOD_RETURN:
                 return isMethod && local.equals(name);
-            case ARRAY_ELEMENT:
             case LOCAL_VARIABLE:
             case GLOBAL_VARIABLE:
                 return !isMethod && local.equals(name);
+            case ARRAY_ELEMENT:
             case NONE:
                 return local.equals(name);
             default:

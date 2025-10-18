@@ -22,13 +22,9 @@ public class ModuleInfo {
         this.infoName = infoName;
     }
 
-    public String getInfoDesc() {
-        return infoDesc;
-    }
+    public String getInfoDesc() {return infoDesc;}
 
-    public void setInfoDesc(String infoDesc) {
-        this.infoDesc = infoDesc;
-    }
+    public void setInfoDesc(String infoDesc) {this.infoDesc = infoDesc;}
 
     public String getInfoMods() {
         return infoMods;
