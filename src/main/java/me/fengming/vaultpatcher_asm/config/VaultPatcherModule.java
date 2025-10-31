@@ -118,7 +118,7 @@ public class VaultPatcherModule {
         Path p_old=VaultPatcherConfig.config.resolve(moduleFile.getFileName());
         if (Files.notExists(moduleFile) && Files.exists(p_old)) {
             Files.move(p_old, moduleFile);
-            VaultPatcher.LOGGER.warn("[VaultPatcher] Moving Moudle file {} from config/vaultpatcher_asm to vaultpatcher/modules.", moduleFile);
+            VaultPatcher.LOGGER.warn("[VaultPatcher] Moving Module file {} from config/vaultpatcher_asm to vaultpatcher/modules.", moduleFile);
         }
         if (Files.notExists(moduleFile)) {
             VaultPatcher.LOGGER.warn("[VaultPatcher] Not Found Module File {}, this file will be created and populated with initial content.", moduleFile);
