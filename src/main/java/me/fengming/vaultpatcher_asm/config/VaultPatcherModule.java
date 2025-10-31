@@ -114,9 +114,9 @@ public class VaultPatcherModule {
     }
 
     public void read() throws IOException {
-        Path p_old = VaultPatcherConfig.config.resolve(moduleFile.getFileName());
-        if (Files.notExists(moduleFile) && Files.exists(p_old)) {
-            Files.move(p_old, moduleFile);
+        Path oldFile = VaultPatcherConfig.config.resolve(moduleFile.getFileName());
+        if (Files.notExists(moduleFile) && Files.exists(oldFile)) {
+            Files.move(oldFile, moduleFile);
             VaultPatcher.LOGGER.warn("[VaultPatcher] Moving Moudle file {} from config/vaultpatcher_asm to vaultpatcher/modules.", moduleFile);
         }
         if (Files.notExists(moduleFile)) {

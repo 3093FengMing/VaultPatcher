@@ -5,6 +5,7 @@ import org.objectweb.asm.tree.ClassNode;
 
 import java.nio.file.Path;
 
+@SuppressWarnings("unused")
 public interface VaultPatcherPlugin {
     String getName();
 
