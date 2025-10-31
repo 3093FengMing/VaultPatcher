@@ -1,6 +1,5 @@
 package me.fengming.vaultpatcher_asm.core.node.handlers;
 
-import me.fengming.vaultpatcher_asm.core.node.HandlerDebugInfo;
 import me.fengming.vaultpatcher_asm.core.node.NodeHandlerParameters;
 import me.fengming.vaultpatcher_asm.core.utils.MatchUtils;
 import org.objectweb.asm.Opcodes;
@@ -23,7 +22,4 @@ public class InsnNodeHandler extends NodeHandler<InsnNode> {
         }
         return this.node;
     }
-
-    @Override
-    public void addDebugInfo(HandlerDebugInfo info) {}
 }

@@ -4,7 +4,6 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashBigSet;
 import me.fengming.vaultpatcher_asm.core.utils.I18n;
-import me.fengming.vaultpatcher_asm.core.utils.Utils;
 
 import java.io.IOException;
 import java.util.HashMap;

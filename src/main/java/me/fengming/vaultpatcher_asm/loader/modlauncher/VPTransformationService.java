@@ -49,7 +49,9 @@ public class VPTransformationService implements ITransformationService {
         VaultPatcher.platform = Platform.Forge1_13;
 
         String minecraftVersion = getMinecraftVersion();
-        if (StringUtils.isBlank(minecraftVersion)) VaultPatcher.LOGGER.error("[VaultPatcher] Failed to get minecraft version!");
+        if (StringUtils.isBlank(minecraftVersion)) {
+            VaultPatcher.LOGGER.error("[VaultPatcher] Failed to get minecraft version!");
+        }
         // VaultPatcher.debugInfo("[VaultPatcher] Get minecraft version: " + minecraftVersion);
         if (isOldVersion(minecraftVersion)) {
             VaultPatcher.LOGGER.warn("[VaultPatcher] Disable dynamic replace because the game version is 1.16.5 or below (your version: {})", minecraftVersion);
@@ -95,10 +97,12 @@ public class VPTransformationService implements ITransformationService {
     }
 
     @Override
-    public void beginScanning(IEnvironment environment) {}
+    public void beginScanning(IEnvironment environment) {
+    }
 
     @Override
-    public void onLoad(IEnvironment env, Set<String> otherServices) {}
+    public void onLoad(IEnvironment env, Set<String> otherServices) {
+    }
 
     @Override
     public List<ITransformer> transformers() {

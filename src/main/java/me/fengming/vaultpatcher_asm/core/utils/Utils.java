@@ -3,7 +3,9 @@ package me.fengming.vaultpatcher_asm.core.utils;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
 import me.fengming.vaultpatcher_asm.VaultPatcher;
 import me.fengming.vaultpatcher_asm.config.DebugMode;
+import me.fengming.vaultpatcher_asm.config.TargetClassInfo;
 import me.fengming.vaultpatcher_asm.config.TranslationInfo;
+import me.fengming.vaultpatcher_asm.core.misc.CommonSuperClassWriter;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
 
@@ -38,14 +40,22 @@ public class Utils {
     }
 
     // debug
-
     public static void printDebugInfo(int ordinal, String source,
                                       String method, String target, String clazz,
                                       TranslationInfo info, String detail) {
         if (!debug.isEnable()) return;
-        int showSame=debug.getOutputMode();
-        if (showSame==0 && source.equals(target)) return;
-        VaultPatcher.LOGGER.info("[VaultPatcher] Trying replacing!\n{}", String.format("'%s' -> '%s' in %s | TranslationInfo{name=%s, method=%s, localMode=%s, local=%s, ordinal=%s, matchMode=%s, ASM/DynMethod=%s, %s}", source, target, clazz.replace('/', '.'), info.getTargetClassInfo().getDynamicName(), info.getTargetClassInfo().getMethod(), info.getTargetClassInfo().getLocalMode(), info.getTargetClassInfo().getLocal(), (ordinal==-1 ? "Unknown" : String.valueOf(ordinal)), info.getTargetClassInfo().getMatchMode(), method, detail));
+        int showSame = debug.getOutputMode();
+        if (showSame == 0 && source.equals(target)) return;
+        TargetClassInfo ci = info.getTargetClassInfo();
+        VaultPatcher.LOGGER.info("[VaultPatcher] Trying replacing!\n{}",
+                String.format(
+                        "'%s' -> '%s' in %s | TranslationInfo{name=%s, method=%s, localMode=%s, local=%s, ordinal=%s, matchMode=%s, ASM/DynMethod=%s, %s}",
+                        source, target, StringUtils.dotPackage(clazz),
+                        ci.getDynamicName(), ci.getMethod(), ci.getLocalMode(),
+                        ci.getLocal(), (ordinal == -1 ? "Unknown" : String.valueOf(ordinal)), ci.getMatchMode(),
+                        method, detail
+                )
+        );
     }
 
     // transformer
@@ -75,12 +85,7 @@ public class Utils {
     }
 
     public static byte[] nodeToBytes(ClassNode node) {
-        ClassWriter wr = new ClassWriter(ClassWriter.COMPUTE_FRAMES){
-            @Override
-            protected String getCommonSuperClass(String type1, String type2){
-                return "java/lang/Object";
-            }
-        };
+        ClassWriter wr = new CommonSuperClassWriter();
         node.accept(wr);
         return wr.toByteArray();
     }

@@ -13,7 +13,9 @@ public class LdcNodeHandler extends NodeHandler<LdcInsnNode> {
 
     @Override
     public LdcInsnNode modifyNode() {
-        if (this.node.cst instanceof String && MatchUtils.matchOrdinal(params.info, params.ordinal) && (params.info.getTargetClassInfo().getLocal()==null || params.info.getTargetClassInfo().getLocal().isEmpty())) {
+        if (this.node.cst instanceof String
+                && MatchUtils.matchOrdinal(params.info, params.ordinal)
+                && (params.info.getTargetClassInfo().getLocal() == null || params.info.getTargetClassInfo().getLocal().isEmpty())) {
             String s = (String) this.node.cst;
             String v = MatchUtils.matchPairs(params.info.getPairs(), s, false);
             String detail = buildDetail(this.node, params.methodNode);

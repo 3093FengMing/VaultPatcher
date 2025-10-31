@@ -4,7 +4,7 @@ import java.nio.charset.StandardCharsets;
 
 public class StringUtils {
     public static String dotPackage(String s) {
-        return s.replace('.', '/');
+        return s.replace('/', '.');
     }
 
     public static String rawPackage(String s) {
