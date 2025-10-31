@@ -97,12 +97,10 @@ public class VPTransformationService implements ITransformationService {
     }
 
     @Override
-    public void beginScanning(IEnvironment environment) {
-    }
+    public void beginScanning(IEnvironment environment) {}
 
     @Override
-    public void onLoad(IEnvironment env, Set<String> otherServices) {
-    }
+    public void onLoad(IEnvironment env, Set<String> otherServices) {}
 
     @Override
     public List<ITransformer> transformers() {
