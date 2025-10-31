@@ -71,18 +71,18 @@ public class VaultPatcher {
     private static void _init(Path mcPath) {
         plugins.forEach(e -> e.start(mcPath));
 
-        VaultPatcher.debugInfo("[VaultPatcher] Loading I18n!");
-        I18n.load(mcPath);
-
         try {
-            VaultPatcher.debugInfo("[VaultPatcher] Loading Configs!");
             plugins.forEach(e -> e.onLoadConfig(VaultPatcherPlugin.Phase.BEFORE));
             VaultPatcherConfig.readConfig(mcPath.resolve("config").resolve("vaultpatcher_asm"));
             Utils.debug = VaultPatcherConfig.getDebugMode();
+            VaultPatcher.debugInfo("[VaultPatcher] Loading Configs!");
             plugins.forEach(e -> e.onLoadConfig(VaultPatcherPlugin.Phase.AFTER));
         } catch (IOException e) {
             throw new RuntimeException("Failed to load config: ", e);
         }
+
+        VaultPatcher.debugInfo("[VaultPatcher] Loading I18n!");
+        I18n.load(mcPath);
 
         try {
             VaultPatcher.debugInfo("[VaultPatcher] Loading Patches!");
@@ -104,6 +104,10 @@ public class VaultPatcher {
 
         try {
             VaultPatcher.debugInfo("[VaultPatcher] Loading Modules!");
+            Path p = Utils.getVpPath().resolve("modules");
+            if (Files.notExists(p)){
+                Files.createDirectories(p);
+            }
             List<String> mods = VaultPatcherConfig.getMods();
             for (String mod : mods) {
                 VaultPatcherModule vpp = new VaultPatcherModule(mod + ".json");
