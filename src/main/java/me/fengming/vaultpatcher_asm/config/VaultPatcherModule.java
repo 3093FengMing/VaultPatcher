@@ -19,7 +19,7 @@ public class VaultPatcherModule {
     private final Path moduleFile;
 
     public VaultPatcherModule(String moduleFile) {
-        VaultPatcher.debugInfo("[VaultPatcher] Found Module {}",moduleFile);
+        VaultPatcher.debugInfo("[VaultPatcher] Found Module: {}", moduleFile);
         Path p = Utils.getVpPath().resolve("modules").resolve(moduleFile);
         try {
             Files.createDirectories(p.getParent());
@@ -56,15 +56,14 @@ public class VaultPatcherModule {
                         while (reader.peek() != JsonToken.END_ARRAY) {
                             if (dynamic) {
                                 targetClassInfo.setDynamicName(reader.nextString());
-                            }
-                            else {
+                            } else {
                                 targetClasses.add(reader.nextString());
                             }
-
                         }
                         reader.endArray();
                         break;
                     }
+                    case "i":
                     case "info": {
                         targetClassInfo.readJson(reader);
                         break;
@@ -115,10 +114,10 @@ public class VaultPatcherModule {
     }
 
     public void read() throws IOException {
-        Path p_old=VaultPatcherConfig.config.resolve(moduleFile.getFileName());
-        if (Files.notExists(moduleFile) && Files.exists(p_old)) {
-            Files.move(p_old, moduleFile);
-            VaultPatcher.LOGGER.warn("[VaultPatcher] Moving Module file {} from config/vaultpatcher_asm to vaultpatcher/modules.", moduleFile);
+        Path oldFile = VaultPatcherConfig.config.resolve(moduleFile.getFileName());
+        if (Files.notExists(moduleFile) && Files.exists(oldFile)) {
+            Files.move(oldFile, moduleFile);
+            VaultPatcher.LOGGER.warn("[VaultPatcher] Moving Moudle file {} from config/vaultpatcher_asm to vaultpatcher/modules.", moduleFile);
         }
         if (Files.notExists(moduleFile)) {
             VaultPatcher.LOGGER.warn("[VaultPatcher] Not Found Module File {}, this file will be created and populated with initial content.", moduleFile);

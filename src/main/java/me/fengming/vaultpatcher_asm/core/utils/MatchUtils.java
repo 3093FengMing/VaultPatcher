@@ -28,7 +28,7 @@ public class MatchUtils {
         TargetClassInfo i = info.getTargetClassInfo();
         String local = i.getLocal();
         if (StringUtils.isBlank(local)) return false;
-        
+
         switch (i.getLocalMode()) {
             case INVOKE_RETURN:
             case METHOD_RETURN:

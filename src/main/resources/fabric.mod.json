@@ -4,7 +4,9 @@
   "version": "${version}",
   "name": "VaultPatcher",
   "description": "",
-  "authors": ["FengMing3093"],
+  "authors": [
+    "FengMing3093"
+  ],
   "contact": {
     "repo": "https://github.com/3093FengMing/VaultPatcher"
   },
@@ -34,7 +36,9 @@
   "custom": {
     "modmenu:api": true,
     "modmenu": {
-      "badges": [ "library" ]
+      "badges": [
+        "library"
+      ]
     }
   }
 }

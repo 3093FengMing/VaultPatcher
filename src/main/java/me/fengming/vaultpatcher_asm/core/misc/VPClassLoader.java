@@ -8,7 +8,7 @@ import java.lang.reflect.Method;
 public class VPClassLoader {
     // misc
     public static void newClass(ClassLoader parent, String className, byte[] classBytes) {
-        String dClassName = StringUtils.dotPackage(className);
+        String dClassName = StringUtils.rawPackage(className);
         try {
             Class<?> Instance_ClassLoader = Class.forName("java.lang.ClassLoader");
             Method Method_defineClass = Instance_ClassLoader.getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class);

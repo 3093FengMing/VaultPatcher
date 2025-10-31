@@ -1,6 +1,5 @@
 package me.fengming.vaultpatcher_asm.core.node.handlers;
 
-import me.fengming.vaultpatcher_asm.core.node.HandlerDebugInfo;
 import me.fengming.vaultpatcher_asm.core.node.NodeHandlerParameters;
 import me.fengming.vaultpatcher_asm.core.utils.MatchUtils;
 import org.objectweb.asm.Opcodes;
@@ -38,7 +37,8 @@ public class ArrayNodeHandler extends NodeHandler<InsnNode> {
     public InsnNode modifyNode() {
         AbstractInsnNode producer = findArrayProducer(this.node);
         String nameToMatch = null;
-        if (this.node.getOpcode() != Opcodes.AALOAD || !MatchUtils.matchOrdinal(params.info, params.ordinal) || producer == null) return this.node;
+        if (this.node.getOpcode() != Opcodes.AALOAD || !MatchUtils.matchOrdinal(params.info, params.ordinal) || producer == null)
+            return this.node;
         // Get name according to the type of producer
         if (producer instanceof VarInsnNode) {
             VarInsnNode v = (VarInsnNode) producer;
@@ -61,9 +61,6 @@ public class ArrayNodeHandler extends NodeHandler<InsnNode> {
         }
         return this.node;
     }
-
-    @Override
-    public void addDebugInfo(HandlerDebugInfo info) {}
 }
 
 
