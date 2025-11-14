@@ -16,8 +16,10 @@ public class VPMinecraftTransformer implements Consumer<ClassNode> {
         switch (input.name) {
             case "net/minecraft/util/text/StringTextComponent": // SRG 1.16.5-
             case "net/minecraft/network/chat/TextComponent":    // MojMaps 1.17-1.18.2
-            case "net/minecraft/network/chat/contents/LiteralContents": // MojMaps 1.18.2+
+            case "net/minecraft/network/chat/contents/LiteralContents":     // MojMaps 1.18.2-1.20.2
+            case "net/minecraft/network/chat/contents/PlainTextContents$LiteralContents":   // MojMaps 1.20.3+
             case "net/minecraft/class_2585":                    // Intermediary 1.20.2-
+            case "net/minecraft/class_8828$class$2585":
                 // TextComponent
                 for (MethodNode method : input.methods) {
                     if (!method.name.equals("<init>")) break;
