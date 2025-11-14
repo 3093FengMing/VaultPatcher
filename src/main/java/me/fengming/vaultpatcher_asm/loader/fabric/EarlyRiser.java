@@ -10,9 +10,12 @@ import me.fengming.vaultpatcher_asm.core.utils.Platform;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.SemanticVersion;
+import net.fabricmc.loader.api.VersionParsingException;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Locale;
 import java.util.NoSuchElementException;
 
 public class EarlyRiser implements Runnable {
@@ -39,12 +42,53 @@ public class EarlyRiser implements Runnable {
         VaultPatcher.debugInfo("[VaultPatcher] ER DONE!");
     }
 
+    private enum FabricEnvironment implements Comparable<FabricEnvironment> {
+        PRE_1_20_3("net.minecraft.class_327", "net.minecraft.class_2585"),
+        POST_1_20_3("net.minecraft.class_327", "net.minecraft.class_8828$class_2585"),
+        MOJ_MAPPED("net.minecraft.client.gui.Font", "net.minecraft.chat.contents.PlainTextContents$LiteralContents"),
+        ;
+        final String nameFont;
+        final String nameLiteralContents;
+
+        FabricEnvironment(String nameFont, String nameLiteralContents) {
+            this.nameFont = nameFont;
+            this.nameLiteralContents = nameLiteralContents;
+        }
+
+        static final net.fabricmc.loader.api.Version MC_VERSION;
+        static final FabricEnvironment CURRENT;
+
+        static {
+            MC_VERSION = FabricLoader.getInstance().getModContainer("minecraft")
+                    .orElseThrow(() -> new NoSuchElementException("Mod container 'minecraft' is absent!"))
+                    .getMetadata()
+                    .getVersion();
+
+            FabricEnvironment current = null;
+            if (MC_VERSION instanceof net.fabricmc.loader.api.SemanticVersion) {
+                if (((SemanticVersion) MC_VERSION).getBuildKey().orElse("").toLowerCase(Locale.ROOT).contains("unobfuscated")) {
+                    current = MOJ_MAPPED;
+                }
+            }
+            if (current == null) {
+                net.fabricmc.loader.api.metadata.version.VersionPredicate predicate;
+                try {
+                    predicate = net.fabricmc.loader.api.metadata.version.VersionPredicate.parse(">=1.20.3-");
+                } catch (VersionParsingException e) {
+                    throw new IllegalStateException("Your Fabric Loader sucks", e);
+                }
+                current = predicate.test(MC_VERSION) ? POST_1_20_3 : PRE_1_20_3;
+            }
+            CURRENT = current;
+        }
+    }
+
     private static void addMinecraftClasses() {
         // net/minecraft/client/gui/Font
-        ClassTinkerers.addTransformation("net.minecraft.class_327", new VPMinecraftTransformer());
+        ClassTinkerers.addTransformation(FabricEnvironment.CURRENT.nameFont, new VPMinecraftTransformer());
         // net/minecraft/chat/contents/LiteralContents
         // In 1.20.3+: PlainTextContents$LiteralContents 8828$2585
-        ClassTinkerers.addTransformation("net.minecraft.class_2585", new VPMinecraftTransformer());
+        ClassTinkerers.addTransformation(FabricEnvironment.CURRENT.nameLiteralContents, new VPMinecraftTransformer());
     }
 
     private static void addExpandClasses() {
@@ -58,10 +102,6 @@ public class EarlyRiser implements Runnable {
     }
 
     private static String getMinecraftVersion() {
-        return FabricLoader.getInstance().getModContainer("minecraft")
-                .orElseThrow(() -> new NoSuchElementException("Mod container 'minecraft' is absent!"))
-                .getMetadata()
-                .getVersion()
-                .getFriendlyString();
+        return FabricEnvironment.MC_VERSION.getFriendlyString();
     }
 }
