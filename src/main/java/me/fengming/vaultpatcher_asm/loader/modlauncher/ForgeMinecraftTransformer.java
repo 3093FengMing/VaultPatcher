@@ -7,8 +7,9 @@ import me.fengming.vaultpatcher_asm.core.transformers.VPMinecraftTransformer;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
 import org.objectweb.asm.tree.ClassNode;
 
-import java.util.HashSet;
+import java.util.Arrays;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ForgeMinecraftTransformer implements ITransformer<ClassNode> {
     public ForgeMinecraftTransformer() {}
@@ -25,21 +26,25 @@ public class ForgeMinecraftTransformer implements ITransformer<ClassNode> {
         return TransformerVoteResult.YES;
     }
 
+    private static final String[] TARGETS = {
+            // TextComponent
+            "net.minecraft.util.text.StringTextComponent",
+            "net.minecraft.network.chat.TextComponent",
+            "net.minecraft.network.chat.contents.LiteralContents",
+
+            // Font
+            "net.minecraft.client.gui.Font",
+            "net.minecraft.client.gui.FontRenderer",
+    };
+
 
     @Override
     public Set<Target> targets() {
-        Set<Target> targets = new HashSet<>();
-        // TextComponent
-        targets.add(Target.targetClass("net.minecraft.util.text.StringTextComponent"));
-        targets.add(Target.targetClass("net.minecraft.network.chat.TextComponent"));
-        targets.add(Target.targetClass("net.minecraft.network.chat.contents.LiteralContents"));
-        // Font
-        targets.add(Target.targetClass("net.minecraft.client.gui.Font"));
-        targets.add(Target.targetClass("net.minecraft.client.gui.FontRenderer"));
-        return targets;
+        return Arrays.stream(TARGETS).map(Target::targetClass).collect(Collectors.toSet());
     }
 
     // neoforge only
+    @SuppressWarnings("unused")
     public cpw.mods.modlauncher.api.TargetType getTargetType() {
         return Utils.neoforgeGetTargetType("CLASS");
     }

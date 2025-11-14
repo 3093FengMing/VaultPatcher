@@ -11,9 +11,9 @@ import me.fengming.vaultpatcher_asm.core.utils.Utils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 
-import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 public class EarlyRiser implements Runnable {
     @Override
@@ -40,7 +40,10 @@ public class EarlyRiser implements Runnable {
     }
 
     private static void addMinecraftClasses() {
+        // net/minecraft/client/gui/Font
         ClassTinkerers.addTransformation("net.minecraft.class_327", new VPMinecraftTransformer());
+        // net/minecraft/chat/contents/LiteralContents
+        // In 1.20.3+: PlainTextContents$LiteralContents 8828$2585
         ClassTinkerers.addTransformation("net.minecraft.class_2585", new VPMinecraftTransformer());
     }
 
@@ -55,22 +58,10 @@ public class EarlyRiser implements Runnable {
     }
 
     private static String getMinecraftVersion() {
-        try {
-            // Fabric
-            return getNormalizedGameVersion(Class.forName("net.fabricmc.loader.impl.FabricLoaderImpl"));
-        } catch (Exception ignored) {}
-        try {
-            // Quilt
-            return getNormalizedGameVersion(Class.forName("org.quiltmc.loader.impl.QuiltLoaderImpl"));
-        } catch (Exception ignored) {}
-        return null;
-    }
-
-    private static String getNormalizedGameVersion(Class<?> clazz) throws Exception {
-        Field field = clazz.getDeclaredField("INSTANCE");
-        field.setAccessible(true);
-        Object instance = field.get(null);
-        Object gameProvider = instance.getClass().getDeclaredMethod("getGameProvider").invoke(instance);
-        return (String) gameProvider.getClass().getDeclaredMethod("getNormalizedGameVersion").invoke(gameProvider);
+        return FabricLoader.getInstance().getModContainer("minecraft")
+                .orElseThrow(() -> new NoSuchElementException("Mod container 'minecraft' is absent!"))
+                .getMetadata()
+                .getVersion()
+                .getFriendlyString();
     }
 }

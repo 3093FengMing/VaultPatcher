@@ -71,6 +71,7 @@ public class ForgeClassTransformer implements ITransformer<ClassNode> {
     }
 
     // neoforge only
+    @SuppressWarnings("unused")
     public cpw.mods.modlauncher.api.TargetType getTargetType() {
         return Utils.neoforgeGetTargetType("CLASS");
     }

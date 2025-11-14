@@ -9,6 +9,7 @@ public enum Platform {
     Fabric, Forge1_6, Forge1_13,
     JAVA_8, JAVA_11, JAVA_17, JAVA_21;
 
+    @Deprecated
     public static Platform getJavaVersion(String s) {
         switch (s) {
             case "1.8":

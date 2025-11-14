@@ -3,6 +3,8 @@ package me.fengming.vaultpatcher_asm.core.utils;
 import me.fengming.vaultpatcher_asm.config.TargetClassInfo;
 import me.fengming.vaultpatcher_asm.config.TranslationInfo;
 
+import java.util.StringJoiner;
+
 @SuppressWarnings("unused")
 public class DynamicReplaceUtils {
 
@@ -57,11 +59,10 @@ public class DynamicReplaceUtils {
     }
 
     private static String stackTraces2String(StackTraceElement[] stackTraces) {
-        if (stackTraces.length == 0) return "[]";
-        StringBuilder sb = new StringBuilder("[");
-        for (StackTraceElement stackTrace : stackTraces) {
-            sb.append(stackTrace.getClassName()).append("#").append(stackTrace.getMethodName()).append(", ");
+        StringJoiner joiner = new StringJoiner(", ", "[", "]");
+        for (StackTraceElement trace : stackTraces) {
+            joiner.add(trace.getClassName() + '#' + trace.getMethodName());
         }
-        return sb.delete(sb.length() - 2, sb.length()).append("]").toString();
+        return joiner.toString();
     }
 }

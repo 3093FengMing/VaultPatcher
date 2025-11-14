@@ -10,7 +10,7 @@ import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
 
 import java.io.File;
-import java.io.FileOutputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Consumer;
@@ -107,22 +107,16 @@ public class Utils {
         return s.substring(0, s.length() - 6).replace(File.separatorChar, '/');
     }
 
-    public static File exportClass(ClassNode node, Path root) {
+    public static Path exportClass(ClassNode node, Path root) {
         ClassWriter w = new ClassWriter(0);
         node.accept(w);
         byte[] b = w.toByteArray();
-        File file = root.resolve(node.name + ".class").toFile();
+        Path path = root.resolve(node.name + ".class");
         try {
-            if (!file.exists()) {
-                file.getParentFile().mkdirs();
-                file.createNewFile();
-            }
-            file.setWritable(true);
-            try (FileOutputStream fos = new FileOutputStream(file)) {
-                fos.write(b);
-                fos.flush();
-            }
-            return file;
+            Files.createDirectories(path.getParent());
+            Files.write(path, b);
+
+            return path;
         } catch (Exception e) {
             throw new IllegalStateException("Failed to export class: ", e);
         }
