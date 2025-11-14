@@ -173,7 +173,12 @@ public class VPClassTransformer implements Consumer<ClassNode> {
 
                     // inner class
                     ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-                    cw.visit(Opcodes.V1_8, Opcodes.ACC_FINAL | Opcodes.ACC_SUPER, innerClassName, "Ljava/util/HashMap<Ljava/lang/String;Ljava/lang/String;>;", "java/util/HashMap", null);
+                    cw.visit(
+                            Opcodes.V1_8,
+                            Opcodes.ACC_FINAL | Opcodes.ACC_SUPER | Opcodes.ACC_PUBLIC | Opcodes.ACC_SYNTHETIC,
+                            innerClassName, "Ljava/util/HashMap<Ljava/lang/String;Ljava/lang/String;>;",
+                            "java/util/HashMap", null
+                    );
                     cw.visitSource("VaultPatcher for " + className + '<' + innerClassName + '>', null);
 
                     // <init>
