@@ -25,12 +25,18 @@ jar {
         into 'META-INF/jars'
     }
 
+    Map<String, Object> prop = [
+            version: project.mod_version,
+            description: project.mod_description,
+            license: project.mod_license,
+            repo: project.mod_repo,
+            homepage: project.mod_homepage,
+    ]
+
+    inputs.properties prop
+
     filesMatching(["fabric.mod.json", "META-INF/neoforge.mods.toml"]) {
-        expand 'version': project.mod_version
-        expand 'description': project.mod_description
-        expand 'license': project.mod_license
-        expand 'repo': project.mod_repo
-        expand 'homepage': project.mod_homepage
+        expand prop
     }
 
     archiveAppendix = 'all'
