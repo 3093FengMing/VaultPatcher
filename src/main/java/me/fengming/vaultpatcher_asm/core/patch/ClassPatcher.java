@@ -3,10 +3,10 @@ package me.fengming.vaultpatcher_asm.core.patch;
 import me.fengming.vaultpatcher_asm.VaultPatcher;
 import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
+import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -25,17 +25,14 @@ public class ClassPatcher {
 
     public static void init(Path path) throws IOException {
         if (!VaultPatcherConfig.isEnableClassPatch()) return;
-        File file = path.toFile();
-        if (Files.notExists(path)) {
-            file.mkdirs();
-        }
+        Files.createDirectories(path);
         traverse(path);
     }
 
     private static void traverse(Path root) throws IOException {
         Files.walkFileTree(root, new SimpleFileVisitor<Path>() {
             @Override
-            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+            public @NotNull FileVisitResult visitFile(@NotNull Path file, @NotNull BasicFileAttributes attrs) throws IOException {
                 if (!file.toString().endsWith(".class")) return super.visitFile(file, attrs);
                 VaultPatcher.debugInfo("[VaultPatcher] Found patch: {}", file);
                 String className = Utils.filePathToClassName(file, root);
