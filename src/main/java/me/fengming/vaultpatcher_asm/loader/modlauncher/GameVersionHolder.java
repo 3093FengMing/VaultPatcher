@@ -28,17 +28,10 @@ final class GameVersionHolder {
 
     private static String lookupNeo() throws Throwable {
         Class<?> loaderClass = Class.forName("net.neoforged.fml.loading.FMLLoader");
+        // Pre-1.21.9 (loader <10)
         Class<?> versionInfoClass = Class.forName("net.neoforged.fml.loading.VersionInfo");
 
-        MethodHandle versionInfoGetter;
-        // loader <10: FMLLoader.versionInfo();
-        // loader >=10: FMLLoader.getCurrent().getVersionInfo();
-        try {
-            Object loader = LOOKUP.findStatic(loaderClass, "getCurrent", MethodType.methodType(loaderClass)).invoke();
-            versionInfoGetter = LOOKUP.findVirtual(loaderClass, "getVersionInfo", MethodType.methodType(versionInfoClass)).bindTo(loader);
-        } catch (NoSuchMethodException e) {
-            versionInfoGetter = LOOKUP.findStatic(loaderClass, "versionInfo", MethodType.methodType(versionInfoClass));
-        }
+        MethodHandle versionInfoGetter = LOOKUP.findStatic(loaderClass, "versionInfo", MethodType.methodType(versionInfoClass));
         Object versionInfo = versionInfoGetter.invoke();
 
         // VersionInfo.mcVersion()

@@ -6,6 +6,7 @@ import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
 import me.fengming.vaultpatcher_asm.core.patch.ClassPatcher;
 import me.fengming.vaultpatcher_asm.core.transformers.VPClassTransformer;
 import me.fengming.vaultpatcher_asm.core.transformers.VPMinecraftTransformer;
+import me.fengming.vaultpatcher_asm.core.utils.ModClassDiscovery;
 import me.fengming.vaultpatcher_asm.core.utils.Platform;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
 import net.fabricmc.api.EnvType;
@@ -15,7 +16,6 @@ import net.fabricmc.loader.api.VersionParsingException;
 import net.fabricmc.loader.api.metadata.version.VersionPredicate;
 
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Locale;
 import java.util.NoSuchElementException;
 
@@ -102,12 +102,7 @@ public class EarlyRiser implements Runnable {
     }
 
     private static void addExpandClasses() {
-        List<String> targetMods = VaultPatcherConfig.getApplyMods();
-        for (String targetMod : targetMods) {
-            Utils.getClassesNameByJar(VaultPatcher.mcPath.resolve("mods").resolve(targetMod + ".jar").toString())
-                    .forEach(s -> ClassTinkerers.addTransformation(s.substring(0, s.length() - 6), new VPClassTransformer(null)));
-        }
-
+        ModClassDiscovery.getApplyClassNames().forEach(cn -> ClassTinkerers.addTransformation(cn, new VPClassTransformer(null)));
         VaultPatcherConfig.getClasses().forEach(s -> ClassTinkerers.addTransformation(s, new VPClassTransformer(null)));
     }
 

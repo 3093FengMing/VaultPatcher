@@ -2,6 +2,7 @@ modLoader = 'javafml' # Neo 1.20.5+ does not need a @Mod for javafml mods
 loaderVersion = '[1,)'
 license = '${license}'
 issueTrackerURL = '${repo}/issues'
+#services = ['cpw.mods.modlauncher.api.ITransformationService']
 
 [[mods]]
 modId = 'vaultpatcher'

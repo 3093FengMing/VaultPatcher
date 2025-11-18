@@ -10,7 +10,7 @@ group = 'me.fengming.vaultpatcher'
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
 
 jar {
-    baseName 'vaultpatcher'
+    archiveBaseName.set 'vaultpatcher'
 
     manifest {
         attributes([
@@ -44,7 +44,7 @@ jar {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(8))
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
     disableAutoTargetJvm()
 }
@@ -70,6 +70,33 @@ repositories {
     maven {
         url 'https://jitpack.io/'
     }
+    maven {
+        url 'https://maven.neoforged.net/releases'
+    }
+}
+
+sourceSets.register('java21') {
+//    java { srcDir 'src/java21/java' }
+    compileClasspath += sourceSets.main.output
+    runtimeClasspath += sourceSets.main.output
+}
+
+configurations {
+    named('java21Implementation') {
+        extendsFrom implementation
+    }
+}
+
+compileJava {
+    options.release = 8
+}
+
+tasks.named('compileJava21Java', JavaCompile.class) {
+    options.release = 21
+}
+
+jar {
+    from sourceSets.java21.output
 }
 
 dependencies {
@@ -82,7 +109,13 @@ dependencies {
     implementation 'net.fabricmc:fabric-loader:0.14.12'
     implementation 'cpw.mods:modlauncher:8.1.3'
     implementation 'net.minecraft:launchwrapper:1.12'
+    java21Implementation ('net.neoforged.fancymodloader:loader:10.0.32') {
+        transitive = false
+    }
+    java21Implementation 'net.neoforged:mergetool:2.0.0:api'
 
     implementation 'com.github.Chocohead:Fabric-ASM:2.3'
 }
+
+
 

@@ -10,6 +10,10 @@ import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
 
 import java.io.File;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -69,19 +73,40 @@ public class Utils {
         }
     }
 
-    public static void deepCopyClass(ClassNode a, ClassNode b) {
-        a.interfaces = b.interfaces;
-        a.name = b.name;
-        a.methods = b.methods;
-        a.fields = b.fields;
-        a.innerClasses = b.innerClasses;
-        a.superName = b.superName;
-        a.access = b.access;
-        a.attrs = b.attrs;
-        a.visibleAnnotations = b.visibleAnnotations;
-        a.visibleTypeAnnotations = b.visibleTypeAnnotations;
-        a.invisibleAnnotations = b.invisibleAnnotations;
-        a.invisibleTypeAnnotations = b.invisibleTypeAnnotations;
+    public static void deepCopyClass(ClassNode target, ClassNode source) {
+        clearClassNode(target);
+        source.accept(target);
+    }
+
+    private static void clearClassNode(ClassNode node) {
+        MethodHandles.Lookup lookup = MethodHandles.lookup();
+
+        for (Field field : ClassNode.class.getFields()) {
+            // bypass final and static members
+            if ((field.getModifiers() & (Modifier.FINAL | Modifier.STATIC)) != 0) continue;
+
+            try {
+                MethodHandle mh = lookup.unreflectSetter(field).bindTo(node);
+                mh.invoke(zero(field.getType()));
+            } catch (Throwable t) {
+                VaultPatcher.LOGGER.error("Can't clear field {1} of ClassNode {0} reflectively", node, field, t);
+            }
+        }
+    }
+
+    private static Object zero(Class<?> type) {
+        if (!type.isPrimitive()) return null;
+        switch (type.getName()) {
+            case "int": return 0;
+            case "float": return 0f;
+            case "double": return 0d;
+            case "short": return (short) 0;
+            case "byte": return (byte) 0;
+            case "long": return 0L;
+            case "boolean": return false;
+            case "char": return '\0';
+            default: throw new IncompatibleClassChangeError("Unknown primitive type: " + type);
+        }
     }
 
     public static byte[] nodeToBytes(ClassNode node) {

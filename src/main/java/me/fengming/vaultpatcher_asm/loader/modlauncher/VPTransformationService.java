@@ -65,7 +65,7 @@ public class VPTransformationService implements ITransformationService {
     private static final int VERSION_DYNAMIC_REPLACE_INTRODUCTION = 17;
 
     private static boolean isLegacyVersion(final String version) {
-        int indexOfDot1 = version.indexOf('.');
+        int indexOfDot1 = version.indexOf('.') + 1;
         int indexOfDot2 = version.indexOf('.', indexOfDot1 + 1);
         try {
             String segment2 = indexOfDot2 < 0 ? version.substring(indexOfDot1) : version.substring(indexOfDot1, indexOfDot2);
