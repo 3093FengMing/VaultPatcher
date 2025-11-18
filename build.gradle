@@ -25,8 +25,12 @@ jar {
         into 'META-INF/jars'
     }
 
-    filesMatching("fabric.mod.json") {
-        expand "version": mod_version
+    filesMatching(["fabric.mod.json", "META-INF/neoforge.mods.toml"]) {
+        expand 'version': project.mod_version
+        expand 'description': project.mod_description
+        expand 'license': project.mod_license
+        expand 'repo': project.mod_repo
+        expand 'homepage': project.mod_homepage
     }
 
     archiveAppendix = 'all'

@@ -12,6 +12,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.SemanticVersion;
 import net.fabricmc.loader.api.VersionParsingException;
+import net.fabricmc.loader.api.metadata.version.VersionPredicate;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -71,15 +72,24 @@ public class EarlyRiser implements Runnable {
                 }
             }
             if (current == null) {
-                net.fabricmc.loader.api.metadata.version.VersionPredicate predicate;
-                try {
-                    predicate = net.fabricmc.loader.api.metadata.version.VersionPredicate.parse(">=1.20.3-");
-                } catch (VersionParsingException e) {
-                    throw new IllegalStateException("Your Fabric Loader sucks", e);
+                if (versionPredicate(">=1.21.12-").test(MC_VERSION)) {
+                    // Mojang claims to remove obfuscation right after Mounts of Mayhem
+                    current = MOJ_MAPPED;
+                } else if (versionPredicate(">=1.20.3-").test(MC_VERSION)) {
+                    current = POST_1_20_3;
+                } else {
+                    current = PRE_1_20_3;
                 }
-                current = predicate.test(MC_VERSION) ? POST_1_20_3 : PRE_1_20_3;
             }
             CURRENT = current;
+        }
+    }
+
+    private static VersionPredicate versionPredicate(String p) {
+        try {
+            return VersionPredicate.parse(p);
+        } catch (VersionParsingException e) {
+            throw new IllegalStateException("Your Fabric Loader sucks", e);
         }
     }
 
