@@ -4,13 +4,13 @@ plugins {
 }
 
 apply plugin: 'maven-publish'
-version = "all-${mod_version}"
+version = project.mod_version
 group = 'me.fengming.vaultpatcher'
 
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
 
 jar {
-    baseName 'vaultpatcher'
+    archiveBaseName.set 'vaultpatcher'
 
     manifest {
         attributes([
@@ -25,16 +25,26 @@ jar {
         into 'META-INF/jars'
     }
 
-    filesMatching("fabric.mod.json") {
-        expand "version": mod_version
+    Map<String, Object> prop = [
+            version: project.mod_version,
+            description: project.mod_description,
+            license: project.mod_license,
+            repo: project.mod_repo,
+            homepage: project.mod_homepage,
+    ]
+
+    inputs.properties prop
+
+    filesMatching(["fabric.mod.json", "META-INF/neoforge.mods.toml"]) {
+        expand prop
     }
 
-    exclude "cpw"
+    archiveAppendix = 'all'
 }
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(8))
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
     disableAutoTargetJvm()
 }
@@ -60,10 +70,38 @@ repositories {
     maven {
         url 'https://jitpack.io/'
     }
+    maven {
+        url 'https://maven.neoforged.net/releases'
+    }
+}
+
+sourceSets.register('java21') {
+//    java { srcDir 'src/java21/java' }
+    compileClasspath += sourceSets.main.output
+    runtimeClasspath += sourceSets.main.output
+}
+
+configurations {
+    named('java21Implementation') {
+        extendsFrom implementation
+    }
+}
+
+compileJava {
+    options.release = 8
+}
+
+tasks.named('compileJava21Java', JavaCompile.class) {
+    options.release = 21
+}
+
+jar {
+    from sourceSets.java21.output
 }
 
 dependencies {
     compileOnly 'org.jetbrains:annotations:23.0.0'
+    compileOnly project(':stub-lib')
 
     implementation 'com.google.code.gson:gson:2.2.4'
     implementation 'it.unimi.dsi:fastutil:7.0.10'
@@ -71,7 +109,13 @@ dependencies {
     implementation 'net.fabricmc:fabric-loader:0.14.12'
     implementation 'cpw.mods:modlauncher:8.1.3'
     implementation 'net.minecraft:launchwrapper:1.12'
+    java21Implementation ('net.neoforged.fancymodloader:loader:10.0.32') {
+        transitive = false
+    }
+    java21Implementation 'net.neoforged:mergetool:2.0.0:api'
 
     implementation 'com.github.Chocohead:Fabric-ASM:2.3'
 }
+
+
 

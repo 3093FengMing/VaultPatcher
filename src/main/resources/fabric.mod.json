@@ -3,30 +3,26 @@
   "id": "vaultpatcher",
   "version": "${version}",
   "name": "VaultPatcher",
-  "description": "",
+  "description": "${description}",
   "authors": [
     "FengMing3093"
   ],
   "contact": {
-    "repo": "https://github.com/3093FengMing/VaultPatcher"
+    "homepage": "${homepage}",
+    "sources": "${repo}",
+    "issues": "${repo}/issues"
   },
-  "license": "GPL-3.0",
+  "license": "${license}",
   "icon": "assets/vaultpatcher/icon.png",
   "environment": "*",
   "entrypoints": {
-    "main": [
-      "me.fengming.vaultpatcher_asm.loader.fabric.VaultPatcherInitializer"
-    ],
-    "client": [
-      "me.fengming.vaultpatcher_asm.loader.fabric.ClientVaultPatcherInitializer"
-    ],
     "mm:early_risers": [
       "me.fengming.vaultpatcher_asm.loader.fabric.EarlyRiser"
     ]
   },
   "mixins": [],
   "depends": {
-    "fabricloader": ">=0.7.0"
+    "fabricloader": ">=0.18.0"
   },
   "jars": [
     {

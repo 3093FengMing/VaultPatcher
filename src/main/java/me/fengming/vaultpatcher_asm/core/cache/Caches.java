@@ -3,7 +3,6 @@ package me.fengming.vaultpatcher_asm.core.cache;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
 import org.objectweb.asm.tree.ClassNode;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -18,10 +17,7 @@ public class Caches {
 
     public static void init(Path path) throws IOException {
         if (!Utils.debug.isUseCache()) return;
-        File file = path.toFile();
-        if (Files.notExists(path)) {
-            file.mkdirs();
-        }
+        Files.createDirectories(path);
         traverse(path);
     }
 
@@ -43,9 +39,9 @@ public class Caches {
     }
 
     public static void addClassCache(String className, ClassNode node) {
-        File classFile = Utils.exportClass(node, Utils.getVpPath().resolve("cache"));
+        Path classFile = Utils.exportClass(node, Utils.getVpPath().resolve("cache"));
         try {
-            ClassCache cache = new ClassCache(classFile.getParentFile().toPath().resolve(classFile.getName() + ".sha256"), classFile.toPath());
+            ClassCache cache = new ClassCache(classFile.getParent().resolve(classFile.getFileName() + ".sha256"), classFile);
             cache.create(Utils.nodeToBytes(node));
             cacheMap.put(className, cache);
         } catch (IOException e) {

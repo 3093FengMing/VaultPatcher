@@ -7,6 +7,7 @@ import me.fengming.vaultpatcher_asm.VaultPatcher;
 import me.fengming.vaultpatcher_asm.config.TranslationInfo;
 import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
 import me.fengming.vaultpatcher_asm.core.transformers.VPClassTransformer;
+import me.fengming.vaultpatcher_asm.core.utils.ModClassDiscovery;
 import me.fengming.vaultpatcher_asm.core.utils.StringUtils;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
 import org.objectweb.asm.tree.ClassNode;
@@ -54,10 +55,7 @@ public class ForgeClassTransformer implements ITransformer<ClassNode> {
     public static Set<ITransformer.Target> getExpandTargets() {
         Set<ITransformer.Target> targets = new HashSet<>();
         // Apply mods
-        VaultPatcherConfig.getApplyMods().stream()
-                .map(mod -> VaultPatcher.mcPath.resolve("mods").resolve(mod + ".jar").toString())
-                .flatMap(jarPath -> Utils.getClassesNameByJar(jarPath).stream())
-                .map(className -> className.substring(0, className.length() - 6))
+        ModClassDiscovery.getApplyClassNames()
                 .map(ITransformer.Target::targetClass)
                 .forEach(targets::add);
 
@@ -71,6 +69,7 @@ public class ForgeClassTransformer implements ITransformer<ClassNode> {
     }
 
     // neoforge only
+    @SuppressWarnings("unused")
     public cpw.mods.modlauncher.api.TargetType getTargetType() {
         return Utils.neoforgeGetTargetType("CLASS");
     }
