@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -107,12 +108,24 @@ public class VaultPatcher {
             if (Files.notExists(p)){
                 Files.createDirectories(p);
             }
-            List<String> mods = VaultPatcherConfig.getMods();
-            for (String mod : mods) {
-                VaultPatcherModule vpp = new VaultPatcherModule(mod + ".json");
-                plugins.forEach(e -> e.onLoadModule(vpp, VaultPatcherPlugin.Phase.BEFORE));
-                vpp.read();
-                plugins.forEach(e -> e.onLoadModule(vpp, VaultPatcherPlugin.Phase.AFTER));
+            if (VaultPatcherConfig.isLoadAllModules()) {
+                try (DirectoryStream<Path> stream = Files.newDirectoryStream(p, "*.json")) {
+                    for (Path jsonFile : stream) {
+                        VaultPatcherModule vpp = new VaultPatcherModule(jsonFile.getFileName().toString());
+                        plugins.forEach(e -> e.onLoadModule(vpp, VaultPatcherPlugin.Phase.BEFORE));
+                        vpp.read();
+                        plugins.forEach(e -> e.onLoadModule(vpp, VaultPatcherPlugin.Phase.AFTER));
+                    }
+                }
+
+            } else {
+                List<String> mods = VaultPatcherConfig.getMods();
+                for (String mod : mods) {
+                    VaultPatcherModule vpp = new VaultPatcherModule(mod + ".json");
+                    plugins.forEach(e -> e.onLoadModule(vpp, VaultPatcherPlugin.Phase.BEFORE));
+                    vpp.read();
+                    plugins.forEach(e -> e.onLoadModule(vpp, VaultPatcherPlugin.Phase.AFTER));
+                }
             }
         } catch (IOException e) {
             throw new RuntimeException("Failed to load modules: ", e);

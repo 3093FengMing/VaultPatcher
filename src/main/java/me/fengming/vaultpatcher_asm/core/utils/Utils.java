@@ -14,9 +14,6 @@ import java.io.FileOutputStream;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.jar.JarFile;
-import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
 
 public class Utils {
     public static Map<String, Set<TranslationInfo>> translationInfoMap = new HashMap<>();
@@ -94,6 +91,129 @@ public class Utils {
     public static String filePathToClassName(Path path, Path root) {
         String s = root.relativize(path).toString();
         return s.substring(0, s.length() - 6).replace(File.separatorChar, '/');
+    }
+
+    private static Map<String, Object> withoutName(Map<String, Object> source) {
+        Map<String, Object> out = new LinkedHashMap<>();
+        if (source == null) return out;
+        for (Map.Entry<String, Object> e : source.entrySet()) {
+            if (!"name".equals(e.getKey())) {
+                out.put(e.getKey(), e.getValue());
+            }
+        }
+        return out;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static void convert(List<Map<String, Object>> data) {
+        if (data == null) return;
+
+        List<Map<String, Object>> newData = new ArrayList<>();
+
+        for (Map<String, Object> entry : data) {
+            if (entry.containsKey("key") && entry.containsKey("value")) {
+                Object k = entry.get("key");
+                Object v = entry.get("value");
+                Map<String, Object> pair = new LinkedHashMap<>();
+                pair.put("key", k);
+                pair.put("value", v);
+                entry.put("pairs", Collections.singletonList(pair));
+                entry.remove("key");
+                entry.remove("value");
+            }
+
+            if (entry.containsKey("target_class")) {
+                Object tc = entry.get("target_class");
+                if (tc instanceof Map) {
+                    Map<String, Object> tcMap = new LinkedHashMap<>((Map<String, Object>) tc);
+                    Map<String, Object> info = new LinkedHashMap<>();
+                    for (Map.Entry<String, Object> e : tcMap.entrySet()) {
+                        if (!"name".equals(e.getKey())) info.put(e.getKey(), e.getValue());
+                    }
+                    if (!info.isEmpty()) {
+                        entry.put("info", info);
+                    }
+                    List<Object> names = new ArrayList<>();
+                    Object name = tcMap.get("name");
+                    if (name != null) names.add(name);
+                    entry.put("target_class", names);
+                }
+                newData.add(entry);
+                continue;
+            }
+
+            if (entry.containsKey("target_classes")) {
+                Object tcsObj = entry.get("target_classes");
+                List<?> tcsList;
+                if (tcsObj instanceof List) {
+                    tcsList = (List<?>) tcsObj;
+                } else {
+                    newData.add(entry);
+                    continue;
+                }
+                Map<String, Object> base = new LinkedHashMap<>();
+                for (Map.Entry<String, Object> kv : entry.entrySet()) {
+                    String key = kv.getKey();
+                    if ("target_classes".equals(key)) continue;
+                    base.put(key, kv.getValue());
+                }
+
+                for (Object each : tcsList) {
+                    Map<String, Object> newEntry = new LinkedHashMap<>(base);
+                    if (each instanceof Map) {
+                        Map<String, Object> eachMap = new LinkedHashMap<>((Map<String, Object>) each);
+                        Object name = eachMap.get("name");
+                        List<Object> names = new ArrayList<>();
+                        if (name != null) names.add(name);
+                        newEntry.put("target_class", names);
+                        Map<String, Object> info = new LinkedHashMap<>();
+                        for (Map.Entry<String, Object> e : eachMap.entrySet()) {
+                            if (!"name".equals(e.getKey())) {
+                                info.put(e.getKey(), e.getValue());
+                            }
+                        }
+                        if (!info.isEmpty()) {
+                            newEntry.put("info", info);
+                        }
+                    }
+                    newData.add(newEntry);
+                }
+                continue;
+            }
+            newData.add(entry);
+        }
+        data.clear();
+        data.addAll(newData);
+    }
+
+
+    public static boolean needsConversion(List<Map<String, Object>> data) {
+        if (data == null) return false;
+        for (Map<String, Object> entry : data) {
+            if (entry == null) continue;
+
+            // case 1: target_class exists and is a map
+            if (entry.containsKey("target_class")) {
+                Object tc = entry.get("target_class");
+                if (tc instanceof Map) {
+                    return true;
+                }
+            }
+
+            // case 2: target_classes exists and contains at least one map element
+            if (entry.containsKey("target_classes")) {
+                Object tcsObj = entry.get("target_classes");
+                if (tcsObj instanceof List) {
+                    List<?> tcs = (List<?>) tcsObj;
+                    for (Object each : tcs) {
+                        if (each instanceof Map) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     public static File exportClass(ClassNode node, Path root) {

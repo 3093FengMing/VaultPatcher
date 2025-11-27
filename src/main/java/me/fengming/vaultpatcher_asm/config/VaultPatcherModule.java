@@ -1,5 +1,8 @@
 package me.fengming.vaultpatcher_asm.config;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
@@ -9,14 +12,17 @@ import me.fengming.vaultpatcher_asm.core.utils.Utils;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+
+
 
 public class VaultPatcherModule {
     private final Path moduleFile;
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
     public VaultPatcherModule(String moduleFile) {
         VaultPatcher.debugInfo("[VaultPatcher] Found Module: {}", moduleFile);
@@ -27,6 +33,7 @@ public class VaultPatcherModule {
             throw new RuntimeException("Failed to create directory for module file: ", e);
         }
         this.moduleFile = p;
+
     }
 
     public void read(JsonReader reader) throws IOException {
@@ -126,6 +133,20 @@ public class VaultPatcherModule {
                 jw.setIndent("  ");
                 write(jw);
             }
+        }
+        try {
+            String json = new String(Files.readAllBytes(moduleFile), StandardCharsets.UTF_8);
+            Type type = new TypeToken<List<Map<String, Object>>>() {
+            }.getType();
+            List<Map<String, Object>> data = GSON.fromJson(json, type);
+            if (Utils.needsConversion(data)) {
+                Utils.convert(data);
+                String result = GSON.toJson(data);
+                Files.write(moduleFile, result.getBytes(StandardCharsets.UTF_8));
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to convert module file: ", e);
         }
         try (JsonReader jsonReader = new JsonReader(new InputStreamReader(Files.newInputStream(moduleFile), StandardCharsets.UTF_8))) {
             read(jsonReader);
