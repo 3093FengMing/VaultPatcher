@@ -1,6 +1,6 @@
 package me.fengming.vaultpatcher_asm.core.utils;
 
-import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
+
 import me.fengming.vaultpatcher_asm.VaultPatcher;
 import me.fengming.vaultpatcher_asm.config.DebugMode;
 import me.fengming.vaultpatcher_asm.config.TargetClassInfo;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 
 public class Utils {
-    public static Map<String, Set<TranslationInfo>> translationInfoMap = new Object2ReferenceOpenHashMap<>();
+    public static Map<String, Set<TranslationInfo>> translationInfoMap = new HashMap<>();
     public static List<TranslationInfo> dynTranslationInfos = new ArrayList<>();
     public static boolean needStacktrace = false;
 

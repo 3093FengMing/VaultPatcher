@@ -44,6 +44,16 @@ public class MatchUtils {
         }
     }
 
+    public static boolean matchLocalIndex(TranslationInfo info, int objectIndex) {
+        try {
+            TargetClassInfo i = info.getTargetClassInfo();
+            int targetIndex = Integer.parseInt(i.getLocal());
+            return targetIndex == objectIndex;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
     public static boolean matchOrdinal(TranslationInfo info, int ordinal) {
         Pair<Integer, Integer> pair = info.getTargetClassInfo().getOrdinal();
         return pair.first <= ordinal && (pair.second == -1 || ordinal <= pair.second);
