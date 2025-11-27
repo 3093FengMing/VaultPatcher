@@ -21,6 +21,7 @@ public class VaultPatcherConfig {
 
     public static final DebugMode debug = new DebugMode();
     public static boolean enableClassPatch = false;
+    public static boolean loadAllModules = false;
     public static Path config = null;
     public static File configFile = null;
     public static String defaultLanguage = "en_us";
@@ -36,6 +37,10 @@ public class VaultPatcherConfig {
 
     public static boolean isEnableClassPatch() {
         return enableClassPatch;
+    }
+
+    public static boolean isLoadAllModules() {
+        return loadAllModules;
     }
 
     public static String getDefaultLanguage() {
@@ -58,6 +63,9 @@ public class VaultPatcherConfig {
 
         jw.name("class_patch");
         jw.value(enableClassPatch);
+
+        jw.name("load_all_modules");
+        jw.value(loadAllModules);
 
         jw.name("debug_mode");
         debug.writeJson(jw);
@@ -88,26 +96,24 @@ public class VaultPatcherConfig {
         jr.beginObject();
         while (jr.peek() != JsonToken.END_OBJECT) {
             switch (jr.nextName()) {
-                case "d":
                 case "debug_mode": {
                     if (jr.peek() == JsonToken.BEGIN_OBJECT) {
                         debug.readJson(jr);
                     }
                     break;
                 }
-                case "p":
-                case "enable_class_patch":
                 case "class_patch": {
                     enableClassPatch = jr.nextBoolean();
                     break;
                 }
-                case "l":
-                case "lang":
+                case "load_all_modules": {
+                    loadAllModules = jr.nextBoolean();
+                    break;
+                }
                 case "default_language": {
                     defaultLanguage = jr.nextString();
                     break;
                 }
-                case "m":
                 case "modules":
                     if (jr.peek() == JsonToken.BEGIN_ARRAY) {
                         mods = GSON.fromJson(jr, new TypeToken<List<String>>() {}.getType());
