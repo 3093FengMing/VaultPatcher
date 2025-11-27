@@ -25,19 +25,9 @@ public class VaultPatcherConfig {
     public static File configFile = null;
     public static String defaultLanguage = "en_us";
     public static List<String> mods = new ArrayList<>();
-    public static List<String> classes = new ArrayList<>();
-    public static List<String> applyMods = new ArrayList<>();
 
     public static List<String> getMods() {
         return mods;
-    }
-
-    public static List<String> getClasses() {
-        return classes;
-    }
-
-    public static List<String> getApplyMods() {
-        return applyMods;
     }
 
     public static DebugMode getDebugMode() {
@@ -56,24 +46,10 @@ public class VaultPatcherConfig {
         jw.setIndent("  ");
         jw.beginObject();
 
-        jw.name("mods");
+        jw.name("modules");
         jw.beginArray();
         for (String mod : mods) {
             jw.value(mod);
-        }
-        jw.endArray();
-
-        jw.name("classes");
-        jw.beginArray();
-        for (String clazz : classes) {
-            jw.value(clazz);
-        }
-        jw.endArray();
-
-        jw.name("apply_mods");
-        jw.beginArray();
-        for (String applyMod : applyMods) {
-            jw.value(applyMod);
         }
         jw.endArray();
 
@@ -132,25 +108,12 @@ public class VaultPatcherConfig {
                     break;
                 }
                 case "m":
-                case "mods":
+                case "modules":
                     if (jr.peek() == JsonToken.BEGIN_ARRAY) {
                         mods = GSON.fromJson(jr, new TypeToken<List<String>>() {}.getType());
                     }
                     break;
-                case "c":
-                case "classes": {
-                    if (jr.peek() == JsonToken.BEGIN_ARRAY) {
-                        classes = GSON.fromJson(jr, new TypeToken<List<String>>() {}.getType());
-                    }
-                    break;
-                }
-                case "a":
-                case "apply_mods": {
-                    if (jr.peek() == JsonToken.BEGIN_ARRAY) {
-                        applyMods = GSON.fromJson(jr, new TypeToken<List<String>>() {}.getType());
-                    }
-                    break;
-                }
+
                 default: {
                     jr.skipValue();
                     break;

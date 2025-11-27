@@ -90,17 +90,6 @@ public class Utils {
         return wr.toByteArray();
     }
 
-    public static List<String> getClassesNameByJar(String jarPath) {
-        try (JarFile jarFile = new JarFile(jarPath)) {
-            return jarFile.stream()
-                    .map(ZipEntry::getName)
-                    .filter(name -> name.endsWith(".class"))
-                    .collect(Collectors.toList());
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Failed loading jar: " + jarPath, e);
-        }
-    }
-
     // other
     public static String filePathToClassName(Path path, Path root) {
         String s = root.relativize(path).toString();

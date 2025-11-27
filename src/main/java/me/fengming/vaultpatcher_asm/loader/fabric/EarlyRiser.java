@@ -33,7 +33,6 @@ public class EarlyRiser implements Runnable {
 
         Utils.translationInfoMap.forEach((k, v) -> ClassTinkerers.addTransformation(k, new VPClassTransformer(v)));
 
-        addExpandClasses();
         addMinecraftClasses();
 
         VaultPatcher.debugInfo("[VaultPatcher] ER DONE!");
@@ -44,15 +43,6 @@ public class EarlyRiser implements Runnable {
         ClassTinkerers.addTransformation("net.minecraft.class_2585", new VPMinecraftTransformer());
     }
 
-    private static void addExpandClasses() {
-        List<String> targetMods = VaultPatcherConfig.getApplyMods();
-        for (String targetMod : targetMods) {
-            Utils.getClassesNameByJar(VaultPatcher.mcPath.resolve("mods").resolve(targetMod + ".jar").toString())
-                    .forEach(s -> ClassTinkerers.addTransformation(s.substring(0, s.length() - 6), new VPClassTransformer(null)));
-        }
-
-        VaultPatcherConfig.getClasses().forEach(s -> ClassTinkerers.addTransformation(s, new VPClassTransformer(null)));
-    }
 
     private static String getMinecraftVersion() {
         try {
