@@ -4,7 +4,6 @@ import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
 import me.fengming.vaultpatcher_asm.config.VaultPatcherModule;
 import me.fengming.vaultpatcher_asm.core.cache.Caches;
 import me.fengming.vaultpatcher_asm.core.patch.ClassPatcher;
-import me.fengming.vaultpatcher_asm.core.transformers.TransformChecker;
 import me.fengming.vaultpatcher_asm.core.utils.I18n;
 import me.fengming.vaultpatcher_asm.core.utils.Platform;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
@@ -119,7 +118,7 @@ public class VaultPatcher {
             throw new RuntimeException("Failed to load modules: ", e);
         }
 
-        TransformChecker.init();
+
 
         // optimization
         Utils.needStacktrace = Utils.dynTranslationInfos.stream().anyMatch(e -> !e.getTargetClassInfo().getDynamicName().isEmpty());
