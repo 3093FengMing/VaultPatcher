@@ -57,23 +57,18 @@ public class DebugMode {
         reader.beginObject();
         while (reader.peek() != JsonToken.END_OBJECT) {
             switch (reader.nextName()) {
-                case "e":
                 case "is_enable":
                     setEnable(reader.nextBoolean());
                     break;
-                case "m":
                 case "output_mode":
                     setOutputMode(reader.nextInt());
                     break;
-                case "c":
                 case "export_class":
                     setExportClass(reader.nextBoolean());
                     break;
-                case "u":
                 case "use_cache":
                     setUseCache(reader.nextBoolean());
                     break;
-                case "d":
                 case "output_node_debug":
                     setOutputNodeDebug(reader.nextBoolean());
                     break;

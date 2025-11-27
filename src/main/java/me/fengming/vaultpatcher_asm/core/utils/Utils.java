@@ -13,7 +13,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.function.Consumer;
 
 public class Utils {
     public static Map<String, Set<TranslationInfo>> translationInfoMap = new HashMap<>();
@@ -21,10 +20,6 @@ public class Utils {
     public static boolean needStacktrace = false;
 
     public static DebugMode debug = new DebugMode();
-
-    public static void forEachInfos(Consumer<TranslationInfo> consumer) {
-        translationInfoMap.values().forEach(set -> set.forEach(consumer));
-    }
 
     public static void addTranslationInfo(String targetClass, TranslationInfo info) {
         translationInfoMap.computeIfAbsent(targetClass, k -> new HashSet<>()).add(info);
@@ -91,17 +86,6 @@ public class Utils {
     public static String filePathToClassName(Path path, Path root) {
         String s = root.relativize(path).toString();
         return s.substring(0, s.length() - 6).replace(File.separatorChar, '/');
-    }
-
-    private static Map<String, Object> withoutName(Map<String, Object> source) {
-        Map<String, Object> out = new LinkedHashMap<>();
-        if (source == null) return out;
-        for (Map.Entry<String, Object> e : source.entrySet()) {
-            if (!"name".equals(e.getKey())) {
-                out.put(e.getKey(), e.getValue());
-            }
-        }
-        return out;
     }
 
     @SuppressWarnings("unchecked")
