@@ -53,20 +53,6 @@ public class ForgeClassTransformer implements ITransformer<ClassNode> {
 
     public static Set<ITransformer.Target> getExpandTargets() {
         Set<ITransformer.Target> targets = new HashSet<>();
-        // Apply mods
-        VaultPatcherConfig.getApplyMods().stream()
-                .map(mod -> VaultPatcher.mcPath.resolve("mods").resolve(mod + ".jar").toString())
-                .flatMap(jarPath -> Utils.getClassesNameByJar(jarPath).stream())
-                .map(className -> className.substring(0, className.length() - 6))
-                .map(ITransformer.Target::targetClass)
-                .forEach(targets::add);
-
-        // Classes
-        VaultPatcherConfig.getClasses().stream()
-                .map(StringUtils::rawPackage)
-                .map(ITransformer.Target::targetClass)
-                .forEach(targets::add);
-
         return targets;
     }
 

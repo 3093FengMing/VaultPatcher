@@ -12,7 +12,6 @@ public class DebugMode {
     private boolean outputNodeDebug = false;
     private boolean exportClass = false;
     private boolean useCache = true;
-    private boolean missingWarn = true;
 
     public boolean isEnable() {
         return isEnable;
@@ -54,14 +53,6 @@ public class DebugMode {
         this.useCache = updateCache;
     }
 
-    public boolean isMissingWarn() {
-        return this.missingWarn;
-    }
-
-    public void setMissingWarn(boolean missingWarn) {
-        this.missingWarn = missingWarn;
-    }
-
     public void readJson(JsonReader reader) throws IOException {
         reader.beginObject();
         while (reader.peek() != JsonToken.END_OBJECT) {
@@ -82,10 +73,6 @@ public class DebugMode {
                 case "use_cache":
                     setUseCache(reader.nextBoolean());
                     break;
-                case "w":
-                case "missing_warn":
-                    setMissingWarn(reader.nextBoolean());
-                    break;
                 case "d":
                 case "output_node_debug":
                     setOutputNodeDebug(reader.nextBoolean());
@@ -105,7 +92,6 @@ public class DebugMode {
         writer.name("output_node_debug").value(isOutputNodeDebug());
         writer.name("export_class").value(isExportClass());
         writer.name("use_cache").value(isUseCache());
-        writer.name("missing_warn").value(isMissingWarn());
         writer.endObject();
     }
 }
