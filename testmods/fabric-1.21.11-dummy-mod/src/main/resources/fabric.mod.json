@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "vpdummy_annotation_stress",
+  "version": "${version}",
+  "name": "VP Dummy Annotation Stress",
+  "description": "Dummy Fabric mod packed with annotated fields/methods/variables for VaultPatcher annotation tests.",
+  "authors": [
+    "VaultPatcher Test"
+  ],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "me.fengming.vpdummy.DummyModInitializer"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "java": ">=21",
+    "minecraft": "~1.21.11"
+  }
+}

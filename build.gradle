@@ -15,7 +15,8 @@ jar {
     manifest {
         attributes([
                 "TweakClass": "me.fengming.vaultpatcher_asm.loader.launchwrapper.VPLaunchTweaker",
-                "TweakOrder": 209
+                "TweakOrder": 209,
+                "FMLModType": "LIBRARY"
         ])
     }
 
@@ -25,11 +26,13 @@ jar {
         into 'META-INF/jars'
     }
 
-    filesMatching("fabric.mod.json") {
+    filesMatching(["fabric.mod.json", "META-INF/neoforge.mods.toml"]) {
         expand "version": mod_version
     }
 
     exclude "cpw"
+    exclude "net/neoforged/fml/common/Mod.class"
+    exclude "net/neoforged/neoforgespi/**"
 }
 
 java {

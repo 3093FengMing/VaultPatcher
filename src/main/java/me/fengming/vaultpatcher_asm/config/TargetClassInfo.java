@@ -11,6 +11,9 @@ public class TargetClassInfo {
     private String dynamicName = ""; // used for dynamic replace
     private String method = "";
     private String local = "";
+    private String annotation = "";
+    private String annoKey = "";
+    private String annoType = "ALL";
     private Pair<Integer, Integer> ordinal = new Pair<>(-1, -1);
     private MatchMode matchMode = MatchMode.FULL;
     private LocalMode localMode = LocalMode.NONE;
@@ -29,6 +32,10 @@ public class TargetClassInfo {
                     setLocal(reader.nextString());
                     break;
                 }
+                case "annotation": {
+                    readAnnotation(reader);
+                    break;
+                }
                 case "o":
                 case "ordinal": {
                     JsonToken peeked = reader.peek();
@@ -42,6 +49,33 @@ public class TargetClassInfo {
                     } else {
                         VaultPatcher.LOGGER.warn("Couldn't read ordinal: {} as {}", reader.nextString(), peeked);
                     }
+                    break;
+                }
+                default: {
+                    reader.skipValue();
+                    break;
+                }
+            }
+        }
+        reader.endObject();
+    }
+
+    private void readAnnotation(JsonReader reader) throws IOException {
+        reader.beginObject();
+        while (reader.peek() != JsonToken.END_OBJECT) {
+            switch (reader.nextName()) {
+                case "desc":
+                case "descriptor": {
+                    setAnnotation(reader.nextString());
+                    break;
+                }
+                case "ak":
+                case "annokey": {
+                    setAnnotationKey(reader.nextString());
+                    break;
+                }
+                case "type": {
+                    setAnnotationType(reader.nextString());
                     break;
                 }
                 default: {
@@ -85,6 +119,51 @@ public class TargetClassInfo {
 
     public void setMethod(String method) {
         this.method = method;
+    }
+
+    public void setAnnotation(String annotation) {
+        this.annotation = annotation;
+    }
+
+    public String getAnnotation() {
+        return annotation;
+    }
+
+    public void setAnnotationKey(String annoKey) {
+        this.annoKey = annoKey;
+    }
+
+    public String getAnnoKey() {
+        return annoKey;
+    }
+
+    public void setAnnotationType(String annoType) {
+        switch (annoType) {
+            case "C":
+            case "CLASS": {
+                this.annoType = "CLASS";
+                break;
+            }
+            case "F":
+            case "FIELD": {
+                this.annoType = "FIELD";
+                break;
+            }
+            case "M":
+            case "METHOD": {
+                this.annoType = "METHOD";
+                break;
+            }
+            default: {
+                this.annoType = "ALL";
+                break;
+            }
+
+        }
+    }
+
+    public String getAnnoType() {
+        return annoType;
     }
 
     public String getLocal() {

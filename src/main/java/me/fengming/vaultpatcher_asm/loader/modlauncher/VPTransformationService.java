@@ -7,8 +7,9 @@ import cpw.mods.modlauncher.api.ITransformer;
 import me.fengming.vaultpatcher_asm.VaultPatcher;
 import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
 import me.fengming.vaultpatcher_asm.core.patch.ClassPatcher;
+import me.fengming.vaultpatcher_asm.loader.LoaderBootstrap;
+import me.fengming.vaultpatcher_asm.loader.LoaderBootstrapContext;
 import me.fengming.vaultpatcher_asm.core.utils.Platform;
-import me.fengming.vaultpatcher_asm.core.utils.StringUtils;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,8 +23,6 @@ import java.util.stream.Collectors;
 
 public class VPTransformationService implements ITransformationService {
 
-    private boolean disableDynamic = false;
-
     @Override
     public @NotNull String name() {
         return "vaultpatcher";
@@ -36,44 +35,64 @@ public class VPTransformationService implements ITransformationService {
 
         VaultPatcher.debugInfo("[VaultPatcher] Loading VPTransformationService!");
 
-        Optional<Path> minecraftPathOptional = environment.getProperty(IEnvironment.Keys.GAMEDIR.get());
-        if (!minecraftPathOptional.isPresent()) {
-            VaultPatcher.LOGGER.error("[VaultPatcher] Minecraft path not found!");
-            return;
-        }
+        final Optional<Path> minecraftPathOptional = environment.getProperty(IEnvironment.Keys.GAMEDIR.get());
+        final boolean isClient = environment.getProperty(IEnvironment.Keys.ASSETSDIR.get()).isPresent();
+        final String minecraftVersion = LoaderBootstrap.resolveMinecraftVersion(new LoaderBootstrapContext() {
+            @Override
+            public String loaderName() {
+                return "ModLauncher";
+            }
 
-        if (environment.getProperty(IEnvironment.Keys.ASSETSDIR.get()).isPresent()) {
-            VaultPatcher.isClient = true;
-        }
+            @Override
+            public Platform platform() {
+                return Platform.Forge1_13;
+            }
 
-        VaultPatcher.platform = Platform.Forge1_13;
+            @Override
+            public Path gameDir() {
+                return minecraftPathOptional.orElse(null);
+            }
 
-        String minecraftVersion = getMinecraftVersion();
-        if (StringUtils.isBlank(minecraftVersion)) {
-            VaultPatcher.LOGGER.error("[VaultPatcher] Failed to get minecraft version!");
-        }
-        // VaultPatcher.debugInfo("[VaultPatcher] Get minecraft version: " + minecraftVersion);
-        if (isOldVersion(minecraftVersion)) {
-            VaultPatcher.LOGGER.warn("[VaultPatcher] Disable dynamic replace because the game version is 1.16.5 or below (your version: {})", minecraftVersion);
-            disableDynamic = true;
-        }
+            @Override
+            public boolean isClient() {
+                return isClient;
+            }
 
-        Path mcPath = minecraftPathOptional.get();
-        VaultPatcher.init(mcPath, minecraftVersion);
+            @Override
+            public String resolveMinecraftVersion() {
+                return getMinecraftVersion();
+            }
+        });
+
+
+        LoaderBootstrap.bootstrap(new LoaderBootstrapContext() {
+            @Override
+            public String loaderName() {
+                return "ModLauncher";
+            }
+
+            @Override
+            public Platform platform() {
+                return Platform.Forge1_13;
+            }
+
+            @Override
+            public Path gameDir() {
+                return minecraftPathOptional.orElse(null);
+            }
+
+            @Override
+            public boolean isClient() {
+                return isClient;
+            }
+
+            @Override
+            public String resolveMinecraftVersion() {
+                return minecraftVersion;
+            }
+        });
 
         VaultPatcher.debugInfo("[VaultPatcher] TS DONE!");
-    }
-
-    public static boolean isOldVersion(String version) {
-        String[] _1165 = {"1", "16", "5"};
-        String[] ver = version.split("\\.", 3);
-        for (int i = 0; i < Math.min(_1165.length, ver.length); i++) {
-            int comparison = _1165[i].compareTo(ver[i]);
-
-            if (comparison < 0) return false;
-            if (comparison > 0) return true;
-        }
-        return _1165.length >= ver.length;
     }
 
     private static String getMinecraftVersion() {
@@ -90,10 +109,8 @@ public class VPTransformationService implements ITransformationService {
             for (int i = 0; i < Instance_args.length; i++) {
                 if (Instance_args[i].equals("--fml.mcVersion")) return Instance_args[i + 1];
             }
-        } catch (Exception e) {
-            throw new IllegalStateException("WHY ARE YOU HERE!!??");
-        }
-        return "";
+        } catch (Exception ignored) {}
+        return null;
     }
 
     @Override
@@ -114,7 +131,12 @@ public class VPTransformationService implements ITransformationService {
                 .collect(Collectors.toList()));
 
         list.add(new ForgeClassTransformer(null));
-        if (!disableDynamic) list.add(new ForgeMinecraftTransformer());
+        boolean hasDynamicRules = !Utils.dynTranslationInfos.isEmpty();
+        VaultPatcher.debugInfo("[VaultPatcher] Dynamic hook transformer enabled: {} (dynamic rules: {})",
+                hasDynamicRules, Utils.dynTranslationInfos.size());
+        if (hasDynamicRules) {
+            list.add(new ForgeMinecraftTransformer());
+        }
         return list;
     }
 

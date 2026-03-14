@@ -5,7 +5,7 @@ import me.fengming.vaultpatcher_asm.VaultPatcher;
 import me.fengming.vaultpatcher_asm.config.DebugMode;
 import me.fengming.vaultpatcher_asm.config.TargetClassInfo;
 import me.fengming.vaultpatcher_asm.config.TranslationInfo;
-import me.fengming.vaultpatcher_asm.core.misc.CommonSuperClassWriter;
+import me.fengming.vaultpatcher_asm.core.misc.SafeClassWriter;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
 
@@ -41,9 +41,9 @@ public class Utils {
         TargetClassInfo ci = info.getTargetClassInfo();
         VaultPatcher.LOGGER.info("[VaultPatcher] Trying replacing!\n{}",
                 String.format(
-                        "'%s' -> '%s' in %s | TranslationInfo{name=%s, method=%s, localMode=%s, local=%s, ordinal=%s, matchMode=%s, ASM/DynMethod=%s, %s}",
+                        "'%s' -> '%s' in %s | TranslationInfo{name=%s, method=%s, annotation=%s, localMode=%s, local=%s, ordinal=%s, matchMode=%s, ASM/DynMethod=%s, %s}",
                         source, target, StringUtils.dotPackage(clazz),
-                        ci.getDynamicName(), ci.getMethod(), ci.getLocalMode(),
+                        ci.getDynamicName(), ci.getMethod(), ci.getAnnotation(), ci.getLocalMode(),
                         ci.getLocal(), (ordinal == -1 ? "Unknown" : String.valueOf(ordinal)), ci.getMatchMode(),
                         method, detail
                 )
@@ -77,7 +77,7 @@ public class Utils {
     }
 
     public static byte[] nodeToBytes(ClassNode node) {
-        ClassWriter wr = new CommonSuperClassWriter();
+        ClassWriter wr = new SafeClassWriter(SafeClassWriter.ClassLoaderGetter(), SafeClassWriter.launchWrapperLookup());
         node.accept(wr);
         return wr.toByteArray();
     }
