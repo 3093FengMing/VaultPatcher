@@ -2,6 +2,8 @@ package me.fengming.vaultpatcher_asm.loader.launchwrapper;
 
 import me.fengming.vaultpatcher_asm.VaultPatcher;
 import me.fengming.vaultpatcher_asm.core.utils.Platform;
+import me.fengming.vaultpatcher_asm.loader.LoaderBootstrap;
+import me.fengming.vaultpatcher_asm.loader.LoaderBootstrapContext;
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 
@@ -13,11 +15,34 @@ public class VPLaunchTweaker implements ITweaker {
 
     @Override
     public void acceptOptions(List<String> args, File gameDir, File assetsDir, String profile) {
-        VaultPatcher.platform = Platform.Forge1_6;
+        final File gameDirectory = gameDir;
+        final File assetsDirectory = assetsDir;
+        LoaderBootstrap.bootstrap(new LoaderBootstrapContext() {
+            @Override
+            public String loaderName() {
+                return "LaunchWrapper";
+            }
 
-        if (assetsDir != null) VaultPatcher.isClient = true;
+            @Override
+            public Platform platform() {
+                return Platform.Forge1_6;
+            }
 
-        VaultPatcher.init(gameDir.toPath(), getMinecraftVersion());
+            @Override
+            public java.nio.file.Path gameDir() {
+                return gameDirectory == null ? null : gameDirectory.toPath();
+            }
+
+            @Override
+            public boolean isClient() {
+                return assetsDirectory != null;
+            }
+
+            @Override
+            public String resolveMinecraftVersion() {
+                return getMinecraftVersion();
+            }
+        });
         VaultPatcher.debugInfo("[VaultPatcher] LT DONE!");
     }
 

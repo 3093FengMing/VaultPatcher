@@ -102,12 +102,10 @@ public class Pairs {
 
     public String getValue(String key) {
         if (dyn) {
-            if (nonFullMatch) return null; // Always ignore this value in Utils class
-            Pair<String, String> pair = pairsSet.stream()
-                    .filter(e -> e.first.equals(key))
-                    .findFirst()
-                    .orElse(null); // Perhaps For Loop is faster than StreamAPI?
-            return pair == null ? key : pair.second;
+            for (Pair<String, String> pair : pairsSet) {
+                if (pair.first.equals(key)) return pair.second;
+            }
+            return null;
         } else {
             return pairsMap.getOrDefault(key, key);
         }

@@ -1,0 +1,22 @@
+modLoader = "javafml"
+loaderVersion = "*"
+license = "GPL-3.0"
+
+[[mods]]
+    modId = "vaultpatcher"
+    version = "${version}"
+    displayName = "VaultPatcher"
+    authors = "FengMing3093"
+    description = "Let the hard coded change into localization string in some mods."
+
+[[dependencies.vaultpatcher]]
+    modId = "minecraft"
+    mandatory = true
+    type = "REQUIRED"
+    versionRange = "[1.21.9,)"
+
+[[dependencies.vaultpatcher]]
+    modId = "neoforge"
+    mandatory = true
+    type = "REQUIRED"
+    versionRange = "[21.9.0,)"

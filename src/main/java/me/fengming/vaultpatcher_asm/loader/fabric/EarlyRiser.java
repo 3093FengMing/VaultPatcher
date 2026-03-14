@@ -8,23 +8,46 @@ import me.fengming.vaultpatcher_asm.core.transformers.VPClassTransformer;
 import me.fengming.vaultpatcher_asm.core.transformers.VPMinecraftTransformer;
 import me.fengming.vaultpatcher_asm.core.utils.Platform;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
+import me.fengming.vaultpatcher_asm.loader.LoaderBootstrap;
+import me.fengming.vaultpatcher_asm.loader.LoaderBootstrapContext;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.lang.reflect.Field;
 import java.nio.file.Path;
-import java.util.List;
 
 public class EarlyRiser implements Runnable {
     @Override
     public void run() {
         VaultPatcher.debugInfo("[VaultPatcher] Loading VPEarlyRiser");
 
-        VaultPatcher.platform = Platform.Fabric;
+        final FabricLoader loader = FabricLoader.getInstance();
+        LoaderBootstrap.bootstrap(new LoaderBootstrapContext() {
+            @Override
+            public String loaderName() {
+                return "Fabric";
+            }
 
-        Path mcPath = FabricLoader.getInstance().getGameDir();
-        VaultPatcher.isClient = FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT;
-        VaultPatcher.init(mcPath, getMinecraftVersion());
+            @Override
+            public Platform platform() {
+                return Platform.Fabric;
+            }
+
+            @Override
+            public Path gameDir() {
+                return loader.getGameDir();
+            }
+
+            @Override
+            public boolean isClient() {
+                return loader.getEnvironmentType() == EnvType.CLIENT;
+            }
+
+            @Override
+            public String resolveMinecraftVersion() {
+                return getMinecraftVersion();
+            }
+        });
 
         // do patches
         if (VaultPatcherConfig.isEnableClassPatch()) {
@@ -41,6 +64,7 @@ public class EarlyRiser implements Runnable {
     private static void addMinecraftClasses() {
         ClassTinkerers.addTransformation("net.minecraft.class_327", new VPMinecraftTransformer());
         ClassTinkerers.addTransformation("net.minecraft.class_2585", new VPMinecraftTransformer());
+        ClassTinkerers.addTransformation("net.minecraft.class_5348", new VPMinecraftTransformer());
     }
 
 

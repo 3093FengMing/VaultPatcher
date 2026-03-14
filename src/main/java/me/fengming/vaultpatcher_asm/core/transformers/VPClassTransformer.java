@@ -6,9 +6,10 @@ import me.fengming.vaultpatcher_asm.config.TargetClassInfo;
 import me.fengming.vaultpatcher_asm.config.TranslationInfo;
 import me.fengming.vaultpatcher_asm.core.cache.Caches;
 import me.fengming.vaultpatcher_asm.core.cache.ClassCache;
-import me.fengming.vaultpatcher_asm.core.misc.CommonSuperClassWriter;
+import me.fengming.vaultpatcher_asm.core.misc.SafeClassWriter;
 import me.fengming.vaultpatcher_asm.core.misc.VPClassLoader;
 import me.fengming.vaultpatcher_asm.core.node.NodeHandlerParameters;
+import me.fengming.vaultpatcher_asm.core.node.handlers.AnnotationHandler;
 import me.fengming.vaultpatcher_asm.core.node.handlers.NodeHandler;
 import me.fengming.vaultpatcher_asm.core.utils.MatchUtils;
 import me.fengming.vaultpatcher_asm.core.utils.Platform;
@@ -119,7 +120,6 @@ public class VPClassTransformer implements Consumer<ClassNode> {
                     .filter(node -> node.desc.equals("Ljava/lang/String;"))
                     .forEach(node -> localVariableMap.put(node.index, node.name));
         }
-
         final NodeHandlerParameters params = new NodeHandlerParameters(disableLocal, disableLocalVariable, input, method, localVariableMap, info);
         for (AbstractInsnNode instruction : method.instructions) {
             params.addOrdinal();
@@ -384,6 +384,20 @@ public class VPClassTransformer implements Consumer<ClassNode> {
         }
     }
 
+    private void annotationReplace(ClassNode input) {
+        for (TranslationInfo info : translationInfos) {
+            int[] ordinal = new int[]{0}; //counter
+            String annotationName = info.getTargetClassInfo().getAnnotation();
+            AnnotationHandler.classAnnotationHandler(input, annotationName, info, ordinal);
+            for (FieldNode field : input.fields) {
+                AnnotationHandler.fieldAnnotationHandler(input, field, annotationName, info, ordinal);
+            }
+            for (MethodNode method : input.methods) {
+                AnnotationHandler.methodAnnotationHandler(input, method, annotationName, info, ordinal);
+            }
+        }
+    }
+
     // for Fabric
     @Override
     public void accept(ClassNode input) {
@@ -414,9 +428,8 @@ public class VPClassTransformer implements Consumer<ClassNode> {
         }
 
         // Recompute frames. Otherwise, it may cause java.lang.VerifyError on java8
-        // Let stack frames treat everything as Object conservatively to avoid calling unloaded class
         if (VaultPatcher.platform == Platform.Forge1_6) {
-            ClassWriter wr = new CommonSuperClassWriter();
+            ClassWriter wr = new SafeClassWriter(SafeClassWriter.ClassLoaderGetter(), SafeClassWriter.launchWrapperLookup());
             input.accept(wr);
             byte[] bytes = wr.toByteArray();
 
@@ -450,6 +463,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
         }
         methodReplace(input);
         fieldReplace(input);
+        annotationReplace(input);
         transformed = true;
     }
 }
