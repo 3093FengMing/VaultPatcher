@@ -66,7 +66,7 @@ public class TargetClassInfo {
             switch (reader.nextName()) {
                 case "desc":
                 case "descriptor": {
-                    setAnnotation(reader.nextString());
+                    setAnnotation("L"+reader.nextString()+";");
                     break;
                 }
                 case "ak":
