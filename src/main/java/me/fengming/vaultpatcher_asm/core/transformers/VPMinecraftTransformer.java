@@ -30,7 +30,6 @@ public class VPMinecraftTransformer implements Consumer<ClassNode> {
                     insnList.add(new LdcInsnNode(input.name + "#<init>"));
                     insnList.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "me/fengming/vaultpatcher_asm/core/utils/DynamicReplaceUtils", "__mappingString", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", false));
                     method.instructions.insertBefore(insn, insnList);
-                    VaultPatcher.debugInfo("[VaultPatcher] Dynamic Replace hook injected into {}", input.name);
                     break;
                 }
             }
@@ -52,7 +51,6 @@ public class VPMinecraftTransformer implements Consumer<ClassNode> {
                     insnList.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "me/fengming/vaultpatcher_asm/core/utils/DynamicReplaceUtils", "__mappingString", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", false));
                     insnList.add(new VarInsnNode(Opcodes.ASTORE, 1));
                     method.instructions.insertBefore(method.instructions.getFirst(), insnList);
-                    VaultPatcher.debugInfo("[VaultPatcher] Dynamic Replace hook injected into {}#{}", input.name, method.name);
                     break;
                 }
             }
@@ -66,7 +64,6 @@ public class VPMinecraftTransformer implements Consumer<ClassNode> {
                     insnList.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "me/fengming/vaultpatcher_asm/core/utils/DynamicReplaceUtils", "__mappingString", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", false));
                     insnList.add(new VarInsnNode(Opcodes.ASTORE, 0));
                     method.instructions.insertBefore(method.instructions.getFirst(), insnList);
-                    VaultPatcher.debugInfo("[VaultPatcher] Dynamic Replace hook injected into {}#{}", input.name, method.name);
                 }
             }
         } else if (input.name.equals("net/minecraft/network/chat/FormattedText") /* Forge */ ) {
@@ -79,7 +76,6 @@ public class VPMinecraftTransformer implements Consumer<ClassNode> {
                     insnList.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "me/fengming/vaultpatcher_asm/core/utils/DynamicReplaceUtils", "__mappingString", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", false));
                     insnList.add(new VarInsnNode(Opcodes.ASTORE, 0));
                     method.instructions.insertBefore(method.instructions.getFirst(), insnList);
-                    VaultPatcher.debugInfo("[VaultPatcher] Dynamic Replace hook injected into {}#{}", input.name, method.name);
                 }
             }
         }

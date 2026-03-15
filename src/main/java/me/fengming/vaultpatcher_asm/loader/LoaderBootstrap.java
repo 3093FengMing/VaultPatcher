@@ -77,11 +77,7 @@ public final class LoaderBootstrap {
             }
         } catch (Throwable ignored) {}
 
-        Path fallback = resolveGameDirFromSystemProperties();
-        if (fallback != null) {
-            VaultPatcher.LOGGER.warn("[VaultPatcher] gameDir is null in {}, fallback to {}", context.loaderName(), fallback);
-        }
-        return fallback;
+        return resolveGameDirFromSystemProperties();
     }
 
     private static Path resolveGameDirFromSystemProperties() {
