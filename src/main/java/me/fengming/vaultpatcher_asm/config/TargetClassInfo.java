@@ -66,7 +66,7 @@ public class TargetClassInfo {
             switch (reader.nextName()) {
                 case "desc":
                 case "descriptor": {
-                    setAnnotation("L"+reader.nextString()+";");
+                    setAnnotation(reader.nextString());
                     break;
                 }
                 case "ak":
@@ -122,7 +122,7 @@ public class TargetClassInfo {
     }
 
     public void setAnnotation(String annotation) {
-        this.annotation = annotation;
+        this.annotation = "L" + annotation + ";";
     }
 
     public String getAnnotation() {

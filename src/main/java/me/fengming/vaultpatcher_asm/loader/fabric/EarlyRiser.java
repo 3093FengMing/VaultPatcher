@@ -65,6 +65,7 @@ public class EarlyRiser implements Runnable {
         ClassTinkerers.addTransformation("net.minecraft.class_327", new VPMinecraftTransformer());
         ClassTinkerers.addTransformation("net.minecraft.class_2585", new VPMinecraftTransformer());
         ClassTinkerers.addTransformation("net.minecraft.class_5348", new VPMinecraftTransformer());
+        ClassTinkerers.addTransformation("net.minecraft.class_8828$class_2585", new VPMinecraftTransformer());
     }
 
 
