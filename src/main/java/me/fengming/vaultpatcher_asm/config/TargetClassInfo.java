@@ -122,7 +122,7 @@ public class TargetClassInfo {
     }
 
     public void setAnnotation(String annotation) {
-        this.annotation = annotation;
+        this.annotation = "L" + annotation + ";";
     }
 
     public String getAnnotation() {

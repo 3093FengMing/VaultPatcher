@@ -37,6 +37,7 @@ public class ArrayNodeHandler extends NodeHandler<InsnNode> {
     public InsnNode modifyNode() {
         AbstractInsnNode producer = findArrayProducer(this.node);
         String nameToMatch = null;
+        int varToMatch = 0;
         if (this.node.getOpcode() != Opcodes.AALOAD || !MatchUtils.matchOrdinal(params.info, params.ordinal) || producer == null)
             return this.node;
         // Get name according to the type of producer
@@ -44,6 +45,7 @@ public class ArrayNodeHandler extends NodeHandler<InsnNode> {
             VarInsnNode v = (VarInsnNode) producer;
             if (v.getOpcode() == Opcodes.ALOAD) {
                 nameToMatch = params.localVariableMap.getOrDefault(v.var, null);
+                varToMatch = v.var;
             }
         } else if (producer instanceof FieldInsnNode) {
             FieldInsnNode f = (FieldInsnNode) producer;
@@ -54,7 +56,7 @@ public class ArrayNodeHandler extends NodeHandler<InsnNode> {
         }
 
         // The 'false' here is just a placeholder for parsing the param
-        if (MatchUtils.matchLocal(params.info, nameToMatch, false)) {
+        if (MatchUtils.matchLocal(params.info, nameToMatch, false) || MatchUtils.matchLocalIndex(params.info, varToMatch)) {
             insertReplace(params.classNode.name, params.methodNode, this.node, false);
             String detail = buildDetail(this.node, params.methodNode);
             debugInfo(params.ordinal, "ASMTransformMethod-InsertArray", "[key]", "[value]", detail);
