@@ -7,6 +7,7 @@ import me.fengming.vaultpatcher_asm.core.utils.StringUtils;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class LoaderBootstrap {
@@ -20,7 +21,7 @@ public final class LoaderBootstrap {
             return false;
         }
 
-        Path gameDir = context.gameDir();
+        Path gameDir = safeResolveGameDir(context);
         if (gameDir == null) {
             VaultPatcher.LOGGER.error("[VaultPatcher] Minecraft path not found in {}!", context.loaderName());
             return false;
@@ -64,6 +65,36 @@ public final class LoaderBootstrap {
         try {
             return context.resolveMinecraftVersion();
         } catch (Throwable t) {
+            return null;
+        }
+    }
+
+    private static Path safeResolveGameDir(LoaderBootstrapContext context) {
+        try {
+            Path gameDir = context.gameDir();
+            if (gameDir != null) {
+                return gameDir;
+            }
+        } catch (Throwable ignored) {}
+
+        Path fallback = resolveGameDirFromSystemProperties();
+        if (fallback != null) {
+            VaultPatcher.LOGGER.warn("[VaultPatcher] gameDir is null in {}, fallback to {}", context.loaderName(), fallback);
+        }
+        return fallback;
+    }
+
+    private static Path resolveGameDirFromSystemProperties() {
+        for (String key : new String[]{"gameDir", "fml.gameDir", "user.dir"}) {
+            String value = System.getProperty(key);
+            if (StringUtils.isBlank(value)) continue;
+            try {
+                return Paths.get(value).toAbsolutePath().normalize();
+            } catch (Exception ignored) {}
+        }
+        try {
+            return Paths.get(".").toAbsolutePath().normalize();
+        } catch (Exception ignored) {
             return null;
         }
     }

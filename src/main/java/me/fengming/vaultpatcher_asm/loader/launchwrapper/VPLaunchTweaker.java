@@ -12,11 +12,15 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 public class VPLaunchTweaker implements ITweaker {
+    private static final String CLIENT_MAIN = "net.minecraft.client.main.Main";
+    private static final String SERVER_MAIN = "net.minecraft.server.MinecraftServer";
+    private String launchTarget = CLIENT_MAIN;
 
     @Override
     public void acceptOptions(List<String> args, File gameDir, File assetsDir, String profile) {
         final File gameDirectory = gameDir;
         final File assetsDirectory = assetsDir;
+        launchTarget = assetsDirectory == null ? SERVER_MAIN : CLIENT_MAIN;
         LoaderBootstrap.bootstrap(new LoaderBootstrapContext() {
             @Override
             public String loaderName() {
@@ -54,7 +58,7 @@ public class VPLaunchTweaker implements ITweaker {
 
     @Override
     public String getLaunchTarget() {
-        return "net.minecraft.client.main.Main";
+        return launchTarget;
     }
 
     @Override
