@@ -56,7 +56,7 @@ public class EarlyRiser implements Runnable {
 
         Utils.translationInfoMap.forEach((k, v) -> ClassTinkerers.addTransformation(k, new VPClassTransformer(v)));
 
-        addMinecraftClasses();
+        if (!Utils.dynTranslationInfos.isEmpty()) addMinecraftClasses();
 
         VaultPatcher.debugInfo("[VaultPatcher] ER DONE!");
     }
@@ -66,6 +66,9 @@ public class EarlyRiser implements Runnable {
         ClassTinkerers.addTransformation("net.minecraft.class_2585", new VPMinecraftTransformer());
         ClassTinkerers.addTransformation("net.minecraft.class_5348", new VPMinecraftTransformer());
         ClassTinkerers.addTransformation("net.minecraft.class_8828$class_2585", new VPMinecraftTransformer());
+        ClassTinkerers.addTransformation("net.minecraft.client.gui.Font", new VPMinecraftTransformer());
+        ClassTinkerers.addTransformation("net.minecraft.network.chat.contents.PlainTextContents$LiteralContents", new VPMinecraftTransformer());
+        ClassTinkerers.addTransformation("net.minecraft.network.chat.FormattedText", new VPMinecraftTransformer());
     }
 
 

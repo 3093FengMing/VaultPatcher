@@ -38,7 +38,7 @@ public class ForgeMinecraftTransformer implements ITransformer<ClassNode> {
         targets.add(Target.targetClass("net.minecraft.client.gui.Font"));
         targets.add(Target.targetClass("net.minecraft.client.gui.FontRenderer"));
         // FormattedText
-        targets.add(Target.targetClass("net/minecraft/network/chat/FormattedText"));
+        targets.add(Target.targetClass("net.minecraft.network.chat.FormattedText"));
         return targets;
     }
 

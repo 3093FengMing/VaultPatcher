@@ -1,5 +1,6 @@
 package me.fengming.vaultpatcher_asm.core.utils;
 
+import me.fengming.vaultpatcher_asm.VaultPatcher;
 import me.fengming.vaultpatcher_asm.config.Pair;
 import me.fengming.vaultpatcher_asm.config.Pairs;
 import me.fengming.vaultpatcher_asm.config.TargetClassInfo;
@@ -69,7 +70,11 @@ public class MatchUtils {
     }
 
     public static boolean matchOrdinal(TranslationInfo info, int ordinal) {
-        Pair<Integer, Integer> pair = info.getTargetClassInfo().getOrdinal();
-        return pair.first <= ordinal && (pair.second == -1 || ordinal <= pair.second);
+        for (Pair<Integer, Integer> ordinalPair : info.getTargetClassInfo().getOrdinal()) {
+            if (ordinalPair.first <= ordinal && (ordinalPair.second == -1 || ordinal <= ordinalPair.second)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

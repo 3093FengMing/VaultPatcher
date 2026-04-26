@@ -23,8 +23,6 @@ public class VPNeoForgeClassProcessorProvider implements ClassProcessorProvider 
         collector.add(new VPNeoForgeTranslationClassProcessor(null, "translation_expand"));
 
         boolean hasDynamicRules = !Utils.dynTranslationInfos.isEmpty();
-        VaultPatcher.debugInfo("[VaultPatcher] NeoForge dynamic processor enabled: {} (dynamic rules: {})",
-                hasDynamicRules, Utils.dynTranslationInfos.size());
         if (hasDynamicRules) {
             collector.add(new VPNeoForgeMinecraftClassProcessor());
         }

@@ -370,7 +370,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
         for (TranslationInfo info : translationInfos) {
             // If the method name is not specified, the field will be replaced
             TargetClassInfo targetClass = info.getTargetClassInfo();
-            if (!StringUtils.isBlank(targetClass.getMethod()) || targetClass.getOrdinal().first == -1) return;
+            if (!StringUtils.isBlank(targetClass.getMethod()) || targetClass.getOrdinal().size() == 1) return;
 
             Pairs pairs = info.getPairs();
             for (FieldNode field : input.fields) {

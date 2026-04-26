@@ -6,6 +6,7 @@ import me.fengming.vaultpatcher_asm.VaultPatcher;
 import me.fengming.vaultpatcher_asm.core.utils.StringUtils;
 
 import java.io.IOException;
+import java.util.*;
 
 public class TargetClassInfo {
     private String dynamicName = ""; // used for dynamic replace
@@ -14,7 +15,7 @@ public class TargetClassInfo {
     private String annotation = "";
     private String annoKey = "";
     private String annoType = "ALL";
-    private Pair<Integer, Integer> ordinal = new Pair<>(-1, -1);
+    private List<Pair<Integer, Integer>> ordinal = new ArrayList<>();{ordinal.add(new Pair<>(-1, -1));}
     private MatchMode matchMode = MatchMode.FULL;
     private LocalMode localMode = LocalMode.NONE;
 
@@ -40,12 +41,26 @@ public class TargetClassInfo {
                 case "ordinal": {
                     JsonToken peeked = reader.peek();
                     if (peeked == JsonToken.NUMBER) {
-                        this.ordinal.first = this.ordinal.second = reader.nextInt();
+                        this.ordinal.clear();
+                        Pair<Integer, Integer> ordinalPair = new Pair<>(-1, -1);
+                        ordinalPair.first=ordinalPair.second=reader.nextInt();
+                        this.ordinal.add(ordinalPair);
                     } else if (peeked == JsonToken.STRING) {
-                        String ordinal = reader.nextString();
-                        String[] upAndDown = ordinal.split("-", 2);
-                        this.ordinal.first = Integer.parseInt(upAndDown[0]);
-                        this.ordinal.second = upAndDown[1].equalsIgnoreCase("e") ? -1 : Integer.parseInt(upAndDown[1]);
+                        this.ordinal.clear();
+                        String[] ordinals = reader.nextString().split(",");
+                        for (String ordinal : ordinals) {
+                            Pair<Integer, Integer> ordinalPair = new Pair<>(-1, -1);
+                            if (ordinal.contains("-")) {
+                                String[] upAndDown = ordinal.split("-", 2);
+                                ordinalPair.first = Integer.parseInt(upAndDown[0]);
+                                ordinalPair.second = upAndDown[1].equalsIgnoreCase("e") ? -1 : Integer.parseInt(upAndDown[1]);
+                                this.ordinal.add(ordinalPair);
+                            } else {
+                                ordinalPair.first=ordinalPair.second=Integer.parseInt(ordinal.trim());
+                                this.ordinal.add(ordinalPair);
+                            }
+                        }
+
                     } else {
                         VaultPatcher.LOGGER.warn("Couldn't read ordinal: {} as {}", reader.nextString(), peeked);
                     }
@@ -215,12 +230,8 @@ public class TargetClassInfo {
     }
 
 
-    public Pair<Integer, Integer> getOrdinal() {
+    public List<Pair<Integer, Integer>> getOrdinal() {
         return this.ordinal;
-    }
-
-    public void setOrdinal(Pair<Integer, Integer> ordinal) {
-        this.ordinal = ordinal;
     }
 
     public enum LocalMode {INVOKE_RETURN, LOCAL_VARIABLE, METHOD_RETURN, GLOBAL_VARIABLE, ARRAY_ELEMENT, NONE}

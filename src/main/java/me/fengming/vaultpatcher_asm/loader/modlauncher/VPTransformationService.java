@@ -132,8 +132,6 @@ public class VPTransformationService implements ITransformationService {
 
         list.add(new ForgeClassTransformer(null));
         boolean hasDynamicRules = !Utils.dynTranslationInfos.isEmpty();
-        VaultPatcher.debugInfo("[VaultPatcher] Dynamic hook transformer enabled: {} (dynamic rules: {})",
-                hasDynamicRules, Utils.dynTranslationInfos.size());
         if (hasDynamicRules) {
             list.add(new ForgeMinecraftTransformer());
         }
