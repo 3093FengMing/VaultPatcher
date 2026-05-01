@@ -1,6 +1,5 @@
 package me.fengming.vaultpatcher_asm.core.utils;
 
-import me.fengming.vaultpatcher_asm.VaultPatcher;
 import me.fengming.vaultpatcher_asm.config.Pair;
 import me.fengming.vaultpatcher_asm.config.Pairs;
 import me.fengming.vaultpatcher_asm.config.TargetClassInfo;

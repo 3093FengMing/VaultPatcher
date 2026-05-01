@@ -19,7 +19,7 @@ import java.nio.file.Path;
 public class EarlyRiser implements Runnable {
     @Override
     public void run() {
-        VaultPatcher.debugInfo("[VaultPatcher] Loading VPEarlyRiser");
+        VaultPatcher.debugInfo("Loading VPEarlyRiser");
 
         final FabricLoader loader = FabricLoader.getInstance();
         LoaderBootstrap.bootstrap(new LoaderBootstrapContext() {
@@ -58,7 +58,7 @@ public class EarlyRiser implements Runnable {
 
         if (!Utils.dynTranslationInfos.isEmpty()) addMinecraftClasses();
 
-        VaultPatcher.debugInfo("[VaultPatcher] ER DONE!");
+        VaultPatcher.debugInfo("ER DONE!");
     }
 
     private static void addMinecraftClasses() {

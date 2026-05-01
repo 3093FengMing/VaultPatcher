@@ -58,7 +58,7 @@ public class ArrayNodeHandler extends NodeHandler<InsnNode> {
         // The 'false' here is just a placeholder for parsing the param
         if (MatchUtils.matchLocal(params.info, nameToMatch, false) || MatchUtils.matchLocalIndex(params.info, varToMatch)) {
             insertReplace(params.classNode.name, params.methodNode, this.node, false);
-            String detail = buildDetail(this.node, params.methodNode);
+            String detail = buildDetail(this.node, params.methodNode, params.info.getPairs());
             debugInfo(params.ordinal, "ASMTransformMethod-InsertArray", "[key]", "[value]", detail);
         }
         return this.node;

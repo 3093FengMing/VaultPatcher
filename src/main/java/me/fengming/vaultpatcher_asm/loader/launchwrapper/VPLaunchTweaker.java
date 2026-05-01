@@ -47,13 +47,13 @@ public class VPLaunchTweaker implements ITweaker {
                 return getMinecraftVersion();
             }
         });
-        VaultPatcher.debugInfo("[VaultPatcher] LT DONE!");
+        VaultPatcher.debugInfo("LT DONE!");
     }
 
     @Override
     public void injectIntoClassLoader(LaunchClassLoader classLoader) {
         classLoader.registerTransformer("me.fengming.vaultpatcher_asm.loader.launchwrapper.LinkedClassTransformer");
-        VaultPatcher.debugInfo("[VaultPatcher] CL DONE!");
+        VaultPatcher.debugInfo("CL DONE!");
     }
 
     @Override

@@ -29,7 +29,7 @@ public class LinkedClassTransformer implements IClassTransformer {
             if (patchedClass != null) {
                 patched = true;
                 input = patchedClass;
-                VaultPatcher.debugInfo("[VaultPatcher] Using Patch: {}", input.name);
+                VaultPatcher.debugInfo("Using Patch: {}", input.name);
             }
         }
 

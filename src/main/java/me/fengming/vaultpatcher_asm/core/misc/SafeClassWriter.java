@@ -35,21 +35,7 @@ public class SafeClassWriter extends ClassWriter {
         }
     }
     public static ClassLoader ClassLoaderGetter() {
-        Object cl = null;
-        // If in LaunchWrapper environment, get LaunchWrapper classLoader
-        try {
-            Class<?> launch = Class.forName("net.minecraft.launchwrapper.Launch");
-            cl = launch.getField("classLoader").get(null);
-        } catch (Throwable ignored) {}
-        // If not in LaunchWrapper environment, try to get context loader first
-        if (cl == null) {
-            cl = Thread.currentThread().getContextClassLoader();
-        }
-        // Then the class loader
-        if (cl == null) {
-            cl = SafeClassWriter.class.getClassLoader();
-        }
-        return (ClassLoader) cl;
+        return Thread.currentThread().getContextClassLoader();
     }
     public static BytecodeLookup launchWrapperLookup() {
         // First try to get classbytes through launchWrapper
@@ -99,12 +85,11 @@ public class SafeClassWriter extends ClassWriter {
                     Class<?> clazz = Class.forName(internalName.replace('/', '.'), false, classLoader);
                     Class<?> superClass = clazz.getSuperclass();
                     Class<?>[] interfaces = clazz.getInterfaces();
-                    List<String> itfs = new ArrayList<String>(interfaces.length);
+                    List<String> itfs = new ArrayList<>(interfaces.length);
                     for (Class<?> itf : interfaces) {
                         itfs.add(itf.getName().replace('.', '/'));
                     }
-                    ClassInfo info = new ClassInfo(internalName, superClass == null ? null : superClass.getName().replace('.', '/'), itfs, clazz.isInterface());
-                    return info;
+                    return new ClassInfo(internalName, superClass == null ? null : superClass.getName().replace('.', '/'), itfs, clazz.isInterface());
                 } catch (Throwable ignored) {
                     return null;
                 }
@@ -113,8 +98,7 @@ public class SafeClassWriter extends ClassWriter {
             int access = cr.getAccess();
             String superName = cr.getSuperName();
             String[] ifs = cr.getInterfaces();
-            ClassInfo info = new ClassInfo(internalName, superName, ifs == null ? Collections.<String>emptyList() : Arrays.asList(ifs), (access & Opcodes.ACC_INTERFACE) != 0);
-            return info;
+            return new ClassInfo(internalName, superName, ifs == null ? Collections.emptyList() : Arrays.asList(ifs), (access & Opcodes.ACC_INTERFACE) != 0);
         } catch (Throwable ignored) {
             return null;
         }
@@ -149,7 +133,7 @@ public class SafeClassWriter extends ClassWriter {
             }
             if (i1.isInterface || i2.isInterface) return OBJECT;
             // Walk ancestors of type1, then walk type2 upwards until first hit.
-            Set<String> ancestors = new LinkedHashSet<String>();
+            Set<String> ancestors = new LinkedHashSet<>();
             String cur = type1;
             while (cur != null) {
                 ancestors.add(cur);
@@ -203,7 +187,7 @@ public class SafeClassWriter extends ClassWriter {
         return arrayOf(commonElem, d1);
     }
     private static boolean isArrayType(String type) {
-        return type != null && type.length() > 0 && type.charAt(0) == '[';
+        return type != null && !type.isEmpty() && type.charAt(0) == '[';
     }
     private static String arrayOf(String elementInternalName, int dims) {
         StringBuilder sb = new StringBuilder(dims + elementInternalName.length() + 2);
@@ -220,8 +204,8 @@ public class SafeClassWriter extends ClassWriter {
         }
         ClassInfo sub = resolve(maybeSub);
         if (sub == null) return false;
-        Deque<String> q = new ArrayDeque<String>();
-        Set<String> seen = new HashSet<String>();
+        Deque<String> q = new ArrayDeque<>();
+        Set<String> seen = new HashSet<>();
         q.add(maybeSub);
         while (!q.isEmpty()) {
             String cur = q.removeFirst();

@@ -8,7 +8,6 @@ import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
 import java.io.BufferedReader;
 import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
-import java.nio.charset.MalformedInputException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -52,7 +51,7 @@ public class I18n {
                 Files.createDirectories(PATH);
             }
             if (Files.notExists(PATH.resolve(currentCode + ".json"))) {
-                VaultPatcher.LOGGER.warn("[VaultPatcher] Not found file {}.json. Will skip I18n loading.", currentCode);
+                VaultPatcher.LOGGER.warn("Not found file {}.json. Will skip I18n loading.", currentCode);
                 return;
             }
 
@@ -60,10 +59,10 @@ public class I18n {
             langugesMap = GSON.fromJson(br2, new TypeToken<Map<String, String>>() {}.getType());
             if (langugesMap == null) {
                 langugesMap = new HashMap<>();
-                VaultPatcher.LOGGER.error("[VaultPatcher] Error loading I18n file.");
+                VaultPatcher.LOGGER.error("Error loading I18n file.");
             }
         } catch (Exception e) {
-            VaultPatcher.LOGGER.error("[VaultPatcher] Error loading I18n file: {}", e);
+            VaultPatcher.LOGGER.error("Error loading I18n file: {}", e);
         } finally {
             try {
                 if (br1 != null) {
@@ -73,7 +72,7 @@ public class I18n {
                     br2.close();
                 }
             } catch (Exception e) {
-                VaultPatcher.LOGGER.error("[VaultPatcher] Error loading I18n file: {}", e);
+                VaultPatcher.LOGGER.error("Error loading I18n file: {}", e);
             }
         }
     }

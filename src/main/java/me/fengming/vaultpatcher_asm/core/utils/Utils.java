@@ -39,7 +39,7 @@ public class Utils {
         int showSame = debug.getOutputMode();
         if (showSame == 0 && source.equals(target)) return;
         TargetClassInfo ci = info.getTargetClassInfo();
-        VaultPatcher.LOGGER.info("[VaultPatcher] Trying replacing!\n{}",
+        VaultPatcher.LOGGER.info("Trying replacing!\n{}",
                 String.format(
                         "'%s' -> '%s' in %s | TranslationInfo{name=%s, method=%s, annotation=%s, localMode=%s, local=%s, ordinal=%s, matchMode=%s, ASM/DynMethod=%s, %s}",
                         source, target, StringUtils.dotPackage(clazz),

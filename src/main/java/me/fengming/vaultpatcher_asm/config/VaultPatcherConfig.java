@@ -21,7 +21,7 @@ public class VaultPatcherConfig {
 
     public static final DebugMode debug = new DebugMode();
     public static boolean enableClassPatch = false;
-    public static boolean loadAllModules = false;
+    public static boolean loadAllModules = true;
     public static Path config = null;
     public static File configFile = null;
     public static String defaultLanguage = "en_us";

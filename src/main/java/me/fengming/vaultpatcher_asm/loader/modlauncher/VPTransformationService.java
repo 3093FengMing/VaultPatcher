@@ -33,7 +33,7 @@ public class VPTransformationService implements ITransformationService {
         // VaultPatcher.LOGGER.warn("[VaultPatcher] Warning! You are in ASM mode!");
         // VaultPatcher.LOGGER.warn("[VaultPatcher] In this mode, the configuration files will be stored in \"config/vaultpatcher_asm\"!");
 
-        VaultPatcher.debugInfo("[VaultPatcher] Loading VPTransformationService!");
+        VaultPatcher.debugInfo("Loading VPTransformationService!");
 
         final Optional<Path> minecraftPathOptional = environment.getProperty(IEnvironment.Keys.GAMEDIR.get());
         final boolean isClient = environment.getProperty(IEnvironment.Keys.ASSETSDIR.get()).isPresent();
@@ -92,7 +92,7 @@ public class VPTransformationService implements ITransformationService {
             }
         });
 
-        VaultPatcher.debugInfo("[VaultPatcher] TS DONE!");
+        VaultPatcher.debugInfo("TS DONE!");
     }
 
     private static String getMinecraftVersion() {

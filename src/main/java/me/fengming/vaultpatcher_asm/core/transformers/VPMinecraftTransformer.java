@@ -9,7 +9,7 @@ import java.util.function.Consumer;
 public class VPMinecraftTransformer implements Consumer<ClassNode> {
 
     public VPMinecraftTransformer() {
-        VaultPatcher.debugInfo("[VaultPatcher] Loading MinecraftTransformer");
+        VaultPatcher.debugInfo("Loading MinecraftTransformer");
     }
 
     private static void classTransform(ClassNode input) {
@@ -84,7 +84,7 @@ public class VPMinecraftTransformer implements Consumer<ClassNode> {
     // for Fabric
     @Override
     public void accept(ClassNode input) {
-        VaultPatcher.debugInfo("[VaultPatcher] Loading MinecraftTransformer for class {}", input.name);
+        VaultPatcher.debugInfo("Loading MinecraftTransformer for class {}", input.name);
         classTransform(input);
     }
 }

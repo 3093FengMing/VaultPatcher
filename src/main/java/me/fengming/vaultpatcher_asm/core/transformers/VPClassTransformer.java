@@ -34,7 +34,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
         if (infos != null) {
             String className = infos.iterator().next().getTargetClass();
             // TransformChecker.setTransformed(infos);
-            VaultPatcher.debugInfo("[VaultPatcher] Loading VPTransformer for class: {}", className);
+            VaultPatcher.debugInfo("Loading VPTransformer for class: {}", className);
         }
     }
 
@@ -419,7 +419,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
                     Utils.deepCopyClass(input, taken);
                 }
             } else {
-                VaultPatcher.debugInfo("[VaultPatcher] Generating Class Cache: {}", input.name);
+                VaultPatcher.debugInfo("Generating Class Cache: {}", input.name);
                 transform(input);
                 Caches.addClassCache(input.name, input);
             }
@@ -448,7 +448,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
 
     private void transform(ClassNode input) {
         if (transformed) {
-            VaultPatcher.debugInfo("[VaultPatcher] Class {} has already been transformed!", input.name);
+            VaultPatcher.debugInfo("Class {} has already been transformed!", input.name);
             return;
         }
         if (translationInfos == null) {
