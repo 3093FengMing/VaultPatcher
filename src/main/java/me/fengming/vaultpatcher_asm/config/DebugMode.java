@@ -7,7 +7,7 @@ import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 
 public class DebugMode {
-    private boolean isEnable = true;
+    private boolean isEnable = false;
     private int outputMode = 0;
     private boolean outputNodeDebug = false;
     private int hidePairsLimit = 7;
