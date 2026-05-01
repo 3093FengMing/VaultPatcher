@@ -19,7 +19,7 @@ public class PatchClassTransformer implements ITransformer<ClassNode> {
     }
 
     public ClassNode transform(ClassNode input, ITransformerVotingContext context) {
-        VaultPatcher.debugInfo("[VaultPatcher] Using Patch: {}", input.name);
+        VaultPatcher.debugInfo("Using Patch: {}", input.name);
         return ClassPatcher.patch(input);
     }
 

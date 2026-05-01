@@ -3,13 +3,12 @@ package me.fengming.vaultpatcher_asm;
 import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
 import me.fengming.vaultpatcher_asm.config.VaultPatcherModule;
 import me.fengming.vaultpatcher_asm.core.cache.Caches;
+import me.fengming.vaultpatcher_asm.core.misc.ILogger;
 import me.fengming.vaultpatcher_asm.core.patch.ClassPatcher;
 import me.fengming.vaultpatcher_asm.core.utils.I18n;
 import me.fengming.vaultpatcher_asm.core.utils.Platform;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
 import me.fengming.vaultpatcher_asm.plugin.VaultPatcherPlugin;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,12 +22,11 @@ import java.util.List;
 import java.util.jar.JarFile;
 
 public class VaultPatcher {
-    public static Logger LOGGER = LogManager.getLogger("VaultPatcher");
+    public static ILogger LOGGER = new ILogger();
 
     public static List<VaultPatcherPlugin> plugins = new ArrayList<>();
     public static Path mcPath = null;
     public static String mcVersion = null;
-    public static Platform javaVersion = Platform.getJavaVersion(System.getProperty("java.specification.version"));
     public static Platform platform = Platform.UNDEFINED;
     public static boolean isClient = false;
 
@@ -75,17 +73,17 @@ public class VaultPatcher {
             plugins.forEach(e -> e.onLoadConfig(VaultPatcherPlugin.Phase.BEFORE));
             VaultPatcherConfig.readConfig(mcPath.resolve("config").resolve("vaultpatcher_asm"));
             Utils.debug = VaultPatcherConfig.getDebugMode();
-            VaultPatcher.debugInfo("[VaultPatcher] Loading Configs!");
+            VaultPatcher.debugInfo("Loading Configs!");
             plugins.forEach(e -> e.onLoadConfig(VaultPatcherPlugin.Phase.AFTER));
         } catch (IOException e) {
             throw new RuntimeException("Failed to load config: ", e);
         }
 
-        VaultPatcher.debugInfo("[VaultPatcher] Loading I18n!");
+        VaultPatcher.debugInfo("Loading I18n!");
         I18n.load(mcPath);
 
         try {
-            VaultPatcher.debugInfo("[VaultPatcher] Loading Patches!");
+            VaultPatcher.debugInfo("Loading Patches!");
             plugins.forEach(e -> e.onLoadPatches(VaultPatcherPlugin.Phase.BEFORE));
             ClassPatcher.init(Utils.getVpPath().resolve("patch"));
             plugins.forEach(e -> e.onLoadPatches(VaultPatcherPlugin.Phase.AFTER));
@@ -94,7 +92,7 @@ public class VaultPatcher {
         }
 
         try {
-            VaultPatcher.debugInfo("[VaultPatcher] Loading Caches!");
+            VaultPatcher.debugInfo("Loading Caches!");
             plugins.forEach(e -> e.onLoadCaches(VaultPatcherPlugin.Phase.BEFORE));
             Caches.init(Utils.getVpPath().resolve("cache"));
             plugins.forEach(e -> e.onLoadCaches(VaultPatcherPlugin.Phase.AFTER));
@@ -103,9 +101,9 @@ public class VaultPatcher {
         }
 
         try {
-            VaultPatcher.debugInfo("[VaultPatcher] Loading Modules!");
+            VaultPatcher.debugInfo("Loading Modules!");
             Path p = Utils.getVpPath().resolve("modules");
-            if (Files.notExists(p)){
+            if (Files.notExists(p)) {
                 Files.createDirectories(p);
             }
             if (VaultPatcherConfig.isLoadAllModules()) {
@@ -130,7 +128,6 @@ public class VaultPatcher {
         } catch (IOException e) {
             throw new RuntimeException("Failed to load modules: ", e);
         }
-
 
 
         // optimization

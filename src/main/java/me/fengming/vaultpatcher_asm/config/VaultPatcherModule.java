@@ -25,7 +25,7 @@ public class VaultPatcherModule {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
     public VaultPatcherModule(String moduleFile) {
-        VaultPatcher.debugInfo("[VaultPatcher] Found Module: {}", moduleFile);
+        VaultPatcher.debugInfo("Found Module: {}", moduleFile);
         Path p = Utils.getVpPath().resolve("modules").resolve(moduleFile);
         try {
             Files.createDirectories(p.getParent());
@@ -42,7 +42,7 @@ public class VaultPatcherModule {
         ModuleInfo moduleInfo = new ModuleInfo();
         moduleInfo.readJson(reader);
         boolean dynamic = moduleInfo.isDataDynamic();
-        VaultPatcher.debugInfo("[VaultPatcher] Loading Module: {}, Author(s): {}, Mod(s): {}, Desc: {}, Dyn: {}, I18n: {}",
+        VaultPatcher.debugInfo("Loading Module: {}, Author(s): {}, Mod(s): {}, Desc: {}, Dyn: {}, I18n: {}",
                 moduleInfo.getInfoName(), moduleInfo.getInfoAuthors(), moduleInfo.getInfoMods(), moduleInfo.getInfoDesc(),
                 moduleInfo.isDataDynamic(), moduleInfo.isDataI18n());
 
@@ -124,10 +124,10 @@ public class VaultPatcherModule {
         Path oldFile = VaultPatcherConfig.config.resolve(moduleFile.getFileName());
         if (Files.notExists(moduleFile) && Files.exists(oldFile)) {
             Files.move(oldFile, moduleFile);
-            VaultPatcher.LOGGER.warn("[VaultPatcher] Moving Module file {} from config/vaultpatcher_asm to vaultpatcher/modules.", moduleFile);
+            VaultPatcher.LOGGER.warn("Moving Module file {} from config/vaultpatcher_asm to vaultpatcher/modules.", moduleFile);
         }
         if (Files.notExists(moduleFile)) {
-            VaultPatcher.LOGGER.warn("[VaultPatcher] Not Found Module File {}, this file will be created and populated with initial content.", moduleFile);
+            VaultPatcher.LOGGER.warn("Not Found Module File {}, this file will be created and populated with initial content.", moduleFile);
             Files.createFile(moduleFile);
             try (JsonWriter jw = new JsonWriter(Files.newBufferedWriter(moduleFile, StandardCharsets.UTF_8))) {
                 jw.setIndent("  ");

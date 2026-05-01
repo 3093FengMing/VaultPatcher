@@ -44,7 +44,7 @@ public class AnnotationHandler {
                     stringHandler(input, annotation, annotationName, info, ordinal);
                 }
             }
-            // visibleParameterAnnotation is a list of list of AnnotationNode
+            // visibleParameterAnnotation is a list of AnnotationNode list
             if (method.visibleParameterAnnotations != null) {
                 for (List<? extends AnnotationNode> annotationNodeList : method.visibleParameterAnnotations) {
                     if (annotationNodeList == null) continue;

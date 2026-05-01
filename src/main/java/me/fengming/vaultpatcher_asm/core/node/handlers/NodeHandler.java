@@ -1,6 +1,7 @@
 package me.fengming.vaultpatcher_asm.core.node.handlers;
 
 import me.fengming.vaultpatcher_asm.VaultPatcher;
+import me.fengming.vaultpatcher_asm.config.Pairs;
 import me.fengming.vaultpatcher_asm.core.node.HandlerDebugInfo;
 import me.fengming.vaultpatcher_asm.core.node.NodeHandlerParameters;
 import me.fengming.vaultpatcher_asm.core.utils.StringUtils;
@@ -51,6 +52,18 @@ public abstract class NodeHandler<E extends AbstractInsnNode> {
             }
         }
         return String.format("In_which_method: %s, Called by: %s", method.name, (calledMethod == null ? "None" : calledMethod));
+    }
+
+    public static String buildDetail(AbstractInsnNode node, MethodNode method, Pairs pairs) {
+        String calledMethod = null;
+        for (AbstractInsnNode p = node; p != null; p = p.getNext()) {
+            if (p instanceof MethodInsnNode && !((MethodInsnNode) p).name.equals("__vp_replace") && !((MethodInsnNode) p).owner.equals("java/lang/StringBuilder")) {
+                MethodInsnNode min = (MethodInsnNode) p;
+                calledMethod = min.owner.replace('/', '.') + "." + min.name + min.desc;
+                break;
+            }
+        }
+        return String.format("In_which_method: %s, Called by: %s, Pairs: %s", method.name, (calledMethod == null ? "None" : calledMethod), pairs.toString());
     }
 
     public static NodeHandler<? extends AbstractInsnNode> getHandlerByNode(AbstractInsnNode node, NodeHandlerParameters params) {

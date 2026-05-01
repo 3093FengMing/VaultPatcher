@@ -4,6 +4,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashBigSet;
 import me.fengming.vaultpatcher_asm.core.utils.I18n;
+import me.fengming.vaultpatcher_asm.core.utils.Utils;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -115,4 +116,17 @@ public class Pairs {
         return nonFullMatch;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("{");
+        if (dyn) {
+            pairsSet.stream().limit(Utils.debug.getHidePairsLimit()).forEach(e -> sb.append("'").append(e.first).append("'='").append(e.second).append("'").append(","));
+            if (pairsSet.size()>Utils.debug.getHidePairsLimit()) {sb.append("...[HIDE]");}
+        } else {
+            pairsMap.entrySet().stream().limit(Utils.debug.getHidePairsLimit()).forEach((e -> sb.append("'").append(e.getKey()).append("'='").append(e.getValue()).append("'").append(",")));
+            if (pairsMap.size()>Utils.debug.getHidePairsLimit()) {sb.append("...[HIDE]");}
+        }
+        sb.deleteCharAt(sb.length() - 1).append("}");
+        return sb.toString();
+    }
 }

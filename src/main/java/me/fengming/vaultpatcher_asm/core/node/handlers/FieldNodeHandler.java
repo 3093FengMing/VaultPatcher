@@ -18,7 +18,7 @@ public class FieldNodeHandler extends NodeHandler<FieldInsnNode> {
                 && MatchUtils.matchOrdinal(params.info, params.ordinal)
                 && MatchUtils.matchLocal(params.info, this.node.name, false)) {
             insertReplace(params.classNode.name, params.methodNode, this.node, "Ljava/lang/String;".equals(this.node.desc));
-            String detail = buildDetail(this.node, params.methodNode);
+            String detail = buildDetail(this.node, params.methodNode, params.info.getPairs());
             debugInfo(params.ordinal, "ASMTransformMethod-InsertGlobalVariablePut/Get", "[key]", "[value]", detail);
         }
         return this.node;

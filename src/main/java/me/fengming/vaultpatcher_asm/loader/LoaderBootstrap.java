@@ -17,18 +17,18 @@ public final class LoaderBootstrap {
 
     public static boolean bootstrap(LoaderBootstrapContext context) {
         if (context == null) {
-            VaultPatcher.LOGGER.error("[VaultPatcher] Loader context is null!");
+            VaultPatcher.LOGGER.error("Loader context is null!");
             return false;
         }
 
         Path gameDir = safeResolveGameDir(context);
         if (gameDir == null) {
-            VaultPatcher.LOGGER.error("[VaultPatcher] Minecraft path not found in {}!", context.loaderName());
+            VaultPatcher.LOGGER.error("Minecraft path not found in {}!", context.loaderName());
             return false;
         }
 
         if (!INITIALIZED.compareAndSet(false, true)) {
-            VaultPatcher.debugInfo("[VaultPatcher] Skip duplicate init from {}", context.loaderName());
+            VaultPatcher.debugInfo("Skip duplicate init from {}", context.loaderName());
             return false;
         }
 
@@ -37,7 +37,7 @@ public final class LoaderBootstrap {
 
         String minecraftVersion = resolveMinecraftVersion(context);
         if (StringUtils.isBlank(minecraftVersion)) {
-            VaultPatcher.LOGGER.error("[VaultPatcher] Failed to get minecraft version in {}!", context.loaderName());
+            VaultPatcher.LOGGER.error("Failed to get minecraft version in {}!", context.loaderName());
             minecraftVersion = "";
         }
 

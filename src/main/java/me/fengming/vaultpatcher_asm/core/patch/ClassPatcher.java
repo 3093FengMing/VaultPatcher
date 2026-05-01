@@ -37,7 +37,7 @@ public class ClassPatcher {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                 if (!file.toString().endsWith(".class")) return super.visitFile(file, attrs);
-                VaultPatcher.debugInfo("[VaultPatcher] Found patch: {}", file);
+                VaultPatcher.debugInfo("Found patch: {}", file);
                 String className = Utils.filePathToClassName(file, root);
                 ClassNode node = new ClassNode();
                 ClassReader cr = new ClassReader(Files.newInputStream(file));
