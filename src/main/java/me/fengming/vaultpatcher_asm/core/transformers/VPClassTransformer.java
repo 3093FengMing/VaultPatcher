@@ -7,7 +7,6 @@ import me.fengming.vaultpatcher_asm.config.TranslationInfo;
 import me.fengming.vaultpatcher_asm.core.cache.Caches;
 import me.fengming.vaultpatcher_asm.core.cache.ClassCache;
 import me.fengming.vaultpatcher_asm.core.misc.SafeClassWriter;
-import me.fengming.vaultpatcher_asm.core.misc.VPClassLoader;
 import me.fengming.vaultpatcher_asm.core.node.NodeHandlerParameters;
 import me.fengming.vaultpatcher_asm.core.node.handlers.AnnotationHandler;
 import me.fengming.vaultpatcher_asm.core.node.handlers.NodeHandler;
@@ -140,105 +139,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
             fv.visitEnd();
         }
 
-        // fix
-        if (isInterface) {
-            String innerClassName = className + "$vp_map";
-            // <clinit>
-            if (!hasClinit) {
-                /*
-                static {
-                    HashMap __vp_map = new ThisClass$vp_map();
-                }
-                */
-                MethodVisitor mv = cv.visitMethod(Opcodes.ACC_STATIC, "<clinit>", "()V", null, null);
-                mv.visitCode();
-
-                Label label0 = new Label();
-                mv.visitLabel(label0);
-                mv.visitTypeInsn(Opcodes.NEW, innerClassName);
-                mv.visitInsn(Opcodes.DUP);
-                mv.visitMethodInsn(Opcodes.INVOKESPECIAL, innerClassName, "<init>", "()V", false);
-                mv.visitFieldInsn(Opcodes.PUTSTATIC, className, "__vp_map", "Ljava/util/HashMap;");
-
-                Label label1 = new Label();
-                mv.visitLabel(label1);
-                mv.visitInsn(Opcodes.RETURN);
-
-                Label label2 = new Label();
-                mv.visitLabel(label2);
-                mv.visitMaxs(0, 0);
-
-                mv.visitEnd();
-            }
-
-            // init (inner class)
-            {
-                /*
-                class ThisClass$vp_map extends HashMap<String, String> {
-                    ThisClass$vp_map() {
-                        super();
-                        this.put(key1, value1);
-                        this.put(key2, value2);
-                        this.put(key3, value3);
-                        ...
-                    }
-                }
-
-                (actually is)
-                HashMap __vp_map = new HashMap() {{
-                        this.put(key1, value1);
-                        this.put(key2, value2);
-                        this.put(key3, value3);
-                        ...
-                }}
-                */
-
-                // inner class
-                ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-                cw.visit(Opcodes.V1_8, Opcodes.ACC_FINAL | Opcodes.ACC_SUPER, innerClassName, "Ljava/util/HashMap<Ljava/lang/String;Ljava/lang/String;>;", "java/util/HashMap", null);
-                cw.visitSource("VaultPatcher_" + innerClassName, null);
-                cw.visitOuterClass(className, null, null);
-                cw.visitInnerClass(innerClassName, null, null, Opcodes.ACC_STATIC);
-
-                // <init>
-                MethodVisitor mv = cw.visitMethod(0, "<init>", "(I)V", null, null);
-
-                mv.visitCode();
-
-                Label label0 = new Label();
-                mv.visitLabel(label0);
-                mv.visitVarInsn(Opcodes.ALOAD, 0);
-                mv.visitVarInsn(Opcodes.ILOAD, 1);
-                mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/util/HashMap", "<init>", "(I)V", false);
-
-                Label label1 = new Label();
-                mv.visitLabel(label1);
-                for (Map.Entry<String, String> entry : set) {
-                    mv.visitVarInsn(Opcodes.ALOAD, 0);
-                    mv.visitLdcInsn(entry.getKey());
-                    mv.visitLdcInsn(entry.getValue());
-                    mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, innerClassName, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false);
-                    mv.visitInsn(Opcodes.POP);
-                }
-
-                Label label2 = new Label();
-                mv.visitLabel(label2);
-                mv.visitInsn(Opcodes.RETURN);
-
-                Label label3 = new Label();
-                mv.visitLabel(label3);
-                mv.visitLocalVariable("this", "L" + innerClassName + ";", null, label0, label3, 0);
-                mv.visitLocalVariable("x0", "I", null, label0, label3, 1);
-                mv.visitMaxs(3, 2);
-
-                mv.visitEnd();
-
-                cw.visitEnd();
-
-                byte[] bytes = cw.toByteArray();
-                VPClassLoader.newClass(Thread.currentThread().getContextClassLoader(), innerClassName, bytes);
-            }
-        } else {
+        {
             // <clinit>
             if (!hasClinit) {
                 /*

@@ -71,9 +71,13 @@ public class Utils {
         a.access = b.access;
         a.attrs = b.attrs;
         a.visibleAnnotations = b.visibleAnnotations;
-        a.visibleTypeAnnotations = b.visibleTypeAnnotations;
         a.invisibleAnnotations = b.invisibleAnnotations;
-        a.invisibleTypeAnnotations = b.invisibleTypeAnnotations;
+        try {
+            a.visibleTypeAnnotations = b.visibleTypeAnnotations;
+            a.invisibleTypeAnnotations = b.invisibleTypeAnnotations;
+        } catch (Throwable ignored) {
+            // These two fields does not exist in ASM4
+        }
     }
 
     public static byte[] nodeToBytes(ClassNode node) {
