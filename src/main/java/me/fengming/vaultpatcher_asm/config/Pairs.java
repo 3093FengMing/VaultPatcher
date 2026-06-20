@@ -76,7 +76,6 @@ public class Pairs {
             return;
         }
         if (dyn) {
-            nonFullMatch |= !lastValue.isEmpty() && lastValue.charAt(0) == '@'; // must be OR
             pairsSet.add(new Pair<>(key, lastValue));
         } else {
             pairsMap.put(key, lastValue);
@@ -92,7 +91,7 @@ public class Pairs {
             return;
         }
         if (dyn) {
-            nonFullMatch |= !value.isEmpty() && value.charAt(0) == '@'; // must be OR
+            nonFullMatch |= !value.isEmpty() && (value.charAt(0) == '@' && value.charAt(1) != '@'); // must be OR
             pairsSet.add(new Pair<>(lastKey, value));
         } else {
             pairsMap.put(lastKey, value);

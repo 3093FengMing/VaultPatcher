@@ -8,9 +8,24 @@ import java.util.Arrays;
 import java.util.List;
 
 public class AnnotationHandler {
+    @SuppressWarnings("unchecked")
+    private static List<? extends AnnotationNode> getAnnoList(Object node, String fieldName) {
+        try {
+            java.lang.reflect.Field field = node.getClass().getField(fieldName);
+            Object value = field.get(node);
+            if (value instanceof List) {
+                return (List<? extends AnnotationNode>) value;
+            }
+        } catch (NoSuchFieldException ignored) {
+            // old ASM: field does not exist
+        } catch (IllegalAccessException ignored) {
+            // should not happen for public ASM tree fields
+        }
+        return null;
+    }
     public static void classAnnotationHandler(ClassNode input, String annotationName, TranslationInfo info, int[] ordinal) {
         if (info.getTargetClassInfo().getAnnoType().equals("CLASS") || info.getTargetClassInfo().getAnnoType().equals("ALL")) {
-            List<List<? extends AnnotationNode>> classAnnotationType = Arrays.asList(input.visibleAnnotations, input.visibleTypeAnnotations);
+            List<List<? extends AnnotationNode>> classAnnotationType = Arrays.asList(input.visibleAnnotations, getAnnoList(input,"visibleTypeAnnotations"));
             for (List<? extends AnnotationNode> list : classAnnotationType) {
                 if (list == null) continue;
                 for (AnnotationNode annotation : list) {
@@ -23,7 +38,7 @@ public class AnnotationHandler {
 
     public static void fieldAnnotationHandler(ClassNode input, FieldNode field, String annotationName, TranslationInfo info, int[] ordinal) {
         if (info.getTargetClassInfo().getAnnoType().equals("FIELD") || info.getTargetClassInfo().getAnnoType().equals("ALL")) {
-            List<List<? extends AnnotationNode>> fieldAnnotationType = Arrays.asList(field.visibleAnnotations, field.visibleTypeAnnotations);
+            List<List<? extends AnnotationNode>> fieldAnnotationType = Arrays.asList(field.visibleAnnotations, getAnnoList(field,"visibleTypeAnnotations"));
             for (List<? extends AnnotationNode> list : fieldAnnotationType) {
                 if (list == null) continue;
                 for (AnnotationNode annotation : list) {
@@ -36,7 +51,7 @@ public class AnnotationHandler {
 
     public static void methodAnnotationHandler(ClassNode input, MethodNode method, String annotationName, TranslationInfo info, int[] ordinal) {
         if (info.getTargetClassInfo().getAnnoType().equals("METHOD") || info.getTargetClassInfo().getAnnoType().equals("ALL")) {
-            List<List<? extends AnnotationNode>> methodAnnotationType = Arrays.asList(method.visibleAnnotations, method.visibleTypeAnnotations, method.visibleLocalVariableAnnotations);
+            List<List<? extends AnnotationNode>> methodAnnotationType = Arrays.asList(method.visibleAnnotations, getAnnoList(method,"visibleTypeAnnotations"), getAnnoList(method,"visibleLocalVariableAnnotations"));
             for (List<? extends AnnotationNode> list : methodAnnotationType) {
                 if (list == null) continue;
                 for (AnnotationNode annotation : list) {

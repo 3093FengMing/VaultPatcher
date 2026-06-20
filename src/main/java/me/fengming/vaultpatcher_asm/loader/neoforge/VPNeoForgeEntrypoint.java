@@ -7,6 +7,5 @@ import net.neoforged.fml.common.Mod;
 public class VPNeoForgeEntrypoint {
     public VPNeoForgeEntrypoint() {
         NeoForgeRuntimeInfo.bootstrap("NeoForge");
-        VaultPatcher.debugInfo("NF DONE!");
     }
 }

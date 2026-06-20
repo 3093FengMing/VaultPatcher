@@ -26,5 +26,6 @@ public class VPNeoForgeClassProcessorProvider implements ClassProcessorProvider 
         if (hasDynamicRules) {
             collector.add(new VPNeoForgeMinecraftClassProcessor());
         }
+        VaultPatcher.debugInfo("NF DONE!");
     }
 }
