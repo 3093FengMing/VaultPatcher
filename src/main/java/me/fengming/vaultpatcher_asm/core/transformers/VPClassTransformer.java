@@ -60,7 +60,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
                 if (!mixedClinit && !disableLocal && method.name.equals("<clinit>")) {
                     InsnList list = createClinitAddition(input, isInterface);
 
-                    method.instructions.insertBefore(method.instructions.getLast(), list);
+                    method.instructions.insertBefore(method.instructions.getFirst(), list);
                     hasClinit = true;
                     mixedClinit = true;
                 }
