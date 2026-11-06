@@ -19,8 +19,18 @@ public class PatchClassTransformer implements ITransformer<ClassNode> {
     }
 
     public ClassNode transform(ClassNode input, ITransformerVotingContext context) {
-        VaultPatcher.debugInfo("Using Patch: {}", input.name);
-        return ClassPatcher.patch(input);
+
+        ClassNode patched = ClassPatcher.patch(input.name);
+        ClassNode deleted = ClassPatcher.delete(input);
+        if (patched != null) {
+            VaultPatcher.debugInfo("Using Patch: {}", input.name);
+            return patched;
+        } else if (deleted != null) {
+            VaultPatcher.debugInfo("Deleting Class: {}", input.name);
+            return deleted;
+        } else {
+            return input;
+        }
     }
 
     public TransformerVoteResult castVote(ITransformerVotingContext context) {

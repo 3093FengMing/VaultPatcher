@@ -81,7 +81,7 @@ public class Utils {
     }
 
     public static byte[] nodeToBytes(ClassNode node) {
-        ClassWriter wr = new SafeClassWriter(SafeClassWriter.ClassLoaderGetter(), SafeClassWriter.launchWrapperLookup());
+        ClassWriter wr = new SafeClassWriter();
         node.accept(wr);
         return wr.toByteArray();
     }

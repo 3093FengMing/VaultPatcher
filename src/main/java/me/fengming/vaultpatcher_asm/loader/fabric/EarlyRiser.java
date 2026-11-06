@@ -52,6 +52,7 @@ public class EarlyRiser implements Runnable {
         // do patches
         if (VaultPatcherConfig.isEnableClassPatch()) {
             ClassPatcher.getPatches().forEach((k, v) -> ClassTinkerers.addReplacement(k, n -> Utils.deepCopyClass(n, v)));
+            ClassPatcher.getDeletes().forEach((k) -> ClassTinkerers.addReplacement(k, n -> ClassPatcher.delete(n)));
         }
 
         Utils.translationInfoMap.forEach((k, v) -> ClassTinkerers.addTransformation(k, new VPClassTransformer(v)));

@@ -14,60 +14,87 @@ import java.util.*;
  * @author Ceroler
  */
 public class SafeClassWriter extends ClassWriter {
-    public interface BytecodeLookup {
-        byte[] find(String internalName) throws IOException;
-    }
+
     private static final String OBJECT = "java/lang/Object";
     private static final String CLONEABLE = "java/lang/Cloneable";
     private static final String SERIALIZABLE = "java/io/Serializable";
-    private final ClassLoader classLoader;
-    private final BytecodeLookup bytecodeLookup;
-    private static final class ClassInfo{
-        final String name;
-        final String superName;
-        final List<String> interfaces;
-        final boolean isInterface;
-        ClassInfo(String name, String superName, List<String> interfaces, boolean isInterface) {
-            this.name = name;
-            this.superName = superName;
-            this.interfaces = interfaces;
-            this.isInterface = isInterface;
-        }
-    }
-    public static ClassLoader ClassLoaderGetter() {
-        return Thread.currentThread().getContextClassLoader();
-    }
-    public static BytecodeLookup launchWrapperLookup() {
-        // First try to get classbytes through launchWrapper
-        return new BytecodeLookup() {
-            @Override
-            public byte[] find(String internalName) throws IOException {
-                try {
-                    Class<?> launch = Class.forName("net.minecraft.launchwrapper.Launch");
-                    Object cl = launch.getField("classLoader").get(null);
-                    Method m = cl.getClass().getMethod("getClassBytes", String.class);
-                    return (byte[]) m.invoke(cl, internalName.replace("/", "."));
-                } catch (Throwable ignored) {
-                    return null;
+    private final ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+
+    private class ClassInfo {
+        private final String className;
+        private final String superName;
+        private final List<String> interfaces;
+        private final boolean isInterface;
+        public ClassInfo(String name, String suName, List<String> itfs, boolean isItf) {
+                this.className = name;
+                this.superName = suName;
+                this.interfaces = itfs;
+                this.isInterface = isItf;            }
+
+            protected boolean isAssignableFrom(ClassInfo anotherInfo) {
+                if (this.className.equals(anotherInfo.className)) return true;
+                if (isArray(anotherInfo.className)) {
+                    return this.isArrayAssignableFrom(anotherInfo);
                 }
-            }
-        };
-    }
-    private byte[] readClassBytes(String internalName) throws IOException {
-        if (bytecodeLookup != null) {
-            byte[] fromLookup = bytecodeLookup.find(internalName);
-            if (fromLookup != null) return fromLookup;
+                if (anotherInfo.superName != null) {
+                    ClassInfo superInfo = resolve(anotherInfo.superName);
+                    if (superInfo != null && this.isAssignableFrom(superInfo)) {
+                        return true;
+                    }
+                }
+                for (String itf : anotherInfo.interfaces) {
+                    ClassInfo itfInfo = resolve(itf);
+                    if (itfInfo != null && this.isAssignableFrom(itfInfo)) {
+                        return true;
+                    }
+                }
+                return false;
         }
-        // Then we try to get classbyte from context
+
+        private boolean isArray(String name) {
+            return name != null && !name.isEmpty() && name.charAt(0) == '[';
+        }
+
+        private boolean isArrayAssignableFrom(ClassInfo anotherInfo) {
+            if (this.className.equals(OBJECT) || this.className.equals(CLONEABLE) || this.className.equals(SERIALIZABLE)) return true;
+            if (!isArray(this.className)) return false;
+            Type ae = Type.getType(this.className.substring(1));
+            Type be = Type.getType(anotherInfo.className.substring(1));
+            if ((ae.getSort() != Type.OBJECT && ae.getSort() != Type.ARRAY) || (be.getSort() != Type.OBJECT && be.getSort() != Type.ARRAY)) {
+                return ae.equals(be);
+            }
+            ClassInfo aeInfo;
+            ClassInfo beInfo;
+            if (ae.getSort() == Type.ARRAY) {
+                aeInfo = new ClassInfo(ae.getDescriptor(),OBJECT,Arrays.asList(CLONEABLE,SERIALIZABLE),false);
+            } else {
+                aeInfo = resolve(ae.getInternalName());
+            }
+            if (be.getSort() == Type.ARRAY) {
+                beInfo = new ClassInfo(be.getDescriptor(),OBJECT,Arrays.asList(CLONEABLE,SERIALIZABLE),false);
+            } else {
+                beInfo = resolve(be.getInternalName());
+            }
+            if (aeInfo != null && beInfo != null) return aeInfo.isAssignableFrom(beInfo);
+            return false;
+        }
+
+    }
+
+
+
+    public SafeClassWriter() { super(ClassWriter.COMPUTE_FRAMES); }
+
+    private byte[] readClassBytes(String internalName) throws IOException {
         String resource = internalName + ".class";
-        InputStream in = classLoader.getResourceAsStream(resource);
-        if (in == null) return null;
+        InputStream in = this.classloader.getResourceAsStream(resource);
+        if (in==null) return null;
         try {
             ByteArrayOutputStream out = new ByteArrayOutputStream(4096);
-            byte[] buf = new byte[4096];
+            byte[] buffer = new byte[4096];
             int r;
-            while ((r = in.read(buf)) != -1) {
-                out.write(buf, 0, r);
+            while ((r=in.read(buffer)) != -1) {
+                out.write(buffer, 0, r);
             }
             return out.toByteArray();
         } finally {
@@ -77,162 +104,50 @@ public class SafeClassWriter extends ClassWriter {
 
     private ClassInfo resolve(String internalName) {
         try {
-            // Try to get class info from classbytes first
-            byte[] bytes = readClassBytes(internalName);
-            if (bytes == null) {
-                // If we can't, use reflection
-                try {
-                    Class<?> clazz = Class.forName(internalName.replace('/', '.'), false, classLoader);
-                    Class<?> superClass = clazz.getSuperclass();
-                    Class<?>[] interfaces = clazz.getInterfaces();
-                    List<String> itfs = new ArrayList<>(interfaces.length);
-                    for (Class<?> itf : interfaces) {
-                        itfs.add(itf.getName().replace('.', '/'));
-                    }
-                    return new ClassInfo(internalName, superClass == null ? null : superClass.getName().replace('.', '/'), itfs, clazz.isInterface());
-                } catch (Throwable ignored) {
-                    return null;
-                }
+            byte[] classBytes = readClassBytes(internalName);
+            if (classBytes != null) {
+                ClassReader cr = new ClassReader(classBytes);
+                return new ClassInfo(cr.getClassName(), cr.getSuperName(), cr.getInterfaces() == null ? Collections.emptyList() : Arrays.asList(cr.getInterfaces()), ((cr.getAccess() & Opcodes.ACC_INTERFACE) != 0));
             }
-            ClassReader cr = new ClassReader(bytes);
-            int access = cr.getAccess();
-            String superName = cr.getSuperName();
-            String[] ifs = cr.getInterfaces();
-            return new ClassInfo(internalName, superName, ifs == null ? Collections.emptyList() : Arrays.asList(ifs), (access & Opcodes.ACC_INTERFACE) != 0);
-        } catch (Throwable ignored) {
-            return null;
-        }
-    }
-
-
-    public SafeClassWriter(ClassLoader classLoader, BytecodeLookup bytecodeLookup) {
-        super(ClassWriter.COMPUTE_FRAMES);
-        this.classLoader = classLoader;
-        this.bytecodeLookup = bytecodeLookup;
+        } catch (Throwable ignored) {}
+        try {
+            Class<?> classRef = Class.forName(internalName.replace('/', '.'), false, this.classloader);
+            String clazzName = classRef.getName().replace('.', '/');
+            String superName;
+            if (classRef.isInterface()) {
+                superName = OBJECT;
+            } else {
+                Class<?> superClazz = classRef.getSuperclass();
+                superName = superClazz == null ? null : superClazz.getName().replace('.', '/');
+            }
+            Class<?>[] interfaces = classRef.getInterfaces();
+            List<String> interfaces_list = new ArrayList<>(interfaces.length);
+            for (Class<?> itf : interfaces) {
+                interfaces_list.add(itf.getName().replace('.', '/'));
+            }
+            return new ClassInfo(clazzName, superName, interfaces_list, classRef.isInterface());
+        } catch (Throwable ignored) {}
+        return null;
     }
 
     @Override
-    protected String getCommonSuperClass(String type1, String type2) {
-        // If two type are the same, return directly
-        if (type1.equals(type2)) {
-            return type1;
-        }
-        try {
-            // We treat Array separately
-            if (isArrayType(type1) || isArrayType(type2)) {
-                return commonSuperArrayAware(type1, type2);
-            }
-            // If one type is assignable from another, return it
-            if (isAssignableFrom(type1, type2)) return type1;
-            if (isAssignableFrom(type2, type1)) return type2;
-            // resolve class information and then do LCA
-            ClassInfo i1 = resolve(type1);
-            ClassInfo i2 = resolve(type2);
-            if (i1 == null || i2 == null) {
+    protected String getCommonSuperClass(final String type1, final String type2) {
+        ClassInfo ci1 = resolve(type1);
+        ClassInfo ci2 = resolve(type2);
+        if (ci1 != null && ci2 != null) {
+            if (ci1.isAssignableFrom(ci2)) {
+                return ci1.className;
+            } else if (ci2.isAssignableFrom(ci1)) {
+                return ci2.className;
+            } else if (ci1.isInterface || ci2.isInterface) {
                 return OBJECT;
-            }
-            if (i1.isInterface || i2.isInterface) return OBJECT;
-            // Walk ancestors of type1, then walk type2 upwards until first hit.
-            Set<String> ancestors = new LinkedHashSet<>();
-            String cur = type1;
-            while (cur != null) {
-                ancestors.add(cur);
-                ClassInfo c = resolve(cur);
-                cur = c == null ? null : c.superName;
-            }
-            cur = type2;
-            while (cur != null) {
-                if (ancestors.contains(cur)) return cur;
-                ClassInfo c = resolve(cur);
-                cur = c == null ? null : c.superName;
-            }
-            return OBJECT;
-        } catch (Throwable ignored) {
-            // Never fail frame computation due to hierarchy lookup.
-            return OBJECT;
+            } else do {
+                ci1=resolve(ci1.superName);
+            } while (ci1 != null && !ci1.isAssignableFrom(ci2));
+            if (ci1 != null) return ci1.className;
         }
-    }
-    private String commonSuperArrayAware(String type1, String type2) {
-        boolean a1 = isArrayType(type1);
-        boolean a2 = isArrayType(type2);
-        // array + non-array
-        if (a1 && !a2) {
-            if (OBJECT.equals(type2) || CLONEABLE.equals(type2) || SERIALIZABLE.equals(type2)) return type2;
-            return OBJECT;
-        }
-        if (!a1 && a2) {
-            if (OBJECT.equals(type1) || CLONEABLE.equals(type1) || SERIALIZABLE.equals(type1)) return type1;
-            return OBJECT;
-        }
-        // both arrays
-        Type t1 = Type.getType(type1);
-        Type t2 = Type.getType(type2);
-        int d1 = t1.getDimensions();
-        int d2 = t2.getDimensions();
-        Type e1 = t1.getElementType();
-        Type e2 = t2.getElementType();
-        // same primitive element + same dims => itself
-        if (e1.getSort() != Type.OBJECT || e2.getSort() != Type.OBJECT) {
-            if (d1 == d2 && e1.getSort() == e2.getSort()) return type1;
-            return OBJECT;
-        }
-        // different dims for reference arrays: best safe precision is Object[minDim]
-        if (d1 != d2) {
-            return arrayOf(OBJECT, Math.min(d1, d2));
-        }
-        // same dims, reference elements
-        String elem1 = e1.getInternalName();
-        String elem2 = e2.getInternalName();
-        String commonElem = getCommonSuperClass(elem1, elem2);
-        return arrayOf(commonElem, d1);
-    }
-    private static boolean isArrayType(String type) {
-        return type != null && !type.isEmpty() && type.charAt(0) == '[';
-    }
-    private static String arrayOf(String elementInternalName, int dims) {
-        StringBuilder sb = new StringBuilder(dims + elementInternalName.length() + 2);
-        for (int i = 0; i < dims; i++) sb.append('[');
-        sb.append('L').append(elementInternalName).append(';');
-        return sb.toString();
-    }
-    private boolean isAssignableFrom(String maybeSuper, String maybeSub) {
-        if (maybeSuper.equals(maybeSub)) return true;
-        if (OBJECT.equals(maybeSuper)) return true;
-        // Handle arrays conservatively and correctly.
-        if (isArrayType(maybeSuper) || isArrayType(maybeSub)) {
-            return isArrayAssignableFrom(maybeSuper, maybeSub);
-        }
-        ClassInfo sub = resolve(maybeSub);
-        if (sub == null) return false;
-        Deque<String> q = new ArrayDeque<>();
-        Set<String> seen = new HashSet<>();
-        q.add(maybeSub);
-        while (!q.isEmpty()) {
-            String cur = q.removeFirst();
-            if (!seen.add(cur)) continue;
-            if (maybeSuper.equals(cur)) return true;
-            ClassInfo ci = resolve(cur);
-            if (ci == null) continue;
-            if (ci.superName != null) q.addLast(ci.superName);
-            for (String itf : ci.interfaces) q.addLast(itf);
-        }
-        return false;
-    }
-    private boolean isArrayAssignableFrom(String maybeSuper, String maybeSub) {
-        if (maybeSuper.equals(maybeSub)) return true;
-        if (OBJECT.equals(maybeSuper)) return true;
-        if (CLONEABLE.equals(maybeSuper) || SERIALIZABLE.equals(maybeSuper)) {
-            return isArrayType(maybeSub);
-        }
-        if (!isArrayType(maybeSuper) || !isArrayType(maybeSub)) return false;
-        Type s = Type.getType(maybeSuper);
-        Type t = Type.getType(maybeSub);
-        if (s.getDimensions() != t.getDimensions()) return false;
-        Type se = s.getElementType();
-        Type te = t.getElementType();
-        if (se.getSort() != Type.OBJECT || te.getSort() != Type.OBJECT) {
-            return se.getSort() == te.getSort();
-        }
-        return isAssignableFrom(se.getInternalName(), te.getInternalName());
+        return OBJECT;
     }
 }
+
+

@@ -26,10 +26,15 @@ public class VPNeoForgePatchClassProcessor extends SimpleClassProcessor {
 
     @Override
     public void transform(ClassNode input, SimpleTransformationContext context) {
-        VaultPatcher.debugInfo("Using Patch: {}", input.name);
-        ClassNode patched = ClassPatcher.patch(input);
-        if (patched != input) {
+
+        ClassNode patched = ClassPatcher.patch(input.name);
+        ClassNode deleted = ClassPatcher.delete(input);
+        if (patched != null) {
+            VaultPatcher.debugInfo("Using Patch: {}", input.name);
             Utils.deepCopyClass(input, patched);
+        } else if (deleted != null) {
+            VaultPatcher.debugInfo("Deleting Class: {}", input.name);
+            Utils.deepCopyClass(input,deleted);
         }
     }
 

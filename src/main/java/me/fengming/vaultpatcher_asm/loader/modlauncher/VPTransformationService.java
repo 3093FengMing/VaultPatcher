@@ -15,10 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class VPTransformationService implements ITransformationService {
@@ -123,7 +120,9 @@ public class VPTransformationService implements ITransformationService {
     public List<ITransformer> transformers() {
         List<ITransformer> list = new ArrayList<>();
         if (VaultPatcherConfig.isEnableClassPatch()) {
-            list.add(new PatchClassTransformer(ClassPatcher.getPatches().keySet()));
+            Set<String> wholeSet=new HashSet<>(ClassPatcher.getPatches().keySet());
+            wholeSet.addAll(ClassPatcher.getDeletes());
+            list.add(new PatchClassTransformer(wholeSet));
         }
 
         list.addAll(Utils.translationInfoMap.values().stream()

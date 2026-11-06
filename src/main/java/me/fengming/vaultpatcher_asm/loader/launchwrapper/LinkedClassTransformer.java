@@ -26,10 +26,16 @@ public class LinkedClassTransformer implements IClassTransformer {
         boolean patched = false;
         if (VaultPatcherConfig.isEnableClassPatch()) {
             ClassNode patchedClass = ClassPatcher.patch(input.name);
+            ClassNode deletedClass = ClassPatcher.delete(input);
             if (patchedClass != null) {
                 patched = true;
                 input = patchedClass;
                 VaultPatcher.debugInfo("Using Patch: {}", input.name);
+            }
+            if (deletedClass != null) {
+                patched = true;
+                input = deletedClass;
+                VaultPatcher.debugInfo("Deleting Class: {}", input.name);
             }
         }
 

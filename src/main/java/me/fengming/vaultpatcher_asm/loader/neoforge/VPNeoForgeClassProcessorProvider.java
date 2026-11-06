@@ -4,7 +4,11 @@ import me.fengming.vaultpatcher_asm.VaultPatcher;
 import me.fengming.vaultpatcher_asm.config.VaultPatcherConfig;
 import me.fengming.vaultpatcher_asm.core.patch.ClassPatcher;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
+import net.fabricmc.loader.impl.discovery.ClasspathModCandidateFinder;
 import net.neoforged.neoforgespi.transformation.ClassProcessorProvider;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class VPNeoForgeClassProcessorProvider implements ClassProcessorProvider {
     @Override
@@ -12,7 +16,9 @@ public class VPNeoForgeClassProcessorProvider implements ClassProcessorProvider 
         NeoForgeRuntimeInfo.bootstrap("NeoForgeProvider");
 
         if (VaultPatcherConfig.isEnableClassPatch()) {
-            collector.add(new VPNeoForgePatchClassProcessor(ClassPatcher.getPatches().keySet()));
+            Set<String> wholeSet=new HashSet<>(ClassPatcher.getPatches().keySet());
+            wholeSet.addAll(ClassPatcher.getDeletes());
+            collector.add(new VPNeoForgePatchClassProcessor(wholeSet));
         }
 
         int i = 0;

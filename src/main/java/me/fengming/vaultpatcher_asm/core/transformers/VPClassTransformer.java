@@ -330,7 +330,7 @@ public class VPClassTransformer implements Consumer<ClassNode> {
 
         // Recompute frames. Otherwise, it may cause java.lang.VerifyError on java8
         if (VaultPatcher.platform == Platform.Forge1_6) {
-            ClassWriter wr = new SafeClassWriter(SafeClassWriter.ClassLoaderGetter(), SafeClassWriter.launchWrapperLookup());
+            ClassWriter wr = new SafeClassWriter();
             input.accept(wr);
             byte[] bytes = wr.toByteArray();
 
