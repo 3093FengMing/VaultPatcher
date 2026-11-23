@@ -9,7 +9,6 @@ import java.io.IOException;
 public class DebugMode {
     private boolean isEnable = false;
     private int outputMode = 0;
-    private boolean outputNodeDebug = false;
     private int hidePairsLimit = 7;
     private boolean exportClass = false;
     private boolean useCache = true;
@@ -28,14 +27,6 @@ public class DebugMode {
 
     public void setOutputMode(int outputMode) {
         this.outputMode = outputMode;
-    }
-
-    public boolean isOutputNodeDebug() {
-        return this.outputNodeDebug;
-    }
-
-    public void setOutputNodeDebug(boolean outputNodeDebug) {
-        this.outputNodeDebug = outputNodeDebug;
     }
 
     public void setHidePairsLimit(int hidePairsLimit) {this.hidePairsLimit = hidePairsLimit;}
@@ -79,9 +70,6 @@ public class DebugMode {
                 case "use_cache":
                     setUseCache(reader.nextBoolean());
                     break;
-                case "output_node_debug":
-                    setOutputNodeDebug(reader.nextBoolean());
-                    break;
                 default:
                     reader.skipValue();
                     break;
@@ -94,7 +82,6 @@ public class DebugMode {
         writer.beginObject();
         writer.name("is_enable").value(isEnable());
         writer.name("output_mode").value(getOutputMode());
-        writer.name("output_node_debug").value(isOutputNodeDebug());
         writer.name("pairs_hide_limit").value(getHidePairsLimit());
         writer.name("export_class").value(isExportClass());
         writer.name("use_cache").value(isUseCache());

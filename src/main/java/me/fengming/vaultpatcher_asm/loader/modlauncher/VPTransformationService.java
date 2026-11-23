@@ -129,7 +129,6 @@ public class VPTransformationService implements ITransformationService {
                 .map(ForgeClassTransformer::new)
                 .collect(Collectors.toList()));
 
-        list.add(new ForgeClassTransformer(null));
         boolean hasDynamicRules = !Utils.dynTranslationInfos.isEmpty();
         if (hasDynamicRules) {
             list.add(new ForgeMinecraftTransformer());

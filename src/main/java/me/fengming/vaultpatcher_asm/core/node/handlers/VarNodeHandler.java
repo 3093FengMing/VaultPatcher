@@ -1,6 +1,5 @@
 package me.fengming.vaultpatcher_asm.core.node.handlers;
 
-import me.fengming.vaultpatcher_asm.core.node.HandlerDebugInfo;
 import me.fengming.vaultpatcher_asm.core.node.NodeHandlerParameters;
 import me.fengming.vaultpatcher_asm.core.utils.MatchUtils;
 import org.objectweb.asm.Opcodes;
@@ -22,19 +21,6 @@ public class VarNodeHandler extends NodeHandler<VarInsnNode> {
             String detail = buildDetail(this.node, params.methodNode, params.info.getPairs());
             debugInfo(params.ordinal, "ASMTransformMethod-InsertLocalVariableStore/Load", "[key]", "[value]", detail);
         }
-//        // Parameters
-//        method.parameters.forEach(p -> {
-//            if (p.name.equals(localVariableMap.getOrDefault(varInsnNode.var, null))) {
-//                insertReplace(info, method, varInsnNode);
-//                Utils.printDebugInfo("[Dyn]", "ASMTransformMethod-InsertLocalVariableLoad", "[Dyn]", input.name, info);
-//            }
-//        });
         return this.node;
-    }
-
-    @Override
-    public void addDebugInfo(HandlerDebugInfo info) {
-        info.var = node.var;
-        info.varString = params.localVariableMap.getOrDefault(this.node.var, null);
     }
 }

@@ -26,7 +26,6 @@ public class VPNeoForgeClassProcessorProvider implements ClassProcessorProvider 
             collector.add(new VPNeoForgeTranslationClassProcessor(infos, "translation_" + i));
             i++;
         }
-        collector.add(new VPNeoForgeTranslationClassProcessor(null, "translation_expand"));
 
         boolean hasDynamicRules = !Utils.dynTranslationInfos.isEmpty();
         if (hasDynamicRules) {

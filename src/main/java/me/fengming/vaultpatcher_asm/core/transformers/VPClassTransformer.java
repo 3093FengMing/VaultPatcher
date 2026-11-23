@@ -14,7 +14,6 @@ import me.fengming.vaultpatcher_asm.core.utils.MatchUtils;
 import me.fengming.vaultpatcher_asm.core.utils.Platform;
 import me.fengming.vaultpatcher_asm.core.utils.StringUtils;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
-import me.fengming.vaultpatcher_asm.plugin.VaultPatcherPlugin;
 import org.objectweb.asm.*;
 import org.objectweb.asm.tree.*;
 
@@ -23,7 +22,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class VPClassTransformer implements Consumer<ClassNode> {
-    private Set<TranslationInfo> translationInfos;
+    private final Set<TranslationInfo> translationInfos;
     private boolean disableLocal = false;
 
     private boolean transformed = false;
@@ -90,11 +89,10 @@ public class VPClassTransformer implements Consumer<ClassNode> {
     private static InsnList createClinitAddition(ClassNode input, boolean isInterface) {
         /*
         static {
-            ...(original code)...
-            ...(original code)...
-
             HashMap __vp_map = new HashMap();
             __vp__init();
+            ...(original code)...
+            ...(original code)...
         }
         */
         String mapClassName = isInterface ? input.name + "$vp_map" : "java/util/HashMap";
@@ -302,7 +300,6 @@ public class VPClassTransformer implements Consumer<ClassNode> {
     // for Fabric
     @Override
     public void accept(ClassNode input) {
-        VaultPatcher.plugins.forEach(e -> e.onTransformClass(input, VaultPatcherPlugin.Phase.BEFORE));
 
         String className = input.name;
         if (Utils.debug.isUseCache()) {
@@ -340,8 +337,6 @@ public class VPClassTransformer implements Consumer<ClassNode> {
             Utils.deepCopyClass(input, copied);
         }
 
-        VaultPatcher.plugins.forEach(e -> e.onTransformClass(input, VaultPatcherPlugin.Phase.AFTER));
-
         if (Utils.debug.isExportClass()) {
             Utils.exportClass(input, Utils.getVpPath().resolve("exported"));
         }
@@ -352,16 +347,9 @@ public class VPClassTransformer implements Consumer<ClassNode> {
             VaultPatcher.debugInfo("Class {} has already been transformed!", input.name);
             return;
         }
-        if (translationInfos == null) {
-            disableLocal = true;
-            translationInfos = Utils.translationInfoMap.values()
-                    .stream()
-                    .flatMap(Collection::stream)
-                    .collect(Collectors.toSet());
-        } else {
-            disableLocal = translationInfos.stream()
-                    .allMatch(i -> StringUtils.isBlank(i.getTargetClassInfo().getLocal()));
-        }
+
+        disableLocal = translationInfos.stream().allMatch(i -> StringUtils.isBlank(i.getTargetClassInfo().getLocal()));
+
         methodReplace(input);
         fieldReplace(input);
         annotationReplace(input);

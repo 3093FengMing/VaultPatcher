@@ -38,7 +38,6 @@ public final class LoaderBootstrap {
         String minecraftVersion = resolveMinecraftVersion(context);
         if (StringUtils.isBlank(minecraftVersion)) {
             VaultPatcher.LOGGER.error("Failed to get minecraft version in {}!", context.loaderName());
-            minecraftVersion = "";
         }
 
         VaultPatcher.init(gameDir, minecraftVersion);

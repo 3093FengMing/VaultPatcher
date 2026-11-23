@@ -35,24 +35,15 @@ public class ForgeClassTransformer implements ITransformer<ClassNode> {
     @Override
     public Set<Target> targets() {
         Set<ITransformer.Target> targets = new HashSet<>();
-
-        if (this.translationInfos == null) {
-            targets.addAll(getExpandTargets());
-        } else {
-            for (TranslationInfo info : this.translationInfos) {
-                String name = info.getTargetClass();
-                if (!StringUtils.isBlank(name)) {
-                    targets.add(ITransformer.Target.targetClass(StringUtils.rawPackage(name)));
-                }
+        for (TranslationInfo info : this.translationInfos) {
+            String name = info.getTargetClass();
+            if (!StringUtils.isBlank(name)) {
+                targets.add(ITransformer.Target.targetClass(StringUtils.rawPackage(name)));
             }
         }
         return targets;
     }
 
-    public static Set<ITransformer.Target> getExpandTargets() {
-        Set<ITransformer.Target> targets = new HashSet<>();
-        return targets;
-    }
 
     // neoforge only
     public cpw.mods.modlauncher.api.TargetType getTargetType() {

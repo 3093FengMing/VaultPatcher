@@ -100,7 +100,7 @@ public class VaultPatcherModule {
                 } else {
                     TranslationInfo.Mutable mutable = new TranslationInfo.Mutable(targetClass);
                     mutable.setPairs(pairs).setTargetClassInfo(targetClassInfo);
-                    Utils.addTranslationInfo(targetClass, mutable);
+                    Utils.addTranslationInfo(targetClass, mutable.toImmutable());
                 }
             }
 

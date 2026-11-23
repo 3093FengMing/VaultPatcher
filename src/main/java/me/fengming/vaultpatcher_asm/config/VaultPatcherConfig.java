@@ -25,10 +25,10 @@ public class VaultPatcherConfig {
     public static Path config = null;
     public static File configFile = null;
     public static String defaultLanguage = "en_us";
-    public static List<String> mods = new ArrayList<>();
+    public static List<String> modules = new ArrayList<>();
 
-    public static List<String> getMods() {
-        return mods;
+    public static List<String> getModules() {
+        return modules;
     }
 
     public static DebugMode getDebugMode() {
@@ -53,8 +53,8 @@ public class VaultPatcherConfig {
 
         jw.name("modules");
         jw.beginArray();
-        for (String mod : mods) {
-            jw.value(mod);
+        for (String module : modules) {
+            jw.value(module);
         }
         jw.endArray();
 
@@ -116,7 +116,7 @@ public class VaultPatcherConfig {
                 }
                 case "modules":
                     if (jr.peek() == JsonToken.BEGIN_ARRAY) {
-                        mods = GSON.fromJson(jr, new TypeToken<List<String>>() {}.getType());
+                        modules = GSON.fromJson(jr, new TypeToken<List<String>>() {}.getType());
                     }
                     break;
 

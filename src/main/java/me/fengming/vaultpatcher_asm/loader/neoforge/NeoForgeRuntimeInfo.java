@@ -20,7 +20,7 @@ final class NeoForgeRuntimeInfo {
 
             @Override
             public Platform platform() {
-                return Platform.Forge1_13;
+                return Platform.NeoForge1_21_9;
             }
 
             @Override

@@ -8,23 +8,16 @@ import me.fengming.vaultpatcher_asm.core.patch.ClassPatcher;
 import me.fengming.vaultpatcher_asm.core.utils.I18n;
 import me.fengming.vaultpatcher_asm.core.utils.Platform;
 import me.fengming.vaultpatcher_asm.core.utils.Utils;
-import me.fengming.vaultpatcher_asm.plugin.VaultPatcherPlugin;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.jar.JarFile;
 
 public class VaultPatcher {
     public static ILogger LOGGER = new ILogger();
 
-    public static List<VaultPatcherPlugin> plugins = new ArrayList<>();
     public static Path mcPath = null;
     public static String mcVersion = null;
     public static Platform platform = Platform.UNDEFINED;
@@ -34,47 +27,15 @@ public class VaultPatcher {
         VaultPatcher.mcPath = mcPath;
         VaultPatcher.mcVersion = mcVersion;
 
-        Path pluginsPath = Utils.getVpPath().resolve("plugins");
-        if (Files.notExists(pluginsPath)) {
-            try {
-                Files.createDirectories(pluginsPath);
-            } catch (IOException e) {
-                throw new RuntimeException("Failed creating plugin directory: ", e);
-            }
-        }
-
-        // Load Plugins
-        File[] plugins = pluginsPath.toFile().listFiles(f -> f.getName().endsWith(".jar"));
-        if (plugins != null) {
-            for (File file : plugins) {
-                try (JarFile jarFile = new JarFile(file)) {
-                    String entryPoint = jarFile.getManifest().getMainAttributes().getValue("VaultPatcherPlugin");
-                    if (entryPoint == null)
-                        throw new RuntimeException("Failed loading plugin " + file.getName() + ": Couldn't find the entry point");
-
-                    ClassLoader parentClassLoader = VaultPatcher.class.getClassLoader();
-                    URLClassLoader classLoader = new URLClassLoader(new URL[]{file.toURI().toURL()}, parentClassLoader);
-                    VaultPatcherPlugin plugin = classLoader.loadClass(entryPoint).asSubclass(VaultPatcherPlugin.class).newInstance();
-
-                    VaultPatcher.plugins.add(plugin);
-                } catch (Exception e) {
-                    throw new RuntimeException("Failed loading plugin: " + file, e);
-                }
-            }
-        }
-
         _init(mcPath);
     }
 
     private static void _init(Path mcPath) {
-        plugins.forEach(e -> e.start(mcPath));
 
         try {
-            plugins.forEach(e -> e.onLoadConfig(VaultPatcherPlugin.Phase.BEFORE));
             VaultPatcherConfig.readConfig(mcPath.resolve("config").resolve("vaultpatcher_asm"));
             Utils.debug = VaultPatcherConfig.getDebugMode();
             VaultPatcher.debugInfo("Loading Configs!");
-            plugins.forEach(e -> e.onLoadConfig(VaultPatcherPlugin.Phase.AFTER));
         } catch (IOException e) {
             throw new RuntimeException("Failed to load config: ", e);
         }
@@ -84,18 +45,14 @@ public class VaultPatcher {
 
         try {
             VaultPatcher.debugInfo("Loading Patches!");
-            plugins.forEach(e -> e.onLoadPatches(VaultPatcherPlugin.Phase.BEFORE));
             ClassPatcher.init(Utils.getVpPath().resolve("patch"));
-            plugins.forEach(e -> e.onLoadPatches(VaultPatcherPlugin.Phase.AFTER));
         } catch (IOException e) {
             throw new RuntimeException("Failed to load patch: ", e);
         }
 
         try {
             VaultPatcher.debugInfo("Loading Caches!");
-            plugins.forEach(e -> e.onLoadCaches(VaultPatcherPlugin.Phase.BEFORE));
             Caches.init(Utils.getVpPath().resolve("cache"));
-            plugins.forEach(e -> e.onLoadCaches(VaultPatcherPlugin.Phase.AFTER));
         } catch (IOException e) {
             throw new RuntimeException("Failed to load cache: ", e);
         }
@@ -110,30 +67,23 @@ public class VaultPatcher {
                 try (DirectoryStream<Path> stream = Files.newDirectoryStream(p, "*.json")) {
                     for (Path jsonFile : stream) {
                         VaultPatcherModule vpp = new VaultPatcherModule(jsonFile.getFileName().toString());
-                        plugins.forEach(e -> e.onLoadModule(vpp, VaultPatcherPlugin.Phase.BEFORE));
                         vpp.read();
-                        plugins.forEach(e -> e.onLoadModule(vpp, VaultPatcherPlugin.Phase.AFTER));
                     }
                 }
 
             } else {
-                List<String> mods = VaultPatcherConfig.getMods();
-                for (String mod : mods) {
-                    VaultPatcherModule vpp = new VaultPatcherModule(mod + ".json");
-                    plugins.forEach(e -> e.onLoadModule(vpp, VaultPatcherPlugin.Phase.BEFORE));
+                List<String> modules = VaultPatcherConfig.getModules();
+                for (String module : modules) {
+                    VaultPatcherModule vpp = new VaultPatcherModule(module + ".json");
                     vpp.read();
-                    plugins.forEach(e -> e.onLoadModule(vpp, VaultPatcherPlugin.Phase.AFTER));
                 }
             }
         } catch (IOException e) {
             throw new RuntimeException("Failed to load modules: ", e);
         }
 
-
         // optimization
         Utils.needStacktrace = Utils.dynTranslationInfos.stream().anyMatch(e -> !e.getTargetClassInfo().getDynamicName().isEmpty());
-
-        plugins.forEach(VaultPatcherPlugin::end);
     }
 
     public static void debugInfo(String s) {

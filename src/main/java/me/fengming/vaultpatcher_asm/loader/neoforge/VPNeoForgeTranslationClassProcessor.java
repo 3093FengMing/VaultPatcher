@@ -33,7 +33,6 @@ public class VPNeoForgeTranslationClassProcessor extends SimpleClassProcessor {
     @Override
     public Set<Target> targets() {
         Set<Target> targets = new HashSet<>();
-        if (this.translationInfos == null) return targets;
         for (TranslationInfo info : this.translationInfos) {
             String name = info.getTargetClass();
             if (StringUtils.isBlank(name)) continue;

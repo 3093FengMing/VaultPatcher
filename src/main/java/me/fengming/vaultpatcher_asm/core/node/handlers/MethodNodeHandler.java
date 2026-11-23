@@ -1,6 +1,5 @@
 package me.fengming.vaultpatcher_asm.core.node.handlers;
 
-import me.fengming.vaultpatcher_asm.core.node.HandlerDebugInfo;
 import me.fengming.vaultpatcher_asm.core.node.NodeHandlerParameters;
 import me.fengming.vaultpatcher_asm.core.utils.MatchUtils;
 import org.objectweb.asm.tree.MethodInsnNode;
@@ -20,11 +19,5 @@ public class MethodNodeHandler extends NodeHandler<MethodInsnNode> {
             debugInfo(params.ordinal, "ASMTransformMethod-InsertCalledMethodReturn", "[key]", "[value]", detail);
         }
         return this.node;
-    }
-
-    @Override
-    public void addDebugInfo(HandlerDebugInfo info) {
-        info.name = node.name;
-        info.desc = node.desc;
     }
 }
